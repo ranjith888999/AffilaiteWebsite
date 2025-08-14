@@ -32,6 +32,7 @@ services:
       - key: SECRET_KEY
         sync: false # Set this in the Render dashboard (it's a secret)
 
+
   # -----------------
   # PostgreSQL Database
   # -----------------
