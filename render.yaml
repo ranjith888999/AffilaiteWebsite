@@ -35,7 +35,7 @@ services:
   # -----------------
   # PostgreSQL Database
   # -----------------
-  - type: postgres
+  - type: psql
     name: affiliate-db # This name is referenced by the web service above
     region: ohio # Optional: should match the web service region
     plan: free # Start with the free database plan
