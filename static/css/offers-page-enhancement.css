@@ -1,0 +1,308 @@
+/* Modern Offers Page Header Styles */
+.offers-modern-header {
+    background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.9) 0%, 
+        rgba(79, 172, 254, 0.85) 50%,
+        rgba(0, 231, 169, 0.8) 100%);
+    position: relative;
+    padding: 120px 0 80px;
+    margin-bottom: 40px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.offers-modern-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    z-index: 1;
+}
+
+.offers-modern-header .container {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.offers-modern-header h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.offers-modern-header p {
+    font-size: 1.4rem;
+    color: rgba(255, 255, 255, 0.9);
+    max-width: 700px;
+    margin: 0 auto 30px;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.1);
+}
+
+.offers-modern-header .header-shape {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    fill: var(--bg-primary, #f8fafc);
+    z-index: 3;
+}
+
+/* Override the old page-header specifically for offers page */
+.offers-page .page-header {
+    display: none;
+}
+
+/* Enhanced filter section */
+.offers-page .filters-section {
+    background: var(--card-bg, rgba(255, 255, 255, 0.95));
+    border-radius: 10px;
+    box-shadow: var(--card-shadow, 0 10px 25px rgba(0, 0, 0, 0.05));
+    padding: 20px;
+    margin-top: -20px;
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 10;
+}
+
+.offers-page .search-box input {
+    border-radius: 8px;
+    padding: 12px 20px;
+    border: var(--input-border, 1px solid rgba(203, 213, 225, 0.8));
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.offers-page .search-box input:focus {
+    border-color: var(--highlight-color, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(var(--highlight-color-rgb, 59, 130, 246), 0.2);
+}
+
+.offers-page .filter-group select {
+    border-radius: 8px;
+    padding: 12px 20px;
+    border: var(--input-border, 1px solid rgba(203, 213, 225, 0.8));
+    background-color: var(--input-bg, white);
+    color: var(--input-text, #1e293b);
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.offers-page .filter-group select:focus {
+    border-color: var(--highlight-color, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(var(--highlight-color-rgb, 59, 130, 246), 0.2);
+}
+
+/* Enhanced offer cards */
+.offers-page .offer-card {
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05), 0 5px 10px rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.offers-page .offer-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08), 0 10px 15px rgba(0, 0, 0, 0.04);
+    border-color: rgba(var(--highlight-color-rgb, 59, 130, 246), 0.3);
+}
+
+.offers-page .offer-card .offer-image {
+    height: 180px;
+    position: relative;
+    overflow: hidden;
+}
+
+.offers-page .offer-card .offer-image img {
+    transition: transform 0.5s ease;
+}
+
+.offers-page .offer-card:hover .offer-image img {
+    transform: scale(1.05);
+}
+
+.offers-page .offer-card .offer-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--offer-badge-bg, rgba(59, 130, 246, 0.1));
+    color: var(--offer-badge-text, #2563eb);
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 2;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.offers-page .offer-card .offer-details {
+    padding: 20px;
+}
+
+.offers-page .offer-card .offer-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-color, #2d3748);
+}
+
+.offers-page .offer-card .offer-description {
+    font-size: 0.9rem;
+    color: var(--text-secondary, #4a5568);
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.offers-page .offer-card .offer-campaign {
+    font-size: 0.85rem;
+    color: var(--highlight-color, #3b82f6);
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.offers-page .offer-card .coupon-code {
+    background: var(--coupon-code-bg, rgba(59, 130, 246, 0.1));
+    color: var(--coupon-code-text, #2563eb);
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 15px;
+    border: 1px dashed rgba(var(--highlight-color-rgb, 59, 130, 246), 0.4);
+}
+
+.offers-page .offer-card .btn-primary {
+    background: var(--btn-primary-bg, #3b82f6);
+    color: var(--btn-primary-color, white);
+    padding: 10px 20px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    border: none;
+    font-weight: 500;
+    display: inline-block;
+    text-align: center;
+}
+
+.offers-page .offer-card .btn-primary:hover {
+    background: var(--btn-hover-bg, #2563eb);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--highlight-color-rgb, 59, 130, 246), 0.25);
+}
+
+/* Loading and pagination styling */
+.offers-page .loading {
+    text-align: center;
+    padding: 40px;
+}
+
+.offers-page .loading-spinner {
+    border: 4px solid rgba(var(--highlight-color-rgb, 59, 130, 246), 0.1);
+    border-left-color: var(--highlight-color, #3b82f6);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 15px;
+    animation: spin 1s linear infinite;
+}
+
+.offers-page .pagination-wrapper {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.offers-page .pagination {
+    display: inline-flex;
+    background: var(--card-bg, rgba(255, 255, 255, 0.95));
+    border-radius: 10px;
+    box-shadow: var(--card-shadow, 0 10px 25px rgba(0, 0, 0, 0.05));
+    padding: 5px;
+}
+
+.offers-page .pagination-item {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 5px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    color: var(--text-color, #2d3748);
+}
+
+.offers-page .pagination-item.active {
+    background: var(--highlight-color, #3b82f6);
+    color: white;
+}
+
+.offers-page .pagination-item:hover:not(.active) {
+    background: rgba(var(--highlight-color-rgb, 59, 130, 246), 0.1);
+}
+
+/* Animation for refreshing indicators */
+.offers-page .filter-group.refreshing select,
+.offers-page .search-box.refreshing input,
+.offers-page .filter-group.refreshing label {
+    animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Active state for filters */
+.offers-page .filter-group.active select,
+.offers-page .search-box.active input {
+    border-color: var(--highlight-color, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(var(--highlight-color-rgb, 59, 130, 246), 0.2);
+}
+
+.offers-page .search-box .fa-search.searching {
+    color: var(--highlight-color, #3b82f6);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .offers-modern-header {
+        padding: 100px 0 60px;
+    }
+    
+    .offers-modern-header h1 {
+        font-size: 2.5rem;
+    }
+    
+    .offers-modern-header p {
+        font-size: 1.1rem;
+    }
+    
+    .offers-page .filters-wrapper {
+        flex-direction: column;
+    }
+    
+    .offers-page .search-box,
+    .offers-page .filter-group {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}

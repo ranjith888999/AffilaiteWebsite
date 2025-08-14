@@ -1,0 +1,199 @@
+/* Voice to Text CSS */
+:root {
+    --listening-color: #e74c3c;
+    --listening-pulse-opacity: 0.3;
+    --listening-animation-duration: 2s;
+}
+
+/* Voice input button styles */
+.btn-voice {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.btn-voice:hover {
+    background-color: rgba(var(--primary-rgb), 0.1);
+}
+
+/* Listening state */
+.btn-voice.listening {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: var(--listening-color);
+    animation: pulse var(--listening-animation-duration) infinite;
+}
+
+.btn-voice.listening::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: var(--listening-color);
+    opacity: var(--listening-pulse-opacity);
+    transform: scale(1);
+    animation: pulseRing var(--listening-animation-duration) infinite;
+}
+
+/* Animation for voice processing feedback */
+.voice-processing {
+    animation: voiceProcessing 0.3s ease;
+}
+
+/* Notification system for voice feedback */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 300px;
+}
+
+.notification {
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    animation: slideIn 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.notification.info {
+    background-color: #3498db;
+    color: white;
+}
+
+.notification.success {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.notification.warning {
+    background-color: #f39c12;
+    color: white;
+}
+
+.notification.error {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.notification.fade-out {
+    opacity: 0;
+    transform: translateX(30px);
+}
+
+/* Sound wave visualization when listening */
+.sound-wave {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    height: 20px;
+    margin-right: 8px;
+}
+
+.btn-voice.listening + .sound-wave {
+    display: flex;
+}
+
+.sound-wave-bar {
+    width: 3px;
+    height: 100%;
+    background-color: var(--listening-color);
+    border-radius: 2px;
+    animation: soundWave 0.5s ease infinite alternate;
+}
+
+.sound-wave-bar:nth-child(1) { animation-delay: 0s; }
+.sound-wave-bar:nth-child(2) { animation-delay: 0.1s; }
+.sound-wave-bar:nth-child(3) { animation-delay: 0.2s; }
+.sound-wave-bar:nth-child(4) { animation-delay: 0.3s; }
+
+/* Animations */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes pulseRing {
+    0% {
+        transform: scale(0.8);
+        opacity: var(--listening-pulse-opacity);
+    }
+    50% {
+        opacity: var(--listening-pulse-opacity) / 2;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+@keyframes voiceProcessing {
+    0% {
+        background-color: rgba(var(--primary-rgb), 0.05);
+    }
+    50% {
+        background-color: rgba(var(--primary-rgb), 0.1);
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes soundWave {
+    0% {
+        height: 20%;
+    }
+    100% {
+        height: 100%;
+    }
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .btn-voice.listening,
+[data-theme="night"] .btn-voice.listening {
+    background-color: rgba(231, 76, 60, 0.2);
+}
+
+[data-theme="dark"] .notification,
+[data-theme="night"] .notification {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .notification-container {
+        top: 10px;
+        right: 10px;
+        max-width: calc(100% - 20px);
+    }
+    
+    .notification {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+}

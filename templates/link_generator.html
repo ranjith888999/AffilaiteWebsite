@@ -1,0 +1,774 @@
+{% extends "base.html" %}
+
+{% block title %}Link Generator - Affiliate Deals Hub{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1 class="animate__animated animate__fadeInUp">Affiliate Link Generator</h1>
+        <p class="animate__animated animate__fadeInUp">Convert any URL into an affiliate link</p>
+    </div>
+</section>
+
+<!-- Link Generator Section -->
+<section class="link-generator-section">
+    <div class="container">
+        <div class="generator-container">
+            <div class="generator-form">
+                <h2><i class="fas fa-link"></i> Generate Affiliate Link</h2>
+                <form id="linkGeneratorForm">
+                    <div class="form-group">
+                        <label for="urlInput">Product URL</label>
+                        <input type="url" id="urlInput" placeholder="https://example.com/product" required>
+                        <small>Enter the URL of the product you want to promote</small>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="subIdInput">Sub ID (Optional)</label>
+                            <input type="text" id="subIdInput" placeholder="campaign_name">
+                            <small>Track this link with a custom identifier</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="shortenCheck">Shorten URL</label>
+                            <div class="checkbox-wrapper">
+                                <input type="checkbox" id="shortenCheck">
+                                <label for="shortenCheck" class="checkbox-label">
+                                    <span class="checkbox-custom"></span>
+                                    Generate short URL
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-generate">
+                        <i class="fas fa-magic"></i>
+                        Generate Link
+                    </button>
+                </form>
+                
+                <!-- Loading State -->
+                <div class="loading-state" id="loadingState" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>Generating your affiliate link...</p>
+                </div>
+                
+                <!-- Result Section -->
+                <div class="result-section" id="resultSection" style="display: none;">
+                    <h3><i class="fas fa-check-circle"></i> Your Affiliate Link is Ready!</h3>
+                    
+                    <div class="link-result">
+                        <label>Original URL:</label>
+                        <div class="link-display">
+                            <input type="text" id="originalUrlResult" readonly>
+                            <button onclick="copyToClipboard('originalUrlResult')" class="copy-btn">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="link-result">
+                        <label>Affiliate URL:</label>
+                        <div class="link-display">
+                            <input type="text" id="affiliateUrlResult" readonly>
+                            <button onclick="copyToClipboard('affiliateUrlResult')" class="copy-btn">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="link-result" id="shortenedResult" style="display: none;">
+                        <label>Shortened URL:</label>
+                        <div class="link-display">
+                            <input type="text" id="shortenedUrlResult" readonly>
+                            <button onclick="copyToClipboard('shortenedUrlResult')" class="copy-btn">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="result-actions">
+                        <button onclick="testLink()" class="btn btn-outline">
+                            <i class="fas fa-external-link-alt"></i>
+                            Test Link
+                        </button>
+                        <button onclick="shareLink()" class="btn btn-outline">
+                            <i class="fas fa-share"></i>
+                            Share
+                        </button>
+                        <button onclick="resetForm()" class="btn btn-secondary">
+                            <i class="fas fa-plus"></i>
+                            Generate Another
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tips Section -->
+            <div class="tips-section">
+                <h3><i class="fas fa-lightbulb"></i> Tips for Better Results</h3>
+                <div class="tips-list">
+                    <div class="tip-item">
+                        <i class="fas fa-check"></i>
+                        <div>
+                            <h4>Use Deep Links</h4>
+                            <p>Link directly to product pages for better conversion rates</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-check"></i>
+                        <div>
+                            <h4>Track Your Campaigns</h4>
+                            <p>Use Sub IDs to track which campaigns perform best</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-check"></i>
+                        <div>
+                            <h4>Test Your Links</h4>
+                            <p>Always test your affiliate links before sharing them</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-check"></i>
+                        <div>
+                            <h4>Shorten for Social Media</h4>
+                            <p>Use shortened URLs for cleaner appearance on social platforms</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Link History Section -->
+<section class="history-section">
+    <div class="container">
+        <h2 class="section-title">Recent Links</h2>
+        <div class="history-container" id="historyContainer">
+            <!-- Link history will be loaded here -->
+        </div>
+        <div class="text-center">
+            <button onclick="loadMoreHistory()" class="btn btn-outline" id="loadMoreBtn">
+                <i class="fas fa-plus"></i>
+                Load More
+            </button>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentHistoryPage = 1;
+    let generatedLink = null;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeLinkGenerator();
+        loadLinkHistory();
+    });
+
+    function initializeLinkGenerator() {
+        const form = document.getElementById('linkGeneratorForm');
+        form.addEventListener('submit', handleFormSubmit);
+        
+        // Auto-focus on URL input
+        document.getElementById('urlInput').focus();
+    }
+
+    async function handleFormSubmit(e) {
+        e.preventDefault();
+        
+        const urlInput = document.getElementById('urlInput');
+        const subIdInput = document.getElementById('subIdInput');
+        const shortenCheck = document.getElementById('shortenCheck');
+        
+        const url = urlInput.value.trim();
+        const subId = subIdInput.value.trim();
+        const shorten = shortenCheck.checked;
+        
+        if (!url) {
+            showNotification('Please enter a valid URL', 'error');
+            return;
+        }
+        
+        // Show loading state
+        showLoadingState(true);
+        
+        try {
+            const response = await fetch('/api/links/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    url: url,
+                    shorten: shorten,
+                    subid: subId || null
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to generate affiliate link');
+            }
+            
+            const data = await response.json();
+            
+            // Store generated link data
+            generatedLink = data;
+            
+            // Show result
+            showResult(data);
+            
+            // Refresh history
+            loadLinkHistory();
+            
+            showNotification('Affiliate link generated successfully!', 'success');
+            
+        } catch (error) {
+            console.error('Error generating link:', error);
+            showNotification('Failed to generate affiliate link. Please try again.', 'error');
+        } finally {
+            showLoadingState(false);
+        }
+    }
+
+    function showLoadingState(show) {
+        const loadingState = document.getElementById('loadingState');
+        const resultSection = document.getElementById('resultSection');
+        
+        if (show) {
+            loadingState.style.display = 'block';
+            resultSection.style.display = 'none';
+        } else {
+            loadingState.style.display = 'none';
+        }
+    }
+
+    function showResult(data) {
+        const resultSection = document.getElementById('resultSection');
+        const originalUrlResult = document.getElementById('originalUrlResult');
+        const affiliateUrlResult = document.getElementById('affiliateUrlResult');
+        const shortenedUrlResult = document.getElementById('shortenedUrlResult');
+        const shortenedResult = document.getElementById('shortenedResult');
+        
+        originalUrlResult.value = data.original_url;
+        affiliateUrlResult.value = data.affiliate_url;
+        
+        if (data.shortened_url) {
+            shortenedUrlResult.value = data.shortened_url;
+            shortenedResult.style.display = 'block';
+        } else {
+            shortenedResult.style.display = 'none';
+        }
+        
+        resultSection.style.display = 'block';
+        
+        // Scroll to result
+        resultSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyToClipboard(inputId) {
+        const input = document.getElementById(inputId);
+        input.select();
+        document.execCommand('copy');
+        
+        showNotification('Link copied to clipboard!', 'success');
+    }
+
+    function testLink() {
+        if (generatedLink && generatedLink.affiliate_url) {
+            window.open(generatedLink.affiliate_url, '_blank');
+        }
+    }
+
+    function shareLink() {
+        if (!generatedLink) return;
+        
+        const url = generatedLink.shortened_url || generatedLink.affiliate_url;
+        
+        if (navigator.share) {
+            navigator.share({
+                title: 'Check out this deal!',
+                url: url
+            });
+        } else {
+            copyToClipboard('affiliateUrlResult');
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('linkGeneratorForm').reset();
+        document.getElementById('resultSection').style.display = 'none';
+        document.getElementById('urlInput').focus();
+        generatedLink = null;
+    }
+
+    async function loadLinkHistory(page = 1) {
+        try {
+            const response = await fetch(`/api/links/history?page=${page}&per_page=5`);
+            const data = await response.json();
+            
+            const container = document.getElementById('historyContainer');
+            
+            if (page === 1) {
+                container.innerHTML = '';
+                currentHistoryPage = 1;
+            }
+            
+            if (data.links.length === 0 && page === 1) {
+                container.innerHTML = `
+                    <div class="no-history">
+                        <i class="fas fa-history"></i>
+                        <h3>No link history yet</h3>
+                        <p>Generate your first affiliate link to see it here</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            data.links.forEach(link => {
+                const historyItem = createHistoryItem(link);
+                container.appendChild(historyItem);
+            });
+            
+            // Show/hide load more button
+            const loadMoreBtn = document.getElementById('loadMoreBtn');
+            if (data.links.length < 5) {
+                loadMoreBtn.style.display = 'none';
+            } else {
+                loadMoreBtn.style.display = 'inline-flex';
+            }
+            
+        } catch (error) {
+            console.error('Error loading link history:', error);
+        }
+    }
+
+    function createHistoryItem(link) {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        
+        const createdDate = new Date(link.created_at).toLocaleDateString();
+        const createdTime = new Date(link.created_at).toLocaleTimeString();
+        
+        item.innerHTML = `
+            <div class="history-content">
+                <div class="history-main">
+                    <h4>${link.original_url}</h4>
+                    <p class="affiliate-link">${link.affiliate_url}</p>
+                    ${link.sub_id ? `<span class="sub-id-tag">Sub ID: ${link.sub_id}</span>` : ''}
+                </div>
+                <div class="history-meta">
+                    <span class="history-date">
+                        <i class="fas fa-calendar"></i>
+                        ${createdDate} ${createdTime}
+                    </span>
+                </div>
+            </div>
+            <div class="history-actions">
+                <button onclick="copyLinkToClipboard('${link.affiliate_url}')" class="action-btn">
+                    <i class="fas fa-copy"></i>
+                </button>
+                <button onclick="openLink('${link.affiliate_url}')" class="action-btn">
+                    <i class="fas fa-external-link-alt"></i>
+                </button>
+            </div>
+        `;
+        
+        return item;
+    }
+
+    function loadMoreHistory() {
+        currentHistoryPage++;
+        loadLinkHistory(currentHistoryPage);
+    }
+
+    function copyLinkToClipboard(url) {
+        navigator.clipboard.writeText(url).then(() => {
+            showNotification('Link copied to clipboard!', 'success');
+        });
+    }
+
+    function openLink(url) {
+        window.open(url, '_blank');
+    }
+
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        
+        const icon = type === 'success' ? 'fas fa-check' : 'fas fa-exclamation-triangle';
+        notification.innerHTML = `<i class="${icon}"></i> ${message}`;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+</script>
+
+<style>
+.link-generator-section {
+    padding: 50px 0 100px;
+}
+
+.generator-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 50px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.generator-form {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.generator-form h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input[type="url"],
+.form-group input[type="text"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group small {
+    display: block;
+    margin-top: 5px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+input[type="checkbox"]:checked + .checkbox-label .checkbox-custom {
+    background: #667eea;
+    border-color: #667eea;
+}
+
+input[type="checkbox"]:checked + .checkbox-label .checkbox-custom::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 0.8rem;
+}
+
+input[type="checkbox"] {
+    display: none;
+}
+
+.btn-generate {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+}
+
+.loading-state {
+    text-align: center;
+    padding: 40px 0;
+}
+
+.result-section {
+    background: #f8fafc;
+    border-radius: 15px;
+    padding: 30px;
+    margin-top: 30px;
+}
+
+.result-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #10b981;
+    margin-bottom: 25px;
+}
+
+.link-result {
+    margin-bottom: 20px;
+}
+
+.link-result label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.link-display {
+    display: flex;
+    gap: 10px;
+}
+
+.link-display input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
+.copy-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.copy-btn:hover {
+    background: #5a6fd8;
+}
+
+.result-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+    flex-wrap: wrap;
+}
+
+.tips-section {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+}
+
+.tips-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.tips-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.tip-item {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.tip-item i {
+    color: #10b981;
+    margin-top: 2px;
+}
+
+.tip-item h4 {
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.tip-item p {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.history-section {
+    padding: 80px 0;
+    background: #f8fafc;
+}
+
+.history-container {
+    max-width: 800px;
+    margin: 0 auto 40px;
+}
+
+.history-item {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.history-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.history-content {
+    flex: 1;
+}
+
+.history-main h4 {
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 1rem;
+}
+
+.affiliate-link {
+    color: #667eea;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.sub-id-tag {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.history-meta {
+    margin-top: 10px;
+}
+
+.history-date {
+    color: #666;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.history-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #666;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.no-history {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.no-history i {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #ccc;
+}
+
+.no-history h3 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+@media (max-width: 768px) {
+    .generator-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .result-actions {
+        flex-direction: column;
+    }
+    
+    .history-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .history-actions {
+        align-self: flex-end;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,29 @@
+# render.yaml
+# This file configures the services for your application on Render.
+
+services:
+  # 1. A PostgreSQL database
+  - type: psql
+    name: affiliate-database
+    plan: free # You can upgrade this later in the Render dashboard
+    postgresMajorVersion: 14
+
+  # 2. A Python web service for the FastAPI application
+  - type: web
+    name: affiliate-website
+    plan: free # Start with the free plan, upgrade as needed
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: DATABASE_URL
+        fromService:
+          type: psql
+          name: affiliate-database
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.11 # Specify a recent Python version
+      - key: CUELINKS_API_KEY
+        sync: false # This is a secret, we will set it in the dashboard
+      - key: SECRET_KEY
+        sync: false # This is a secret, we will set it in the dashboard

@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block title %}Categories - Affiliate Deals Hub{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1 class="animate__animated animate__fadeInUp">Browse by Categories</h1>
+        <p class="animate__animated animate__fadeInUp">Find deals in your favorite categories</p>
+    </div>
+</section>
+
+<!-- Categories Grid -->
+<section class="categories-section">
+    <div class="container">
+        <div class="categories-grid">
+            <div class="category-card animate__animated animate__fadeInUp" onclick="filterByCategory('Fashion')">
+                <div class="category-icon">
+                    <i class="fas fa-tshirt"></i>
+                </div>
+                <h3>Fashion</h3>
+                <p>Trendy clothes, shoes, and accessories from top brands</p>
+                <div class="category-stats">
+                    <span class="offer-count" id="fashion-count">Loading...</span>
+                </div>
+            </div>
+            
+            <div class="category-card animate__animated animate__fadeInUp" onclick="filterByCategory('Electronics')">
+                <div class="category-icon">
+                    <i class="fas fa-laptop"></i>
+                </div>
+                <h3>Electronics</h3>
+                <p>Latest gadgets, smartphones, and tech accessories</p>
+                <div class="category-stats">
+                    <span class="offer-count" id="electronics-count">Loading...</span>
+                </div>
+            </div>
+            
+            <div class="category-card animate__animated animate__fadeInUp" onclick="filterByCategory('Travel')">
+                <div class="category-icon">
+                    <i class="fas fa-plane"></i>
+                </div>
+                <h3>Travel</h3>
+                <p>Flight bookings, hotel deals, and travel packages</p>
+                <div class="category-stats">
+                    <span class="offer-count" id="travel-count">Loading...</span>
+                </div>
+            </div>
+            
+            <div class="category-card animate__animated animate__fadeInUp" onclick="filterByCategory('Food & Grocery')">
+                <div class="category-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h3>Food & Grocery</h3>
+                <p>Fresh food delivery and grocery essentials</p>
+                <div class="category-stats">
+                    <span class="offer-count" id="food-count">Loading...</span>
+                </div>
+            </div>
+            
+            <div class="category-card animate__animated animate__fadeInUp" onclick="filterByCategory('Health & Beauty')">
+                <div class="category-icon">
+                    <i class="fas fa-spa"></i>
+                </div>
+                <h3>Health & Beauty</h3>
+                <p>Skincare, cosmetics, and wellness products</p>
+                <div class="category-stats">
+                    <span class="offer-count" id="beauty-count">Loading...</span>
+                </div>
+            </div>
+            
+            <div class="category-card animate__animated animate__fadeInUp" onclick="filterByCategory('Home & Kitchen')">
+                <div class="category-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <h3>Home & Kitchen</h3>
+                <p>Furniture, appliances, and home decor items</p>
+                <div class="category-stats">
+                    <span class="offer-count" id="home-count">Loading...</span>
+                </div>
+            </div>
+            
+            <div class="category-card animate__animated animate__fadeInUp" onclick="filterByCategory('Books')">
+                <div class="category-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h3>Books</h3>
+                <p>E-books, audiobooks, and physical books</p>
+                <div class="category-stats">
+                    <span class="offer-count" id="books-count">Loading...</span>
+                </div>
+            </div>
+            
+            <div class="category-card animate__animated animate__fadeInUp" onclick="filterByCategory('Gaming')">
+                <div class="category-icon">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <h3>Gaming</h3>
+                <p>Video games, gaming accessories, and consoles</p>
+                <div class="category-stats">
+                    <span class="offer-count" id="gaming-count">Loading...</span>
+                </div>
+            </div>
+            
+            <div class="category-card animate__animated animate__fadeInUp" onclick="filterByCategory('Baby & Kids')">
+                <div class="category-icon">
+                    <i class="fas fa-baby"></i>
+                </div>
+                <h3>Baby & Kids</h3>
+                <p>Baby care products and kids' toys</p>
+                <div class="category-stats">
+                    <span class="offer-count" id="baby-count">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Category Offers -->
+<section class="featured-offers-section" id="categoryOffers" style="display: none;">
+    <div class="container">
+        <h2 class="section-title" id="categoryTitle">Category Offers</h2>
+        <div class="offers-grid" id="categoryOffersGrid">
+            <!-- Category offers will be loaded here -->
+        </div>
+        <div class="text-center">
+            <a href="/offers" class="btn btn-primary" id="viewAllOffersBtn">
+                View All Offers
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadCategoryCounts();
+    });
+
+    async function loadCategoryCounts() {
+        const categories = ['Fashion', 'Electronics', 'Travel', 'Food & Grocery', 'Health & Beauty', 'Home & Kitchen', 'Books', 'Gaming', 'Baby & Kids'];
+        
+        for (const category of categories) {
+            try {
+                const response = await fetch(`/api/offers/database?category=${encodeURIComponent(category)}&per_page=1`);
+                const data = await response.json();
+                const countElement = document.getElementById(`${category.toLowerCase().replace(/[^a-z]/g, '')}-count`);
+                if (countElement) {
+                    countElement.textContent = `${data.total_count} offers`;
+                }
+            } catch (error) {
+                console.error(`Error loading count for ${category}:`, error);
+                const countElement = document.getElementById(`${category.toLowerCase().replace(/[^a-z]/g, '')}-count`);
+                if (countElement) {
+                    countElement.textContent = 'N/A';
+                }
+            }
+        }
+    }
+
+    async function filterByCategory(category) {
+        const categoryOffersSection = document.getElementById('categoryOffers');
+        const categoryTitle = document.getElementById('categoryTitle');
+        const categoryOffersGrid = document.getElementById('categoryOffersGrid');
+        const viewAllBtn = document.getElementById('viewAllOffersBtn');
+        
+        // Show section and update title
+        categoryOffersSection.style.display = 'block';
+        categoryTitle.textContent = `${category} Offers`;
+        viewAllBtn.href = `/offers?category=${encodeURIComponent(category)}`;
+        
+        // Show loading
+        categoryOffersGrid.innerHTML = `
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <p>Loading ${category} offers...</p>
+            </div>
+        `;
+        
+        // Scroll to section
+        categoryOffersSection.scrollIntoView({ behavior: 'smooth' });
+        
+        try {
+            const response = await fetch(`/api/offers/database?category=${encodeURIComponent(category)}&per_page=6`);
+            const data = await response.json();
+            
+            displayCategoryOffers(data.offers);
+            
+        } catch (error) {
+            console.error('Error loading category offers:', error);
+            categoryOffersGrid.innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error loading offers</h3>
+                    <p>Please try again later.</p>
+                </div>
+            `;
+        }
+    }
+
+    function displayCategoryOffers(offers) {
+        const container = document.getElementById('categoryOffersGrid');
+        container.innerHTML = '';
+        
+        if (offers.length === 0) {
+            container.innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-search"></i>
+                    <h3>No offers found</h3>
+                    <p>Check back soon for new offers in this category.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        offers.forEach((offer, index) => {
+            const offerCard = createOfferCard(offer, index);
+            container.appendChild(offerCard);
+        });
+    }
+
+    function createOfferCard(offer, index) {
+        const card = document.createElement('div');
+        card.className = 'offer-card animate__animated animate__fadeInUp';
+        card.style.animationDelay = `${index * 0.1}s`;
+        
+        // Parse categories
+        let categories = '';
+        try {
+            const categoryObj = JSON.parse(offer.categories || '{}');
+            categories = Object.values(categoryObj).join(', ');
+        } catch (e) {
+            categories = offer.categories || '';
+        }
+        
+        // Clean description
+        const cleanDescription = offer.description ? offer.description.replace(/<[^>]*>/g, '') : '';
+        const truncatedDescription = cleanDescription.length > 120 ? 
+            cleanDescription.substring(0, 120) + '...' : cleanDescription;
+        
+        // Format dates
+        const endDate = offer.end_date ? new Date(offer.end_date).toLocaleDateString() : '';
+        
+        // Add cache-busting parameter to image URL
+        const imageUrl = offer.image_url || '/static/images/placeholder.jpg';
+        const cacheBustedImageUrl = imageUrl.includes('?') ? 
+            `${imageUrl}&t=${Date.now()}` : `${imageUrl}?t=${Date.now()}`;
+        
+        card.innerHTML = `
+            <div class="offer-image">
+                <img src="${cacheBustedImageUrl}" alt="${offer.title}" onerror="this.src='/static/images/placeholder.jpg?t=${Date.now()}'">
+                ${offer.type ? `<div class="offer-badge">${offer.type}</div>` : ''}
+                ${endDate ? `<div class="offer-expiry">Expires: ${endDate}</div>` : ''}
+            </div>
+            <div class="offer-content">
+                <div class="offer-meta">
+                    ${categories ? `<span class="category-tag">${categories}</span>` : ''}
+                </div>
+                <h3>${offer.title}</h3>
+                <p>${truncatedDescription}</p>
+                ${offer.coupon_code ? `
+                    <div class="coupon-code">
+                        <span>Code: <strong>${offer.coupon_code}</strong></span>
+                        <button onclick="copyCoupon('${offer.coupon_code}')" class="copy-btn">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                ` : ''}
+                <div class="offer-actions">
+                    <a href="${offer.affiliate_url}" target="_blank" class="btn btn-primary">
+                        <i class="fas fa-external-link-alt"></i>
+                        Get Deal
+                    </a>
+                    <button onclick="shareOffer('${offer.title}', '${offer.affiliate_url}')" class="btn btn-outline">
+                        <i class="fas fa-share"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        return card;
+    }
+
+    function copyCoupon(code) {
+        navigator.clipboard.writeText(code).then(() => {
+            showNotification(`Coupon code "${code}" copied to clipboard!`, 'success');
+        }).catch(() => {
+            showNotification('Failed to copy coupon code.', 'error');
+        });
+    }
+
+    function shareOffer(title, url) {
+        if (navigator.share) {
+            navigator.share({
+                title: title,
+                url: url
+            });
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(url).then(() => {
+                showNotification('Offer link copied to clipboard!', 'success');
+            });
+        }
+    }
+
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        
+        const icon = type === 'success' ? 'fas fa-check' : 'fas fa-exclamation-triangle';
+        notification.innerHTML = `<i class="${icon}"></i> ${message}`;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+</script>
+{% endblock %}

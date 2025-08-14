@@ -1,0 +1,648 @@
+{% extends "base.html" %}
+
+{% block title %}All Offers - Affiliate Deals Hub{% endblock %}
+
+{% block content %}
+<div class="offers-page">
+    <!-- Modern Offers Header -->
+    <section class="offers-modern-header">
+        <div class="container">
+            <h1 class="animate__animated animate__fadeInUp" id="pageTitle">All Offers</h1>
+            <p class="animate__animated animate__fadeInUp animate__delay-1s" id="pageSubtitle">Discover amazing deals from top brands</p>
+        </div>
+        <!-- Wave shape divider -->
+        <svg class="header-shape" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 60" preserveAspectRatio="none">
+            <path d="M0,0 C320,80 720,80 1440,0 L1440,60 L0,60 Z"></path>
+        </svg>
+    </section>
+
+    <!-- Filters Section -->
+    <section class="filters-section">
+        <div class="container">
+            <div class="filters-wrapper">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search offers..." onkeyup="searchOffers()">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="filter-group">
+                    <select id="categoryFilter" onchange="filterOffers()">
+                        <option value="all">All Categories</option>
+                        <!-- Categories will be loaded dynamically -->
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <select id="campaignFilter" onchange="filterOffers()">
+                        <option value="all">All Campaigns</option>
+                        <!-- Campaigns will be loaded dynamically -->
+                    </select>
+                </div>
+                <div class="filter-group checkbox-filter">
+                    <label for="couponFilter">
+                        <input type="checkbox" id="couponFilter" onchange="filterOffers()">
+                        <span>Coupon Codes Only</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- Offers Section -->
+<section class="offers-section">
+    <div class="container">
+        <div class="offers-grid" id="offersGrid">
+            <!-- Offers will be loaded here -->
+        </div>
+        
+        <!-- Loading indicator -->
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Loading amazing offers...</p>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination-wrapper" id="paginationWrapper">
+            <div class="pagination" id="pagination">
+                <!-- Pagination will be generated here -->
+            </div>
+        </div>
+    </div>
+</section>
+</div> <!-- End of offers-page wrapper -->
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/image-handler.js"></script>
+<script src="/static/js/offers-enhanced.js"></script>
+<script>
+    let currentPage = 1;
+    let totalPages = 1;
+    let currentCategory = 'all';
+    let currentCampaign = 'all';
+    let currentCouponOnly = false;
+    let currentSearch = '';
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load categories and campaigns for filters
+        loadFilterOptions();
+        
+        // Check for URL parameters and pre-select filters
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // Handle category parameter
+        const categoryParam = urlParams.get('category');
+        if (categoryParam) {
+            currentCategory = categoryParam;
+            const categorySelect = document.getElementById('categoryFilter');
+            if (categorySelect) {
+                categorySelect.value = categoryParam;
+            }
+            updatePageHeader();
+        }
+        
+        // Handle campaign parameter
+        const campaignParam = urlParams.get('campaign');
+        if (campaignParam) {
+            currentCampaign = campaignParam;
+            const campaignSelect = document.getElementById('campaignFilter');
+            if (campaignSelect) {
+                campaignSelect.value = campaignParam;
+            }
+        }
+        
+        // Handle coupon only parameter
+        const couponOnlyParam = urlParams.get('coupon_only');
+        if (couponOnlyParam === 'true') {
+            currentCouponOnly = true;
+            const couponCheck = document.getElementById('couponFilter');
+            if (couponCheck) {
+                couponCheck.checked = true;
+            }
+        }
+        
+        // Handle search parameter
+        const searchParam = urlParams.get('search');
+        if (searchParam) {
+            currentSearch = searchParam;
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = searchParam;
+            }
+        }
+        
+        // Handle sort parameter
+        const sortParam = urlParams.get('sort');
+        if (sortParam) {
+            currentSort = sortParam;
+            const sortSelect = document.getElementById('sortFilter');
+            if (sortSelect) {
+                sortSelect.value = sortParam;
+            }
+        }
+        
+        loadOffers();
+    });
+
+    async function loadFilterOptions(selectedCategory = 'all') {
+        try {
+            console.log("Loading filter options - start", { selectedCategory });
+            
+            // Load categories
+            try {
+                console.log("Fetching categories from /api/offers/categories");
+                const categoryResponse = await fetch('/api/offers/categories');
+                console.log("Category response status:", categoryResponse.status);
+                
+                if (!categoryResponse.ok) {
+                    throw new Error(`HTTP error! status: ${categoryResponse.status}`);
+                }
+                
+                const categoryText = await categoryResponse.text();
+                console.log("Raw category response:", categoryText);
+                
+                let categoryData;
+                try {
+                    categoryData = JSON.parse(categoryText);
+                } catch (jsonError) {
+                    console.error("Error parsing category JSON:", jsonError);
+                    throw new Error("Invalid JSON in category response");
+                }
+                
+                console.log("Categories data:", categoryData);
+                
+                const categorySelect = document.getElementById('categoryFilter');
+                if (categorySelect && categoryData.categories && Array.isArray(categoryData.categories) && categoryData.categories.length > 0) {
+                    console.log("Found category select element and valid categories array");
+                    // Clear existing options except the first one
+                    while (categorySelect.options.length > 1) {
+                        categorySelect.remove(1);
+                    }
+                    
+                    // Add new options
+                    categoryData.categories.forEach((category, index) => {
+                        console.log(`Adding category ${index+1}:`, category);
+                        const option = document.createElement('option');
+                        option.value = category;
+                        option.textContent = category;
+                        categorySelect.appendChild(option);
+                    });
+                    console.log(`Added ${categoryData.categories.length} category options`);
+                    
+                    // Set the selected category if provided
+                    if (selectedCategory && selectedCategory !== 'all') {
+                        categorySelect.value = selectedCategory;
+                    }
+                } else {
+                    console.warn("No categories found or invalid response format:", {
+                        selectExists: !!categorySelect,
+                        categoriesExist: !!categoryData.categories,
+                        categoriesIsArray: Array.isArray(categoryData.categories),
+                        categoriesLength: categoryData.categories ? categoryData.categories.length : 0
+                    });
+                    
+                    // Manually add fallback categories if none were loaded
+                    if (categorySelect) {
+                        const fallbackCategories = ["Fashion", "Electronics", "Travel", "Food & Grocery", "Health & Beauty", "Home & Kitchen"];
+                        console.log("Adding fallback categories:", fallbackCategories);
+                        
+                        // Clear existing options except the first one
+                        while (categorySelect.options.length > 1) {
+                            categorySelect.remove(1);
+                        }
+                        
+                        fallbackCategories.forEach(category => {
+                            const option = document.createElement('option');
+                            option.value = category;
+                            option.textContent = category;
+                            categorySelect.appendChild(option);
+                        });
+                    }
+                }
+            } catch (categoryError) {
+                console.error("Error loading categories:", categoryError);
+            }
+            
+            // Load campaigns based on selected category
+            try {
+                console.log(`Fetching campaigns for category: ${selectedCategory}`);
+                
+                // Use the new endpoint that filters campaigns by category
+                let campaignUrl = '/api/offers/campaigns-by-category';
+                if (selectedCategory && selectedCategory !== 'all') {
+                    campaignUrl += `?category=${encodeURIComponent(selectedCategory)}`;
+                    console.log(`Using category filter in URL: ${campaignUrl}`);
+                }
+                
+                const campaignResponse = await fetch(campaignUrl);
+                console.log("Campaign response status:", campaignResponse.status);
+                
+                if (!campaignResponse.ok) {
+                    throw new Error(`HTTP error! status: ${campaignResponse.status}`);
+                }
+                
+                const campaignText = await campaignResponse.text();
+                console.log("Raw campaign response:", campaignText);
+                
+                let campaignData;
+                try {
+                    campaignData = JSON.parse(campaignText);
+                } catch (jsonError) {
+                    console.error("Error parsing campaign JSON:", jsonError);
+                    throw new Error("Invalid JSON in campaign response");
+                }
+                
+                console.log("Campaigns data:", campaignData);
+                
+                const campaignSelect = document.getElementById('campaignFilter');
+                if (campaignSelect && campaignData.campaigns && Array.isArray(campaignData.campaigns) && campaignData.campaigns.length > 0) {
+                    console.log("Found campaign select element and valid campaigns array");
+                    // Clear existing options except the first one
+                    while (campaignSelect.options.length > 1) {
+                        campaignSelect.remove(1);
+                    }
+                    
+                    // Add new options
+                    campaignData.campaigns.forEach((campaign, index) => {
+                        console.log(`Adding campaign ${index+1}:`, campaign);
+                        const option = document.createElement('option');
+                        option.value = campaign;
+                        option.textContent = campaign;
+                        campaignSelect.appendChild(option);
+                    });
+                    console.log(`Added ${campaignData.campaigns.length} campaign options`);
+                } else {
+                    console.warn("No campaigns found or invalid response format:", {
+                        selectExists: !!campaignSelect,
+                        campaignsExist: !!campaignData.campaigns,
+                        campaignsIsArray: Array.isArray(campaignData.campaigns),
+                        campaignsLength: campaignData.campaigns ? campaignData.campaigns.length : 0
+                    });
+                    
+                    // Add fallback campaigns if none were loaded
+                    if (campaignSelect) {
+                        const fallbackCampaigns = ["Amazon", "Flipkart", "Myntra", "Ajio", "Nykaa"];
+                        console.log("Adding fallback campaigns:", fallbackCampaigns);
+                        
+                        // Clear existing options except the first one
+                        while (campaignSelect.options.length > 1) {
+                            campaignSelect.remove(1);
+                        }
+                        
+                        fallbackCampaigns.forEach(campaign => {
+                            const option = document.createElement('option');
+                            option.value = campaign;
+                            option.textContent = campaign;
+                            campaignSelect.appendChild(option);
+                        });
+                    }
+                }
+            } catch (campaignError) {
+                console.error("Error loading campaigns:", campaignError);
+            }
+        } catch (error) {
+            console.error('Error loading filter options:', error);
+        }
+    }
+
+    async function loadOffers(page = 1) {
+        showLoading(true);
+        
+        try {
+            let url = `/api/offers/database?page=${page}&per_page=12`;
+            
+            if (currentSearch) {
+                url += `&search_term=${encodeURIComponent(currentSearch)}`;
+            }
+            
+            if (currentCategory && currentCategory !== 'all') {
+                url += `&category=${encodeURIComponent(currentCategory)}`;
+            }
+            
+            if (currentCampaign && currentCampaign !== 'all') {
+                url += `&campaign=${encodeURIComponent(currentCampaign)}`;
+            }
+            
+            if (currentCouponOnly) {
+                url += `&coupon_only=true`;
+            }
+            
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            currentPage = page;
+            totalPages = Math.ceil(data.total / 12);
+            
+            console.log("Pagination data:", { 
+                currentPage, 
+                totalPages, 
+                total: data.total,
+                total_pages: data.total_pages 
+            });
+            
+            displayOffers(data.offers);
+            setupPagination();
+            
+        } catch (error) {
+            console.error('Error loading offers:', error);
+            showError('Failed to load offers. Please try again.');
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    function displayOffers(offers) {
+        const container = document.getElementById('offersGrid');
+        container.innerHTML = '';
+        
+        if (offers.length === 0) {
+            container.innerHTML = `
+                <div class="no-results">
+                    <i class="fas fa-search"></i>
+                    <h3>No offers found</h3>
+                    <p>Try adjusting your search criteria or browse different categories.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        offers.forEach((offer, index) => {
+            const offerCard = createOfferCard(offer, index);
+            container.appendChild(offerCard);
+        });
+        
+        // Trigger image handler for newly added offers
+        if (window.imageHandler) {
+            setTimeout(() => window.imageHandler.refreshImages(), 100);
+        }
+    }
+
+    function createOfferCard(offer, index) {
+        const card = document.createElement('div');
+        card.className = 'offer-card animate__animated animate__fadeInUp';
+        card.style.animationDelay = `${index * 0.1}s`;
+        
+        // Parse categories
+        let categories = '';
+        try {
+            const categoryObj = JSON.parse(offer.categories || '{}');
+            categories = Object.values(categoryObj).join(', ');
+        } catch (e) {
+            categories = offer.categories || '';
+        }
+        
+        // Clean description - remove HTML tags and decode entities
+        let cleanDescription = offer.description ? offer.description.replace(/<[^>]*>/g, '') : '';
+        cleanDescription = cleanDescription.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+        
+        // Create truncated and full versions for 2 lines (approximately 160 characters)
+        const maxLength = 160; // Longer for 2 lines
+        const isLongDescription = cleanDescription.length > maxLength;
+        const truncatedDescription = isLongDescription ? 
+            cleanDescription.substring(0, maxLength).trim() : cleanDescription;
+        
+        // Format dates
+        const startDate = offer.start_date ? new Date(offer.start_date).toLocaleDateString() : '';
+        const endDate = offer.end_date ? new Date(offer.end_date).toLocaleDateString() : '';
+        
+        // Use clean image URL without cache-busting
+        const imageUrl = offer.image_url || '/static/images/placeholder.jpg';
+        
+        // Create unique ID for this description
+        const descriptionId = `offer-desc-${index}-${Date.now()}`;
+        
+        // Check if expansion is needed
+        const needsExpansion = isLongDescription;
+        
+        card.innerHTML = `
+            <div class="offer-image">
+                <img src="${imageUrl}" alt="${offer.title}" loading="lazy" onerror="this.onerror=null; this.src='/static/images/placeholder.jpg';">
+                ${offer.type ? `<div class="offer-badge">${offer.type}</div>` : ''}
+                ${endDate ? `<div class="offer-expiry">Expires: ${endDate}</div>` : ''}
+            </div>
+            <div class="offer-content">
+                <div class="offer-meta">
+                    ${categories ? `<span class="category-tag">${categories}</span>` : ''}
+                </div>
+                <h3>${offer.title}</h3>
+                <div class="description-container">
+                    <p class="description-text collapsed" id="${descriptionId}">${truncatedDescription}${needsExpansion ? ` <span class="show-more-btn" onclick="expandDescription('${descriptionId}', '${cleanDescription.replace(/'/g, "\\'")}')" title="Click to expand">Show more</span>` : ''}</p>
+                </div>
+                <div class="coupon-code">
+                    ${offer.coupon_code ? `
+                        <span>Code: <strong>${offer.coupon_code}</strong></span>
+                        <button onclick="copyCoupon('${offer.coupon_code}')" class="copy-btn">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    ` : `
+                        <span class="no-coupon">No Coupon Code Required</span>
+                    `}
+                </div>
+                <div class="offer-actions">
+                    <a href="${offer.affiliate_url}" target="_blank" class="btn btn-primary">
+                        <i class="fas fa-external-link-alt"></i>
+                        Get Deal
+                    </a>
+                    <button onclick="shareOffer('${offer.title}', '${offer.affiliate_url}')" class="btn btn-outline">
+                        <i class="fas fa-share"></i>
+                        Share
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        return card;
+    }
+
+    function setupPagination() {
+        const container = document.getElementById('pagination');
+        container.innerHTML = '';
+        
+        if (totalPages <= 1) {
+            document.getElementById('paginationWrapper').style.display = 'none';
+            return;
+        }
+        
+        document.getElementById('paginationWrapper').style.display = 'block';
+        
+        // Previous button
+        if (currentPage > 1) {
+            const prevBtn = document.createElement('button');
+            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevBtn.onclick = () => loadOffers(currentPage - 1);
+            container.appendChild(prevBtn);
+        }
+        
+        // Page numbers
+        for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.textContent = i;
+            pageBtn.className = i === currentPage ? 'active' : '';
+            pageBtn.onclick = () => loadOffers(i);
+            container.appendChild(pageBtn);
+        }
+        
+        // Next button
+        if (currentPage < totalPages) {
+            const nextBtn = document.createElement('button');
+            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextBtn.onclick = () => loadOffers(currentPage + 1);
+            container.appendChild(nextBtn);
+        }
+    }
+
+    function filterOffers() {
+        const categoryFilter = document.getElementById('categoryFilter');
+        const campaignFilter = document.getElementById('campaignFilter');
+        const couponFilter = document.getElementById('couponFilter');
+        
+        const previousCategory = currentCategory;
+        currentCategory = categoryFilter.value;
+        currentCampaign = campaignFilter.value;
+        currentCouponOnly = couponFilter.checked;
+        
+        // If category changed, reload campaigns dropdown
+        if (previousCategory !== currentCategory) {
+            console.log(`Category changed from ${previousCategory} to ${currentCategory}, updating campaigns`);
+            // Reset campaign selection when category changes
+            currentCampaign = 'all';
+            loadFilterOptions(currentCategory);
+        }
+        
+        updatePageHeader();
+        updateURL();
+        loadOffers(1);
+    }
+
+    function searchOffers() {
+        const searchInput = document.getElementById('searchInput');
+        currentSearch = searchInput.value.trim();
+        updateURL();
+        loadOffers(1);
+    }
+
+    function updatePageHeader() {
+        const pageTitle = document.getElementById('pageTitle');
+        const pageSubtitle = document.getElementById('pageSubtitle');
+        
+        if (currentCategory && currentCategory !== 'all') {
+            pageTitle.textContent = `${currentCategory} Offers`;
+            pageSubtitle.textContent = `Discover amazing ${currentCategory.toLowerCase()} deals from top brands`;
+        } else if (currentCampaign && currentCampaign !== 'all') {
+            pageTitle.textContent = `${currentCampaign} Offers`;
+            pageSubtitle.textContent = `Exclusive deals from ${currentCampaign}`;
+        } else if (currentCouponOnly) {
+            pageTitle.textContent = 'Coupon Offers';
+            pageSubtitle.textContent = 'Discover amazing deals with coupon codes';
+        } else {
+            pageTitle.textContent = 'All Offers';
+            pageSubtitle.textContent = 'Discover amazing deals from top brands';
+        }
+    }
+
+    function updateURL() {
+        // Update the URL with current filters for bookmarking/sharing
+        const params = new URLSearchParams();
+        
+        if (currentCategory && currentCategory !== 'all') {
+            params.set('category', currentCategory);
+        }
+        
+        if (currentCampaign && currentCampaign !== 'all') {
+            params.set('campaign', currentCampaign);
+        }
+        
+        if (currentCouponOnly) {
+            params.set('coupon_only', 'true');
+        }
+        
+        if (currentSearch) {
+            params.set('search', currentSearch);
+        }
+        
+        const newURL = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+        window.history.replaceState({}, '', newURL);
+    }
+
+    function copyCoupon(code) {
+        navigator.clipboard.writeText(code).then(() => {
+            showSuccess(`Coupon code "${code}" copied to clipboard!`);
+        }).catch(() => {
+            showError('Failed to copy coupon code.');
+        });
+    }
+
+    function expandDescription(descriptionId, fullText) {
+        const descElement = document.getElementById(descriptionId);
+        
+        if (descElement) {
+            descElement.innerHTML = fullText + ' <span class="show-less-btn" onclick="collapseDescription(\'' + descriptionId + '\', \'' + fullText.replace(/'/g, "\\'") + '\')">Show less</span>';
+            descElement.classList.remove('collapsed');
+            descElement.classList.add('expanded');
+        }
+    }
+
+    function collapseDescription(descriptionId, fullText) {
+        const descElement = document.getElementById(descriptionId);
+        
+        if (descElement) {
+            // Restore truncated text (160 chars for 2 lines)
+            const maxLength = 160;
+            const truncatedText = fullText.length > maxLength ? fullText.substring(0, maxLength).trim() : fullText;
+            const needsExpansion = fullText.length > maxLength;
+            
+            descElement.innerHTML = truncatedText + (needsExpansion ? ' <span class="show-more-btn" onclick="expandDescription(\'' + descriptionId + '\', \'' + fullText.replace(/'/g, "\\'") + '\')">Show more</span>' : '');
+            descElement.classList.remove('expanded');
+            descElement.classList.add('collapsed');
+        }
+    }
+
+    function shareOffer(title, url) {
+        if (navigator.share) {
+            navigator.share({
+                title: title,
+                url: url
+            });
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(url).then(() => {
+                showSuccess('Offer link copied to clipboard!');
+            });
+        }
+    }
+
+    function showLoading(show) {
+        const loading = document.getElementById('loading');
+        loading.style.display = show ? 'block' : 'none';
+    }
+
+    function showSuccess(message) {
+        // Create and show success notification
+        const notification = document.createElement('div');
+        notification.className = 'notification success';
+        notification.innerHTML = `<i class="fas fa-check"></i> ${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    function showError(message) {
+        // Create and show error notification
+        const notification = document.createElement('div');
+        notification.className = 'notification error';
+        notification.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    // Search on Enter key
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchOffers();
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,63 @@
+Starting performance test...
+Timestamp: 2025-08-11 22:11:05
+
+Importing ultra_fast_service...
+
+
+Testing query: 'best laptop deals'
+----------------------------------------
+Searching for offers with query: 'best laptop deals'...
+Search completed in 0.388 seconds
+Found 5 offers
+Response generated in 0.000 seconds
+Error processing query 'best laptop deals': 'charmap' codec can't encode character '\U0001f3af' in position 10: character maps to <undefined>
+Traceback (most recent call last):
+  File "C:\Users\Ranjit\Desktop\Python\Affiliate Website\test_with_file_output.py", line 51, in <module>
+    f.write(f"Response: {response}\n")
+  File "C:\Users\Ranjit\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f3af' in position 10: character maps to <undefined>
+
+
+
+Testing query: 'fashion discounts'
+----------------------------------------
+Searching for offers with query: 'fashion discounts'...
+Search completed in 0.126 seconds
+Found 5 offers
+Response generated in 0.000 seconds
+Error processing query 'fashion discounts': 'charmap' codec can't encode characters in position 105-106: character maps to <undefined>
+Traceback (most recent call last):
+  File "C:\Users\Ranjit\Desktop\Python\Affiliate Website\test_with_file_output.py", line 51, in <module>
+    f.write(f"Response: {response}\n")
+  File "C:\Users\Ranjit\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 105-106: character maps to <undefined>
+
+
+
+Testing query: 'travel offers'
+----------------------------------------
+Searching for offers with query: 'travel offers'...
+Search completed in 0.125 seconds
+Found 5 offers
+Response generated in 0.000 seconds
+Error processing query 'travel offers': 'charmap' codec can't encode characters in position 10-11: character maps to <undefined>
+Traceback (most recent call last):
+  File "C:\Users\Ranjit\Desktop\Python\Affiliate Website\test_with_file_output.py", line 51, in <module>
+    f.write(f"Response: {response}\n")
+  File "C:\Users\Ranjit\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode characters in position 10-11: character maps to <undefined>
+
+
+
+==================================================
+PERFORMANCE TEST SUMMARY
+==================================================
+No queries completed successfully
+
+Test completed at 2025-08-11 22:11:07

@@ -1,0 +1,215 @@
+/* First-time User Guide Styles */
+.first-time-guide {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.first-time-guide.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.guide-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 900px;
+    background: var(--card-bg, white);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    overflow: auto;
+    max-height: 90vh;
+}
+
+.guide-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.guide-header h2 {
+    margin: 0;
+    color: var(--highlight-color, #3b82f6);
+}
+
+.guide-close {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-secondary, #4a5568);
+    transition: all 0.2s ease;
+}
+
+.guide-close:hover {
+    color: var(--text-color, #2d3748);
+    transform: scale(1.1);
+}
+
+.guide-content {
+    margin-bottom: 30px;
+}
+
+.guide-section {
+    margin-bottom: 40px;
+    display: none;
+}
+
+.guide-section.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.guide-section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--highlight-color, #3b82f6);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--section-divider, rgba(226, 232, 240, 0.8));
+}
+
+.guide-section p {
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.guide-feature {
+    display: flex;
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 10px;
+    background: var(--card-bg, white);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.guide-feature:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.guide-feature-icon {
+    width: 50px;
+    height: 50px;
+    min-width: 50px;
+    border-radius: 50%;
+    background: var(--highlight-color, #3b82f6);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-right: 15px;
+}
+
+.guide-feature-content {
+    flex: 1;
+}
+
+.guide-feature-content h4 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: var(--text-color, #2d3748);
+}
+
+.guide-feature-content p {
+    margin: 0;
+    color: var(--text-secondary, #4a5568);
+}
+
+.guide-footer {
+    text-align: center;
+}
+
+.guide-nav {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.guide-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--section-divider, rgba(226, 232, 240, 0.8));
+    margin: 0 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.guide-dot.active {
+    background: var(--highlight-color, #3b82f6);
+    transform: scale(1.2);
+}
+
+.guide-btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    background: var(--highlight-color, #3b82f6);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.guide-btn:hover {
+    background: var(--btn-hover-bg, #2563eb);
+}
+
+.guide-btn-prev {
+    background: var(--btn-secondary-bg, #f1f5f9);
+    color: var(--btn-secondary-color, #334155);
+    margin-right: 10px;
+}
+
+.guide-btn-prev:hover {
+    background: var(--btn-secondary-hover, #e2e8f0);
+}
+
+.guide-dont-show {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.guide-dont-show label {
+    margin-left: 5px;
+    color: var(--text-secondary, #4a5568);
+    cursor: pointer;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .guide-container {
+        width: 95%;
+        padding: 20px;
+    }
+    
+    .guide-feature {
+        flex-direction: column;
+    }
+    
+    .guide-feature-icon {
+        margin-bottom: 15px;
+        margin-right: 0;
+    }
+}
