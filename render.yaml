@@ -1,65 +1,33 @@
-# render.yaml
-# This file defines the services for your application on Render.
-# It allows you to manage your infrastructure as code.
-
-# This file defines the services for your application on Render.
-# It allows you to manage your infrastructure as code.
-
-
 services:
-  # -----------------
-  # FastAPI Web Service
-  # -----------------
-  # -----------------
-  # FastAPI Web Service
-  # -----------------
   - type: web
-    name: affiliate-website # You can change this name
+    name: affiliate-website
     runtime: python
-    region: ohio # Optional: choose a region (e.g., ohio, frankfurt)
-    branch: main # Or your default branch name
-    plan: free # Start with the free plan
+    region: ohio
+    branch: main
+    plan: free
     buildFilter:
       paths:
-      - "app/**"
-      - "static/**"
-      - "templates/**"
-      - "main.py"
-      - "requirements.txt"
-    name: affiliate-website # You can change this name
-    runtime: python
-    region: ohio # Optional: choose a region (e.g., ohio, frankfurt)
-    branch: main # Or your default branch name
-    plan: free # Start with the free plan
-    buildFilter:
-      paths:
-      - "app/**"
-      - "static/**"
-      - "templates/**"
-      - "main.py"
-      - "requirements.txt"
+        - "app/**"
+        - "static/**"
+        - "templates/**"
+        - "main.py"
+        - "requirements.txt"
     buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: affiliate-db # This must match the database name below
-        fromDatabase:
-          name: affiliate-db # This must match the database name below
+          name: affiliate-db
           property: connectionString
       - key: CUELINKS_API_KEY
-        sync: false # Set this in the Render dashboard (it's a secret)
-        sync: false # Set this in the Render dashboard (it's a secret)
+        sync: false
       - key: SECRET_KEY
-        sync: false # Set this in the Render dashboard (it's a secret)
+        sync: false
 
-  # -----------------
-  # PostgreSQL Database
-  # -----------------
-  - type: psql
-    name: affiliate-db # This name is referenced by the web service above
-    region: ohio # Optional: should match the web service region
-    plan: free # Start with the free database plan
-    ipAllowList: [] # Allow access from anywhere
-    databaseName: affiliate_website_db # The actual name of the database
-    user: affiliate_user # The username for the database
+databases:
+  - name: affiliate-db
+    region: ohio
+    plan: free
+    databaseName: affiliate_website_db
+    user: affiliate_user
+    ipAllowList: []
