@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-container">
+        <div class="hero-content animate__animated animate__fadeInUp">
+            <h1>Discover Amazing Deals & Offers</h1>
+            <p>Find the best affiliate deals from top brands and save money on your favorite products.</p>
+            <div class="hero-buttons">
+                <a href="/offers" class="btn btn-primary">
+                    <i class="fas fa-search"></i>
+                    Browse Offers
+                </a>
+                <a href="/chat" class="btn btn-secondary">
+                    <i class="fas fa-comments"></i>
+                    Ask Assistant
+                </a>
+            </div>
+        </div>
+        <div class="hero-image animate__animated animate__fadeInRight">
+            <div class="floating-cards">
+                <div class="floating-card card1">
+                    <i class="fas fa-percentage"></i>
+                    <span>50% OFF</span>
+                </div>
+                <div class="floating-card card2">
+                    <i class="fas fa-gift"></i>
+                    <span>FREE SHIPPING</span>
+                </div>
+                <div class="floating-card card3">
+                    <i class="fas fa-star"></i>
+                    <span>EXCLUSIVE</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section" style="position: relative; z-index: 5; padding-bottom: 80px; margin-bottom: 50px; background-color: var(--card-bg);">
+    <div class="container">
+        <h2 class="section-title animate__animated animate__fadeInUp">Popular Categories</h2>
+        <div class="categories-grid" style="position: relative; z-index: 5; margin-bottom: 100px;">
+            <div class="category-card animate__animated animate__fadeInUp" data-delay="0.1s">
+                <div class="category-icon">
+                    <i class="fas fa-tshirt"></i>
+                </div>
+                <h3>Fashion</h3>
+                <p>Trendy clothes and accessories</p>
+                <a href="/offers?category=Fashion" class="category-link">Explore</a>
+            </div>
+            <div class="category-card animate__animated animate__fadeInUp" data-delay="0.2s">
+                <div class="category-icon">
+                    <i class="fas fa-laptop"></i>
+                </div>
+                <h3>Electronics</h3>
+                <p>Latest gadgets and tech</p>
+                <a href="/offers?category=Electronics" class="category-link">Explore</a>
+            </div>
+            <div class="category-card animate__animated animate__fadeInUp" data-delay="0.3s">
+                <div class="category-icon">
+                    <i class="fas fa-plane"></i>
+                </div>
+                <h3>Travel</h3>
+                <p>Flights, hotels, and packages</p>
+                <a href="/offers?category=Travel" class="category-link">Explore</a>
+            </div>
+            <div class="category-card animate__animated animate__fadeInUp" data-delay="0.4s">
+                <div class="category-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+                <h3>Food & Grocery</h3>
+                <p>Fresh food and daily essentials</p>
+                <a href="/offers?category=Food%20%26%20Grocery" class="category-link">Explore</a>
+            </div>
+            <div class="category-card animate__animated animate__fadeInUp" data-delay="0.5s">
+                <div class="category-icon">
+                    <i class="fas fa-spa"></i>
+                </div>
+                <h3>Health & Beauty</h3>
+                <p>Skincare and wellness products</p>
+                <a href="/offers?category=Health%20%26%20Beauty" class="category-link">Explore</a>
+            </div>
+            <div class="category-card animate__animated animate__fadeInUp" data-delay="0.6s">
+                <div class="category-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <h3>Home & Kitchen</h3>
+                <p>Furniture and home appliances</p>
+                <a href="/offers?category=Home%20%26%20Kitchen" class="category-link">Explore</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Offers Section -->
+<section class="featured-offers-section" style="position: relative; z-index: 1;">
+    <div class="container">
+        <h2 class="section-title animate__animated animate__fadeInUp">Featured Offers</h2>
+        <div class="offers-grid" id="featuredOffers" style="position: relative; z-index: 2;">
+            <!-- Featured offers will be loaded here -->
+        </div>
+        <div class="text-center">
+            <a href="/offers" class="btn btn-primary">
+                <i class="fas fa-eye"></i>
+                View All Offers
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item animate__animated animate__fadeInUp" data-delay="0.1s">
+                <div class="stat-icon">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="stat-number" data-count="500">0</div>
+                <div class="stat-label">Active Offers</div>
+            </div>
+            <div class="stat-item animate__animated animate__fadeInUp" data-delay="0.2s">
+                <div class="stat-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <div class="stat-number" data-count="100">0</div>
+                <div class="stat-label">Partner Brands</div>
+            </div>
+            <div class="stat-item animate__animated animate__fadeInUp" data-delay="0.3s">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-number" data-count="10000">0</div>
+                <div class="stat-label">Happy Users</div>
+            </div>
+            <div class="stat-item animate__animated animate__fadeInUp" data-delay="0.4s">
+                <div class="stat-icon">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-number" data-count="1000000">0</div>
+                <div class="stat-label">Money Saved</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content animate__animated animate__fadeInUp">
+            <h2>Start Saving Today!</h2>
+            <p>Join thousands of smart shoppers who save money every day with our exclusive deals.</p>
+            <div class="cta-buttons">
+                <a href="/offers" class="btn btn-white">
+                    <i class="fas fa-rocket"></i>
+                    Get Started
+                </a>
+                <a href="/chat" class="btn btn-outline">
+                    <i class="fas fa-question-circle"></i>
+                    Need Help?
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Load featured offers
+    document.addEventListener('DOMContentLoaded', function() {
+        loadFeaturedOffers();
+        animateStats();
+    });
+
+    async function loadFeaturedOffers() {
+        try {
+            const response = await fetch('/api/offers/featured');
+            const data = await response.json();
+            
+            const container = document.getElementById('featuredOffers');
+            container.innerHTML = '';
+            
+            data.offers.forEach((offer, index) => {
+                const offerCard = createOfferCard(offer, index);
+                container.appendChild(offerCard);
+            });
+        } catch (error) {
+            console.error('Error loading featured offers:', error);
+        }
+    }
+
+    function createOfferCard(offer, index) {
+        const card = document.createElement('div');
+        card.className = 'offer-card animate__animated animate__fadeInUp';
+        card.style.animationDelay = `${index * 0.1}s`;
+        
+        // Clean description - remove HTML tags and decode entities
+        let cleanDescription = offer.description ? offer.description.replace(/<[^>]*>/g, '') : '';
+        cleanDescription = cleanDescription.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+        
+        // Create truncated and full versions for 2 lines (approximately 160 characters)
+        const maxLength = 160; // Longer for 2 lines
+        const isLongDescription = cleanDescription.length > maxLength;
+        const truncatedDescription = isLongDescription ? 
+            cleanDescription.substring(0, maxLength).trim() : cleanDescription;
+        
+        // Use clean image URL without cache-busting
+        const imageUrl = offer.image_url || '/static/images/placeholder.jpg';
+        
+        // Create unique ID for this description
+        const descriptionId = `desc-${index}-${Date.now()}`;
+        
+        card.innerHTML = `
+            <div class="offer-image">
+                <img src="${imageUrl}" 
+                     alt="${offer.title}" 
+                     loading="lazy"
+                     onerror="this.onerror=null; this.src='/static/images/placeholder.jpg';">
+                ${offer.type ? `<div class="offer-badge">${offer.type}</div>` : ''}
+            </div>
+            <div class="offer-content">
+                <h3>${offer.title}</h3>
+                <div class="description-container">
+                    <p class="description-text collapsed" id="${descriptionId}">${truncatedDescription}${isLongDescription ? ` <span class="show-more-btn" onclick="expandDescription('${descriptionId}', '${cleanDescription.replace(/'/g, "\\'")}')" title="Click to expand">Show more</span>` : ''}</p>
+                </div>
+                <div class="coupon-code">
+                    ${offer.coupon_code ? `
+                        <span>Code: <strong>${offer.coupon_code}</strong></span>
+                    ` : `
+                        <span class="no-coupon">No Coupon Code Required</span>
+                    `}
+                </div>
+                <div class="offer-actions">
+                    <a href="${offer.affiliate_url}" target="_blank" class="btn btn-primary">
+                        <i class="fas fa-external-link-alt"></i>
+                        Get Deal
+                    </a>
+                </div>
+            </div>
+        `;
+        
+        return card;
+    }
+
+    function expandDescription(elementId, fullDescription) {
+        const element = document.getElementById(elementId);
+        
+        if (element) {
+            element.innerHTML = fullDescription + ' <span class="show-less-btn" onclick="collapseDescription(\'' + elementId + '\', \'' + fullDescription.replace(/'/g, "\\'") + '\')">Show less</span>';
+            element.classList.remove('collapsed');
+            element.classList.add('expanded');
+        }
+    }
+
+    function collapseDescription(elementId, fullText) {
+        const element = document.getElementById(elementId);
+        
+        if (element) {
+            // Restore truncated text (160 chars for 2 lines)
+            const maxLength = 160;
+            const truncatedText = fullText.length > maxLength ? fullText.substring(0, maxLength).trim() : fullText;
+            const needsExpansion = fullText.length > maxLength;
+            
+            element.innerHTML = truncatedText + (needsExpansion ? ' <span class="show-more-btn" onclick="expandDescription(\'' + elementId + '\', \'' + fullText.replace(/'/g, "\\'") + '\')">Show more</span>' : '');
+            element.classList.remove('expanded');
+            element.classList.add('collapsed');
+        }
+    }
+
+    function animateStats() {
+        const statNumbers = document.querySelectorAll('.stat-number');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = entry.target;
+                    const count = parseInt(target.dataset.count);
+                    animateNumber(target, count);
+                    observer.unobserve(target);
+                }
+            });
+        });
+        
+        statNumbers.forEach(stat => observer.observe(stat));
+    }
+
+    function animateNumber(element, target) {
+        let current = 0;
+        const increment = target / 100;
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            element.textContent = Math.floor(current).toLocaleString();
+        }, 20);
+    }
+</script>
+
+<!-- Enhanced Image Handler -->
+<script src="/static/js/image-handler.js"></script>
+{% endblock %}

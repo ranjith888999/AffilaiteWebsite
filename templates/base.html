@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Affiliate Deals Hub{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <link href="/static/css/themes.css" rel="stylesheet">
+    <link href="/static/css/theme-fix.css" rel="stylesheet">
+    <link href="/static/css/enhanced-ui.css" rel="stylesheet">
+    <link href="/static/css/section-overlap-fix.css" rel="stylesheet">
+    <link href="/static/css/fixed-categories.css" rel="stylesheet">
+    <link href="/static/css/offers-page-enhancement.css" rel="stylesheet">
+    <link href="/static/css/off-white-theme.css" rel="stylesheet">
+    <link href="/static/css/chat-enhancements.css" rel="stylesheet">
+    <link href="/static/css/chat-ui-enhanced.css" rel="stylesheet">
+    <link href="/static/css/voice-to-text.css" rel="stylesheet">
+    <link href="/static/css/voice-tutorial.css" rel="stylesheet">
+    <link href="/static/css/offers-display.css" rel="stylesheet">
+    <style>
+        :root {
+            --highlight-color-rgb: 59, 130, 246; /* Default blue color in RGB format */
+        }
+        [data-theme="dark"] {
+            --highlight-color-rgb: 96, 165, 250;
+        }
+        [data-theme="night"] {
+            --highlight-color-rgb: 167, 139, 250;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="/">
+                    <i class="fas fa-percentage"></i>
+                    <span>DealsHub</span>
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/offers" class="nav-link">Offers</a>
+                <a href="/categories" class="nav-link">Categories</a>
+                <a href="/link-generator" class="nav-link">Link Generator</a>
+                <a href="/chat" class="nav-link">Chat Support</a>
+            </div>
+            <div class="theme-switcher">
+                <div class="theme-selector">
+                    <button id="theme-light" class="theme-btn" title="Light Mode">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                    <button id="theme-dark" class="theme-btn" title="Dark Mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <button id="theme-night" class="theme-btn" title="Night Mode">
+                        <i class="fas fa-star"></i>
+                    </button>
+                    <button id="theme-off-white" class="theme-btn" title="Off-White Mode">
+                        <i class="fas fa-adjust"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="nav-auth" id="navAuth">
+                <!-- Auth buttons will be loaded here via JavaScript -->
+            </div>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget" id="chatWidget">
+        <div class="chat-header" onclick="toggleChat()">
+            <i class="fas fa-comments"></i>
+            <span>Need Help?</span>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="chat-messages" id="chatMessages">
+                <div class="bot-message">
+                    <div class="message-content">
+                        Hi! I'm here to help you find the best deals. What are you looking for today?
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Type your message..." onkeypress="handleChatInput(event)">
+                <button onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3><i class="fas fa-percentage"></i> DealsHub</h3>
+                <p>Your ultimate destination for the best affiliate deals and offers.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/offers">Latest Offers</a></li>
+                    <li><a href="/categories">Categories</a></li>
+                    <li><a href="/link-generator">Link Generator</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Categories</h4>
+                <ul>
+                    <li><a href="/categories?cat=fashion">Fashion</a></li>
+                    <li><a href="/categories?cat=electronics">Electronics</a></li>
+                    <li><a href="/categories?cat=travel">Travel</a></li>
+                    <li><a href="/categories?cat=food">Food & Grocery</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="/chat">Live Chat</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#help">Help Center</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 DealsHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+    <script src="/static/js/theme.js"></script>
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/fix-overlap.js"></script>
+    <script src="/static/js/voice-to-text.js"></script>
+    <script src="/static/js/voice-tutorial.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

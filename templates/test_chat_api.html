@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat API Test</title>
+</head>
+<body>
+    <h1>Chat API Test</h1>
+    <div>
+        <input type="text" id="messageInput" placeholder="Enter your message" style="width: 400px; padding: 10px;">
+        <button onclick="testChat()" style="padding: 10px;">Send</button>
+    </div>
+    <div id="results" style="margin-top: 20px; padding: 20px; border: 1px solid #ccc; min-height: 200px;"></div>
+
+    <script>
+        async function testChat() {
+            const message = document.getElementById('messageInput').value;
+            const resultsDiv = document.getElementById('results');
+            
+            if (!message.trim()) {
+                resultsDiv.innerHTML = 'Please enter a message';
+                return;
+            }
+            
+            resultsDiv.innerHTML = 'Testing...';
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        user_id: 'test_user'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                let html = `
+                    <h3>✅ API Response (${response.status})</h3>
+                    <p><strong>Bot Response:</strong> ${data.response || 'No response'}</p>
+                    <p><strong>Offers Found:</strong> ${data.offers ? data.offers.length : 0}</p>
+                    <p><strong>Processing Time:</strong> ${data.processing_time || 'N/A'}s</p>
+                `;
+                
+                if (data.offers && data.offers.length > 0) {
+                    html += '<h4>📦 Offers:</h4>';
+                    data.offers.forEach((offer, index) => {
+                        html += `
+                            <div style="border: 1px solid #eee; margin: 10px 0; padding: 10px;">
+                                <h5>${index + 1}. ${offer.title || 'No title'}</h5>
+                                <p>${offer.description || 'No description'}</p>
+                                <p><strong>URL:</strong> <a href="${offer.affiliate_url}" target="_blank">${offer.affiliate_url}</a></p>
+                                <p><strong>Coupon:</strong> ${offer.coupon_code || 'None'}</p>
+                                <p><strong>Similarity:</strong> ${offer.similarity || 'N/A'}</p>
+                            </div>
+                        `;
+                    });
+                }
+                
+                resultsDiv.innerHTML = html;
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+        
+        // Test specific queries
+        function testSpecificQueries() {
+            const queries = ['Myntra Offers', 'Nykaa Offers', 'Electronic Offers', 'Best Coupon Codes'];
+            queries.forEach((query, index) => {
+                setTimeout(() => {
+                    document.getElementById('messageInput').value = query;
+                    testChat();
+                }, index * 2000);
+            });
+        }
+        
+        // Add quick test buttons
+        window.onload = function() {
+            const testButtons = `
+                <div style="margin: 20px 0;">
+                    <h3>Quick Tests:</h3>
+                    <button onclick="document.getElementById('messageInput').value='Myntra Offers'; testChat();" style="margin: 5px; padding: 5px;">Myntra Offers</button>
+                    <button onclick="document.getElementById('messageInput').value='Nykaa Offers'; testChat();" style="margin: 5px; padding: 5px;">Nykaa Offers</button>
+                    <button onclick="document.getElementById('messageInput').value='Electronic Offers'; testChat();" style="margin: 5px; padding: 5px;">Electronic Offers</button>
+                    <button onclick="document.getElementById('messageInput').value='Best Coupon Codes'; testChat();" style="margin: 5px; padding: 5px;">Best Coupon Codes</button>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('afterbegin', testButtons);
+        }
+    </script>
+</body>
+</html>

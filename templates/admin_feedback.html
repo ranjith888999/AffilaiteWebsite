@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback Analytics - Admin{% endblock %}
+
+{% block content %}
+<section class="admin-section">
+    <div class="container">
+        <div class="admin-header">
+            <h1>💬 Chat Feedback Analytics</h1>
+            <p>Monitor user feedback and improve chat experience</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <h3 id="totalFeedback">Loading...</h3>
+                    <p>Total Feedback</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">👍</div>
+                <div class="stat-content">
+                    <h3 id="likesCount">Loading...</h3>
+                    <p>Likes</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">👎</div>
+                <div class="stat-content">
+                    <h3 id="dislikesCount">Loading...</h3>
+                    <p>Dislikes</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">💬</div>
+                <div class="stat-content">
+                    <h3 id="detailedFeedback">Loading...</h3>
+                    <p>Detailed Feedback</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="feedback-sections">
+            <div class="feedback-section">
+                <h2>📈 Feedback Overview</h2>
+                <div class="chart-container">
+                    <canvas id="feedbackChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <div class="feedback-section">
+                <h2>📝 Recent Detailed Feedback</h2>
+                <div class="feedback-list" id="recentFeedback">
+                    <div class="loading-message">Loading feedback...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let feedbackChart;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        loadFeedbackStats();
+        
+        // Refresh every 30 seconds
+        setInterval(loadFeedbackStats, 30000);
+    });
+
+    async function loadFeedbackStats() {
+        try {
+            const response = await fetch('/api/chat/feedback/stats');
+            const data = await response.json();
+            
+            updateStatsDisplay(data);
+            updateChart(data.feedback_counts);
+            updateRecentFeedback(data.recent_feedback);
+            
+        } catch (error) {
+            console.error('Error loading feedback stats:', error);
+        }
+    }
+
+    function updateStatsDisplay(data) {
+        const counts = data.feedback_counts;
+        const total = (counts.like || 0) + (counts.dislike || 0) + (counts.feedback || 0);
+        
+        document.getElementById('totalFeedback').textContent = total;
+        document.getElementById('likesCount').textContent = counts.like || 0;
+        document.getElementById('dislikesCount').textContent = counts.dislike || 0;
+        document.getElementById('detailedFeedback').textContent = counts.feedback || 0;
+    }
+
+    function updateChart(feedbackCounts) {
+        const ctx = document.getElementById('feedbackChart').getContext('2d');
+        
+        if (feedbackChart) {
+            feedbackChart.destroy();
+        }
+        
+        feedbackChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['👍 Likes', '👎 Dislikes', '💬 Detailed'],
+                datasets: [{
+                    data: [
+                        feedbackCounts.like || 0,
+                        feedbackCounts.dislike || 0,
+                        feedbackCounts.feedback || 0
+                    ],
+                    backgroundColor: [
+                        '#10b981',
+                        '#ef4444',
+                        '#3b82f6'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            color: '#4a5568'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function updateRecentFeedback(recentFeedback) {
+        const container = document.getElementById('recentFeedback');
+        
+        if (recentFeedback.length === 0) {
+            container.innerHTML = '<div class="no-feedback">No detailed feedback yet.</div>';
+            return;
+        }
+        
+        const feedbackHtml = recentFeedback.map(feedback => `
+            <div class="feedback-item">
+                <div class="feedback-header">
+                    <span class="feedback-type ${feedback.feedback_type}">${getFeedbackIcon(feedback.feedback_type)}</span>
+                    <span class="feedback-time">${new Date(feedback.timestamp).toLocaleString()}</span>
+                </div>
+                <div class="feedback-content">
+                    <div class="user-message">"${feedback.user_message}"</div>
+                    ${feedback.feedback_text ? `<div class="feedback-text">${feedback.feedback_text}</div>` : ''}
+                </div>
+            </div>
+        `).join('');
+        
+        container.innerHTML = feedbackHtml;
+    }
+
+    function getFeedbackIcon(type) {
+        switch(type) {
+            case 'like': return '👍';
+            case 'dislike': return '👎';
+            case 'feedback': return '💬';
+            default: return '📝';
+        }
+    }
+</script>
+
+<style>
+.admin-section {
+    padding: 120px 0 80px;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    min-height: 100vh;
+}
+
+.admin-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.admin-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.admin-header p {
+    color: #6b7280;
+    font-size: 1.1rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-content h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.stat-content p {
+    color: #6b7280;
+    margin: 5px 0 0 0;
+}
+
+.feedback-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.feedback-section {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.feedback-section h2 {
+    margin-bottom: 25px;
+    color: #1f2937;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+.feedback-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.feedback-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #f9fafb;
+}
+
+.feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.feedback-type {
+    font-size: 1.2rem;
+}
+
+.feedback-time {
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.user-message {
+    font-style: italic;
+    color: #4b5563;
+    margin-bottom: 8px;
+}
+
+.feedback-text {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+    color: #1f2937;
+}
+
+.loading-message, .no-feedback {
+    text-align: center;
+    color: #6b7280;
+    padding: 20px;
+}
+
+@media (max-width: 768px) {
+    .feedback-sections {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

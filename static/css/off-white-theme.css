@@ -1,0 +1,181 @@
+/* Off-White Theme - Clean and minimal */
+[data-theme="off-white"] {
+    --bg-primary: linear-gradient(135deg, #f7f7f7 0%, #f0f0f0 50%, #f5f5f5 100%);
+    --bg-overlay: radial-gradient(circle at 20% 20%, rgba(241, 241, 241, 0.5) 0%, transparent 50%),
+                 radial-gradient(circle at 80% 80%, rgba(236, 236, 236, 0.5) 0%, transparent 50%),
+                 radial-gradient(circle at 40% 60%, rgba(246, 246, 246, 0.5) 0%, transparent 50%);
+    --text-color: #333333;
+    --text-secondary: #555555;
+    --card-bg: rgba(252, 252, 252, 0.95);
+    --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.03), 0 3px 8px rgba(0, 0, 0, 0.01);
+    --nav-bg: linear-gradient(135deg, rgba(250, 250, 250, 0.95) 0%, rgba(245, 245, 245, 0.95) 100%);
+    --nav-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    --nav-text: #333333;
+    --nav-link-hover: #111111;
+    --input-bg: rgba(255, 255, 255, 0.95);
+    --input-border: 1px solid rgba(200, 200, 200, 0.8);
+    --input-focus-border: 1px solid rgba(150, 150, 150, 0.5);
+    --input-text: #333333;
+    --input-placeholder: #999999;
+    --btn-primary-bg: #666666;
+    --btn-primary-color: white;
+    --btn-hover-bg: #444444;
+    --btn-secondary-bg: #eeeeee;
+    --btn-secondary-color: #333333;
+    --btn-secondary-hover: #dddddd;
+    --highlight-color: #666666;
+    --message-user-bg: #f0f0f0;
+    --message-bot-bg: #f9f9f9;
+    --footer-bg: #f5f5f5;
+    --footer-text: #444444;
+    --footer-link: #666666;
+    --footer-link-hover: #444444;
+    --chat-widget-bg: rgba(252, 252, 252, 0.98);
+    --chat-widget-header: linear-gradient(135deg, #777777 0%, #555555 100%);
+    --chat-widget-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    --offer-card-hover-bg: rgba(255, 255, 255, 1);
+    --offer-badge-bg: rgba(150, 150, 150, 0.1);
+    --offer-badge-text: #555555;
+    --section-divider: rgba(220, 220, 220, 0.8);
+    --scrollbar-track: #f5f5f5;
+    --scrollbar-thumb: #dddddd;
+    --scrollbar-thumb-hover: #bbbbbb;
+    --coupon-code-bg: rgba(150, 150, 150, 0.1);
+    --coupon-code-text: #555555;
+    --notification-success-bg: #777777;
+    --notification-error-bg: #999999;
+    --modal-backdrop: rgba(50, 50, 50, 0.5);
+    --modal-bg: #fcfcfc;
+}
+
+/* Off-white specific overrides */
+[data-theme="off-white"] .navbar {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+[data-theme="off-white"] .footer {
+    border-top: 1px solid #e5e5e5;
+}
+
+[data-theme="off-white"] .card,
+[data-theme="off-white"] .offer-card {
+    border: 1px solid #e5e5e5;
+}
+
+[data-theme="off-white"] .btn-primary {
+    background-color: #666666;
+    border-color: #555555;
+}
+
+[data-theme="off-white"] .btn-primary:hover {
+    background-color: #444444;
+    border-color: #333333;
+}
+
+[data-theme="off-white"] .page-header,
+[data-theme="off-white"] .offers-modern-header {
+    background: linear-gradient(135deg, 
+        rgba(120, 120, 120, 0.9) 0%, 
+        rgba(100, 100, 100, 0.85) 50%,
+        rgba(80, 80, 80, 0.8) 100%);
+}
+
+[data-theme="off-white"] .nav-logo span,
+[data-theme="off-white"] .nav-logo i {
+    color: #333333;
+}
+
+[data-theme="off-white"] .theme-selector {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="off-white"] .theme-btn {
+    color: #333333;
+}
+
+[data-theme="off-white"] .theme-btn.active {
+    background: #f0f0f0;
+    color: #333333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Additional Off-white specific styles */
+[data-theme="off-white"] .category-card {
+    background-color: #ffffff;
+    border: 1px solid #e5e5e5;
+}
+
+[data-theme="off-white"] .category-card:hover {
+    border-color: #aaaaaa;
+}
+
+[data-theme="off-white"] .offers-grid .offer-card {
+    background-color: #ffffff;
+}
+
+[data-theme="off-white"] .pagination-item {
+    background-color: #f7f7f7;
+    color: #333333;
+}
+
+[data-theme="off-white"] .pagination-item.active {
+    background-color: #666666;
+    color: #ffffff;
+}
+
+[data-theme="off-white"] .pagination-item:hover:not(.active) {
+    background-color: #eeeeee;
+}
+
+[data-theme="off-white"] .filters-section {
+    background-color: #ffffff;
+    border: 1px solid #e5e5e5;
+}
+
+[data-theme="off-white"] .search-box input,
+[data-theme="off-white"] .filter-group select {
+    border: 1px solid #dddddd;
+    background-color: #ffffff;
+}
+
+[data-theme="off-white"] .search-box input:focus,
+[data-theme="off-white"] .filter-group select:focus {
+    border-color: #aaaaaa;
+    box-shadow: 0 0 0 3px rgba(150, 150, 150, 0.2);
+}
+
+[data-theme="off-white"] .nav-link.active {
+    color: #000000;
+    font-weight: 600;
+}
+
+[data-theme="off-white"] .section-title h2 {
+    color: #333333;
+}
+
+[data-theme="off-white"] .section-title::after {
+    background-color: #cccccc;
+}
+
+[data-theme="off-white"] .section-subtitle {
+    color: #666666;
+}
+
+[data-theme="off-white"] .chat-widget {
+    background-color: #ffffff;
+    border: 1px solid #e5e5e5;
+}
+
+[data-theme="off-white"] .chat-header {
+    background: linear-gradient(135deg, #777777 0%, #555555 100%);
+}
+
+[data-theme="off-white"] .user-message {
+    background-color: #f0f0f0;
+    border: 1px solid #e5e5e5;
+}
+
+[data-theme="off-white"] .bot-message {
+    background-color: #f9f9f9;
+    border: 1px solid #e5e5e5;
+}

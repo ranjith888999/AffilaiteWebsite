@@ -1,0 +1,255 @@
+/* Fix Theme Implementation */
+
+/* Update body styles */
+body {
+    color: var(--text-color);
+    background: var(--bg-primary);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+body::before {
+    background: var(--bg-overlay);
+}
+
+/* Update navbar */
+.navbar {
+    background: var(--nav-bg);
+    box-shadow: var(--nav-shadow);
+}
+
+.nav-logo a {
+    color: var(--nav-text);
+}
+
+.nav-link {
+    color: var(--nav-text);
+}
+
+.nav-link:hover {
+    color: var(--nav-link-hover);
+}
+
+.nav-link::after {
+    background-color: var(--nav-link-hover);
+}
+
+/* Update cards */
+.card, 
+.offer-card,
+.message-bubble,
+.chat-container,
+.category-card,
+.feature-card {
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    color: var(--text-color);
+    border-color: var(--section-divider);
+    transition: all 0.3s ease;
+}
+
+/* Update offer cards */
+.offer-card:hover {
+    background: var(--offer-card-hover-bg);
+}
+
+.offer-badge, 
+.relevance-badge {
+    background: var(--offer-badge-bg);
+    color: var(--offer-badge-text);
+}
+
+.coupon-code {
+    background: var(--coupon-code-bg);
+    color: var(--coupon-code-text);
+}
+
+/* Update forms */
+input, 
+textarea, 
+select,
+.chat-input input {
+    background: var(--input-bg);
+    border: var(--input-border);
+    color: var(--input-text);
+}
+
+input::placeholder, 
+textarea::placeholder {
+    color: var(--input-placeholder);
+}
+
+input:focus, 
+textarea:focus, 
+select:focus {
+    border: var(--input-focus-border);
+    outline: none;
+}
+
+/* Update buttons */
+.btn-primary {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-color);
+}
+
+.btn-primary:hover {
+    background: var(--btn-hover-bg);
+}
+
+.btn-secondary {
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-color);
+}
+
+.btn-secondary:hover {
+    background: var(--btn-secondary-hover);
+}
+
+/* Update footer */
+.footer {
+    background: var(--footer-bg);
+    color: var(--footer-text);
+}
+
+.footer a {
+    color: var(--footer-link);
+}
+
+.footer a:hover {
+    color: var(--footer-link-hover);
+}
+
+/* Update chat */
+.user-message .message-bubble {
+    background: var(--message-user-bg);
+    color: var(--text-color);
+}
+
+.bot-message .message-bubble {
+    background: var(--message-bot-bg);
+    color: var(--text-color);
+}
+
+.chat-widget {
+    background: var(--chat-widget-bg);
+    box-shadow: var(--chat-widget-shadow);
+}
+
+.chat-header {
+    background: var(--chat-widget-header);
+}
+
+/* Update scrollbars */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* Update hero section */
+.hero-section {
+    background: var(--nav-bg);
+    color: var(--nav-text);
+}
+
+.hero-content h1,
+.hero-content p {
+    color: var(--nav-text);
+}
+
+/* Update category section */
+.categories-section h2, 
+.categories-section p,
+.offers-section h2,
+.offers-section p,
+.features-section h2,
+.features-section p {
+    color: var(--text-color);
+}
+
+/* Update dividers */
+.section-divider {
+    background: var(--section-divider);
+}
+
+/* Make sure links have correct colors */
+a {
+    color: var(--highlight-color);
+}
+
+a:hover {
+    color: var(--btn-hover-bg);
+}
+
+/* Update notifications */
+.notification {
+    background: var(--card-bg);
+    color: var(--text-color);
+    box-shadow: var(--card-shadow);
+}
+
+.copy-notification.success {
+    background: var(--notification-success-bg);
+}
+
+.copy-notification.error {
+    background: var(--notification-error-bg);
+}
+
+/* Update modals */
+.modal-backdrop {
+    background: var(--modal-backdrop);
+}
+
+.modal-content {
+    background: var(--modal-bg);
+    color: var(--text-color);
+}
+
+/* Update chat feedback indicators */
+.feedback-btn {
+    color: var(--text-secondary);
+    background: transparent;
+}
+
+.feedback-btn:hover {
+    color: var(--highlight-color);
+}
+
+/* Fix overlays and search */
+.search-container input {
+    background: var(--input-bg);
+    color: var(--input-text);
+    border: var(--input-border);
+}
+
+.search-container input:focus {
+    border: var(--input-focus-border);
+}
+
+/* Fix for campaign page */
+.campaign-details {
+    background: var(--card-bg);
+    color: var(--text-color);
+}
+
+/* Fix headings */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-color);
+}
+
+/* Fix loader colors */
+.loader {
+    border-color: var(--card-bg);
+    border-top-color: var(--highlight-color);
+}

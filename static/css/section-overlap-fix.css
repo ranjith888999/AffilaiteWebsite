@@ -1,0 +1,63 @@
+/* Fix for overlapping sections on homepage with fixed positioning */
+
+/* Clear previous styles and apply new approach */
+.categories-section {
+    position: relative !important;
+    background-color: var(--card-bg) !important;
+    padding: 80px 0 !important;
+    margin-bottom: 50px !important;
+    z-index: 5 !important;
+    overflow: visible !important;
+    
+    /* Create an invisible barrier to prevent overlap */
+    isolation: isolate !important;
+}
+
+/* Make the categories grid stable */
+.categories-grid {
+    position: relative !important;
+    z-index: 5 !important;
+    margin-bottom: 100px !important;
+}
+
+/* Add a solid barrier between sections */
+.categories-section::after {
+    content: '' !important;
+    display: block !important;
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100px !important;
+    background-color: var(--card-bg) !important;
+    z-index: 2 !important;
+}
+
+/* Clear positioning for featured offers section */
+.featured-offers-section {
+    position: relative !important;
+    z-index: 1 !important;
+    margin-top: 200px !important; /* Create substantial gap */
+    padding-top: 80px !important;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 25%, #f1f5f9 75%, #f8fafc 100%) !important;
+}
+
+/* Space filler to ensure clear separation */
+.section-spacer {
+    height: 200px !important;
+    width: 100% !important;
+    display: block !important;
+    clear: both !important;
+    background-color: var(--card-bg) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .featured-offers-section {
+        margin-top: 150px !important; /* Smaller gap on mobile but still substantial */
+    }
+    
+    .section-spacer {
+        height: 150px !important;
+    }
+}
