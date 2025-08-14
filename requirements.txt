@@ -11,8 +11,8 @@ numpy>=1.22.0
 asyncpg==0.28.0
 starlette>=0.27.0
 
-# Handle Rust-based packages by using pre-built binaries
-sentence-transformers==2.2.2 --no-build-isolation --only-binary=:all:
+# Machine learning and NLP libraries
+sentence-transformers==2.2.2
 langchain>=0.0.267
 langchain-community>=0.0.10
 langchain-openai>=0.0.2
