@@ -1,29 +1,44 @@
 # render.yaml
-# This file configures the services for your application on Render.
+# This file defines the services for your application on Render.
+# It allows you to manage your infrastructure as code.
+
 
 services:
-  # 1. A PostgreSQL database
-  - type: psql
-    name: affiliate-database
-    plan: free # You can upgrade this later in the Render dashboard
-    postgresMajorVersion: 14
-
-  # 2. A Python web service for the FastAPI application
+  # -----------------
+  # FastAPI Web Service
+  # -----------------
   - type: web
-    name: affiliate-website
-    plan: free # Start with the free plan, upgrade as needed
-    env: python
+    name: affiliate-website # You can change this name
+    runtime: python
+    region: ohio # Optional: choose a region (e.g., ohio, frankfurt)
+    branch: main # Or your default branch name
+    plan: free # Start with the free plan
+    buildFilter:
+      paths:
+      - "app/**"
+      - "static/**"
+      - "templates/**"
+      - "main.py"
+      - "requirements.txt"
     buildCommand: "pip install -r requirements.txt"
     startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: DATABASE_URL
-        fromService:
-          type: psql
-          name: affiliate-database
+        fromDatabase:
+          name: affiliate-db # This must match the database name below
           property: connectionString
-      - key: PYTHON_VERSION
-        value: 3.11 # Specify a recent Python version
       - key: CUELINKS_API_KEY
-        sync: false # This is a secret, we will set it in the dashboard
+        sync: false # Set this in the Render dashboard (it's a secret)
       - key: SECRET_KEY
-        sync: false # This is a secret, we will set it in the dashboard
+        sync: false # Set this in the Render dashboard (it's a secret)
+
+  # -----------------
+  # PostgreSQL Database
+  # -----------------
+  - type: postgres
+    name: affiliate-db # This name is referenced by the web service above
+    region: ohio # Optional: should match the web service region
+    plan: free # Start with the free database plan
+    ipAllowList: [] # Allow access from anywhere
+    databaseName: affiliate_website_db # The actual name of the database
+    user: affiliate_user # The username for the database
