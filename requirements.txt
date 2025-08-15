@@ -25,3 +25,19 @@ scikit-learn>=1.7.0
 pydantic-settings>=2.0.0
 opentelemetry-instrumentation-fastapi>=0.40b0
 cryptography>=45.0.0
+
+# Authentication and session management
+itsdangerous>=2.1.2
+python-jose[cryptography]>=3.3.0
+
+# Database management
+alembic>=1.12.0
+
+# HTTP client for scripts
+requests>=2.31.0
+
+# Improved logging
+loguru>=0.7.0
+
+# Additional LangChain dependencies
+ollama>=0.1.20
