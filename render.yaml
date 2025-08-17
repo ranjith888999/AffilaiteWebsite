@@ -1,28 +1,56 @@
 services:
   - type: web
     name: affiliate-website
-    runtime: python
+    env: docker
     region: ohio
     branch: main
     plan: free
+    healthCheckPath: /
+    dockerfilePath: ./Dockerfile
+    dockerCommand: /app/startup.sh
     buildFilter:
       paths:
-        - "app/**"
-        - "static/**"
-        - "templates/**"
-        - "main.py"
-        - "requirements.txt"
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
+        - app/**
+        - scripts/**
+        - static/**
+        - templates/**
+        - .dockerignore
+        - Dockerfile
+        - init_render_database.py
+        - requirements-core.txt
+        - requirements-ml.txt
+        - main.py
     envVars:
       - key: DATABASE_URL
         fromDatabase:
           name: affiliate-db
           property: connectionString
+      - key: DATABASE_HOST
+        fromDatabase:
+          name: affiliate-db
+          property: host
+      - key: DATABASE_PORT
+        fromDatabase:
+          name: affiliate-db
+          property: port
+      - key: DATABASE_NAME
+        fromDatabase:
+          name: affiliate-db
+          property: database
+      - key: DATABASE_USER
+        fromDatabase:
+          name: affiliate-db
+          property: user
+      - key: DATABASE_PASSWORD
+        fromDatabase:
+          name: affiliate-db
+          property: password
       - key: CUELINKS_API_KEY
         sync: false
       - key: SECRET_KEY
         sync: false
+      - key: PORT
+        value: 8000
 
 databases:
   - name: affiliate-db
@@ -31,3 +59,7 @@ databases:
     databaseName: affiliate_website_db
     user: affiliate_user
     ipAllowList: []
+    postgresMajorVersion: 15
+    extensions:
+      - vector
+      - vector

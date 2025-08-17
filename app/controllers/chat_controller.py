@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.services.semantic_search_service import semantic_search_service
+from app.services.semantic_search_service import get_semantic_search_service
 from typing import Dict, Any, Optional
 from pydantic import BaseModel
 import uuid
@@ -34,13 +34,14 @@ class FeedbackRequest(BaseModel):
 # Lazy import and initialization of semantic service
 _semantic_search_service = None
 
-def get_semantic_search_service():
+def get_semantic_search_service_instance():
     """Lazy load the semantic search service only when needed"""
     global _semantic_search_service
     if _semantic_search_service is None:
         logger.info("🔄 Initializing Semantic Search service...")
         try:
-            _semantic_search_service = semantic_search_service
+            # Use the getter function from the service module
+            _semantic_search_service = get_semantic_search_service()
             logger.info("✅ Semantic Search service ready")
         except Exception as e:
             logger.error(f"❌ Error initializing Semantic Search service: {str(e)}")
@@ -67,7 +68,7 @@ async def chat_with_offers(request: ChatRequest, db: Session = Depends(get_db)):
         
         logger.info(f"🧠 Processing chat query with Semantic Search: '{user_message}'")
         
-        search_service = get_semantic_search_service()
+        search_service = get_semantic_search_service_instance()
         
         if search_service is None:
             raise HTTPException(status_code=503, detail="Search service is currently unavailable.")
