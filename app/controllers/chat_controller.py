@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.services.semantic_search_service import get_semantic_search_service
 from typing import Dict, Any, Optional
 from pydantic import BaseModel
 import uuid
@@ -40,7 +39,8 @@ def get_semantic_search_service_instance():
     if _semantic_search_service is None:
         logger.info("🔄 Initializing Semantic Search service...")
         try:
-            # Use the getter function from the service module
+            # Lazy import and use the getter function from the service module
+            from app.services.semantic_search_service import get_semantic_search_service
             _semantic_search_service = get_semantic_search_service()
             logger.info("✅ Semantic Search service ready")
         except Exception as e:

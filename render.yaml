@@ -5,9 +5,9 @@ services:
     region: ohio
     branch: feature/docker_enhancements
     plan: free
-    healthCheckPath: /
-    dockerfilePath: ./Dockerfile
-    dockerCommand: ./startup.sh
+    healthCheckPath: /health
+    dockerfilePath: ./Dockerfile.render
+    dockerCommand: ./startup_optimized.sh
     buildFilter:
       paths:
         - app/**

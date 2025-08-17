@@ -54,6 +54,15 @@ app.mount("/images", StaticFiles(directory="static/images"), name="images")
 # Templates
 templates = Jinja2Templates(directory="templates")
 
+# Health check endpoint for Render
+@app.get("/")
+async def health_check():
+    return {"status": "healthy", "message": "Affiliate Website is running"}
+
+@app.get("/health")
+async def health_check_detailed():
+    return {"status": "ok", "timestamp": time.time()}
+
 # Include routers
 app.include_router(campaigns_controller.router)
 app.include_router(offers_controller.router)
@@ -119,11 +128,6 @@ async def test_chat_page(request: Request):
 # Admin feedback page
 @app.get("/admin/feedback", response_class=HTMLResponse)
 async def admin_feedback_page(request: Request):
-    return templates.TemplateResponse("admin_feedback.html", {"request": request})
-
-# Admin feedback stats page
-@app.get("/admin/feedback", response_class=HTMLResponse)
-async def feedback_stats_page(request: Request):
     return templates.TemplateResponse("admin_feedback.html", {"request": request})
 
 if __name__ == "__main__":

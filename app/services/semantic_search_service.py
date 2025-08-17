@@ -6,7 +6,6 @@ This service provides fast and accurate semantic search over offer embeddings.
 import logging
 from typing import List, Dict, Any
 import numpy as np
-from sentence_transformers import SentenceTransformer
 from sqlalchemy.orm import Session
 from app.models.database import Offer, OfferEmbedding
 from app.database import get_db_sync
@@ -15,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 class SemanticSearchService:
     def __init__(self, model_name: str = 'all-MiniLM-L6-v2'):
+        # Lazy import to avoid startup delays
+        from sentence_transformers import SentenceTransformer
         self.model = SentenceTransformer(model_name)
         self.offer_embeddings = {}
         self.offers_cache = {}
