@@ -28,7 +28,7 @@ RUN pip install --no-cache-dir \
 COPY . .
 
 # Make script files executable
-RUN chmod +x startup.sh startup_optimized.sh
+RUN chmod +x startup_optimized.sh
 RUN find ./scripts -name "*.py" -exec chmod +x {} \; || true
 
 # Set up environment variables for optimized performance
