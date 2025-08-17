@@ -3,7 +3,7 @@ services:
     name: affiliate-website
     env: docker
     region: ohio
-    branch: feature/docker_enhancements
+    branch: feature/removed_unusedfiles
     plan: free
     healthCheckPath: /health
     dockerfilePath: ./Dockerfile.render
