@@ -3,11 +3,11 @@ services:
     name: affiliate-website
     env: docker
     region: ohio
-    branch: main
+    branch: feature/docker_enhancements
     plan: free
     healthCheckPath: /
     dockerfilePath: ./Dockerfile
-    dockerCommand: /app/startup.sh
+    dockerCommand: ./startup.sh
     buildFilter:
       paths:
         - app/**
@@ -16,6 +16,7 @@ services:
         - templates/**
         - .dockerignore
         - Dockerfile
+        - startup.sh
         - init_render_database.py
         - requirements-core.txt
         - requirements-ml.txt
