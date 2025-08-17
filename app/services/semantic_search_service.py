@@ -102,4 +102,12 @@ class SemanticSearchService:
 
 
 # Singleton instance
-semantic_search_service = SemanticSearchService()
+# semantic_search_service = SemanticSearchService()
+
+_semantic_search_service_instance = None
+
+def get_semantic_search_service():
+    global _semantic_search_service_instance
+    if _semantic_search_service_instance is None:
+        _semantic_search_service_instance = SemanticSearchService()
+    return _semantic_search_service_instance
