@@ -25,7 +25,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_, desc, text
 from sqlalchemy.orm import selectinload
 import numpy as np
-from sentence_transformers import SentenceTransformer
 
 from app.models.database import Offer, OfferEmbedding
 from app.database import get_db
@@ -287,7 +286,8 @@ class RAGService:
     """
     
     def __init__(self):
-        # Initialize embedding model
+        # Initialize embedding model with lazy import
+        from sentence_transformers import SentenceTransformer
         self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')  # 384 dimensions
         
         # Initialize text splitter for chunking

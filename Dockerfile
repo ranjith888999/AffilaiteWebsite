@@ -41,10 +41,3 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
 
 # Command to run the application
 CMD ["./startup.sh"]
-
-# Initialize database on startup
-RUN echo '#!/bin/bash\npython init_render_database.py || true\nexec uvicorn main:app --host 0.0.0.0 --port $PORT' > /app/startup.sh && \
-    chmod +x /app/startup.sh
-
-# Run the application with startup script
-CMD ["/app/startup.sh"]
