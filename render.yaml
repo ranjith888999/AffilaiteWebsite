@@ -63,4 +63,3 @@ databases:
     postgresMajorVersion: 15
     extensions:
       - vector
-      - vector
