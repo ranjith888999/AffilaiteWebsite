@@ -65,6 +65,42 @@ if __name__ == "__main__":
     
     if success:
         logger.info("Database initialization completed successfully.")
+        
+        # Check if we need to populate the database with initial data
+        try:
+            from app.models.database import Offer
+            from app.database import get_db_sync
+            
+            db = next(get_db_sync())
+            offer_count = db.query(Offer).count()
+            logger.info(f"Current offers in database: {offer_count}")
+            
+            if offer_count == 0:
+                logger.info("Database is empty. Fetching initial data from Cuelinks API...")
+                
+                # Import and run the data fetching script
+                import subprocess
+                import sys
+                
+                # Run the fetch script
+                result = subprocess.run([
+                    sys.executable, 
+                    "/app/scripts/fetch_and_embed_all_offers.py"
+                ], capture_output=True, text=True, timeout=300)  # 5 minute timeout
+                
+                if result.returncode == 0:
+                    logger.info("✅ Data fetching completed successfully!")
+                    logger.info(f"Output: {result.stdout}")
+                else:
+                    logger.warning(f"⚠️ Data fetching failed: {result.stderr}")
+                    logger.info("Application will start anyway. Data can be fetched later via API.")
+            else:
+                logger.info(f"✅ Database already contains {offer_count} offers. Skipping data fetch.")
+                
+        except Exception as e:
+            logger.warning(f"⚠️ Error checking/fetching data: {str(e)}")
+            logger.info("Application will start anyway. Data can be fetched later via API.")
+        
         sys.exit(0)
     else:
         logger.error("Database initialization failed.")

@@ -6,6 +6,9 @@ from app.models.database import Offer, Campaign
 from typing import Optional
 from datetime import datetime
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/offers", tags=["offers"])
 
@@ -458,3 +461,79 @@ async def get_campaigns_by_category(category: str = Query(None), db: Session = D
     except Exception as e:
         print(f"❌ ERROR in get_campaigns_by_category: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/initialize-data")
+async def initialize_data(db: Session = Depends(get_db)):
+    """Initialize database with offers data from Cuelinks API"""
+    try:
+        # Check current data count
+        offer_count = db.query(Offer).count()
+        
+        if offer_count > 0:
+            return {
+                "status": "info",
+                "message": f"Database already contains {offer_count} offers. Use force=true to reinitialize.",
+                "current_count": offer_count
+            }
+        
+        # Fetch from Cuelinks API
+        logger.info("🔄 Fetching offers from Cuelinks API...")
+        offers_data = await cuelinks_service.get_offers(page=1, per_page=100)
+        
+        if not offers_data or 'offers' not in offers_data:
+            raise HTTPException(status_code=500, detail="Failed to fetch data from Cuelinks API")
+        
+        # Store offers in database
+        new_offers = []
+        for offer_data in offers_data['offers']:
+            try:
+                # Create offer object
+                offer = Offer(
+                    offer_id=offer_data.get('id'),
+                    title=offer_data.get('title', ''),
+                    description=offer_data.get('description', ''),
+                    terms=offer_data.get('terms', ''),
+                    start_date=datetime.fromisoformat(offer_data['start_date']) if offer_data.get('start_date') else None,
+                    end_date=datetime.fromisoformat(offer_data['end_date']) if offer_data.get('end_date') else None,
+                    categories=json.dumps(offer_data.get('categories', [])),
+                    campaign_id=offer_data.get('campaign', {}).get('id'),
+                    campaign_name=offer_data.get('campaign', {}).get('name', ''),
+                    link=offer_data.get('link', ''),
+                    image_url=offer_data.get('image_url', ''),
+                    status=offer_data.get('status', 'active'),
+                    discount_percentage=offer_data.get('discount_percentage'),
+                    coupon_code=offer_data.get('coupon_code', ''),
+                    tracking_url=offer_data.get('tracking_url', ''),
+                    commission_percentage=offer_data.get('commission_percentage'),
+                    created_at=datetime.utcnow(),
+                    updated_at=datetime.utcnow()
+                )
+                
+                # Check if offer already exists
+                existing = db.query(Offer).filter(Offer.offer_id == offer.offer_id).first()
+                if not existing:
+                    new_offers.append(offer)
+                    
+            except Exception as e:
+                logger.warning(f"⚠️ Error processing offer {offer_data.get('id', 'unknown')}: {str(e)}")
+                continue
+        
+        # Bulk insert new offers
+        if new_offers:
+            db.add_all(new_offers)
+            db.commit()
+            logger.info(f"✅ Added {len(new_offers)} new offers to database")
+        
+        final_count = db.query(Offer).count()
+        
+        return {
+            "status": "success",
+            "message": f"Database initialized successfully",
+            "offers_added": len(new_offers),
+            "total_offers": final_count
+        }
+        
+    except Exception as e:
+        db.rollback()
+        logger.error(f"❌ Error initializing data: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to initialize data: {str(e)}")
