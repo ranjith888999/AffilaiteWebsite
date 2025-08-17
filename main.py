@@ -55,9 +55,25 @@ app.mount("/images", StaticFiles(directory="static/images"), name="images")
 templates = Jinja2Templates(directory="templates")
 
 # Health check endpoint for Render
-@app.get("/")
-async def health_check():
-    return {"status": "healthy", "message": "Affiliate Website is running"}
+@app.get("/", response_class=HTMLResponse)
+async def homepage(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/offers", response_class=HTMLResponse)
+async def offers_page(request: Request):
+    return templates.TemplateResponse("offers.html", {"request": request})
+
+@app.get("/chat", response_class=HTMLResponse)
+async def chat_page(request: Request):
+    return templates.TemplateResponse("chat.html", {"request": request})
+
+@app.get("/categories", response_class=HTMLResponse)
+async def categories_page(request: Request):
+    return templates.TemplateResponse("categories.html", {"request": request})
+
+@app.get("/link-generator", response_class=HTMLResponse)
+async def link_generator_page(request: Request):
+    return templates.TemplateResponse("link_generator.html", {"request": request})
 
 @app.get("/health")
 async def health_check_detailed():
