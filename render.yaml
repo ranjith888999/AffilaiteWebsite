@@ -61,5 +61,3 @@ databases:
     user: affiliate_user
     ipAllowList: []
     postgresMajorVersion: 15
-    extensions:
-      - vector
