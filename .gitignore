@@ -1,1 +1,73 @@
+# Deployment platforms
 .vercel
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+.venv/
+.env
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local development files
+local.env
+*.local
+
+# Test files
+test_*.py
+*_test.py
+tests/
+
+# Batch files
+*.bat
+
+# Performance and debug files
+performance_*.txt
+debug_*.log
+
+# Temporary documentation
+*_FIX_*.md
+*_RESULTS.md
+TROUBLESHOOTING*.md
+
+# Docker development files
+docker-compose.yml
+Dockerfile.dev
+Dockerfile.local
+
+# Database dumps
+*.sql.backup
+*.dump

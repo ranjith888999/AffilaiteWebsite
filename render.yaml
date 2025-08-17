@@ -15,8 +15,8 @@ services:
         - static/**
         - templates/**
         - .dockerignore
-        - Dockerfile
-        - startup.sh
+        - Dockerfile.render
+        - startup_optimized.sh
         - init_render_database.py
         - requirements-core.txt
         - requirements-ml.txt
