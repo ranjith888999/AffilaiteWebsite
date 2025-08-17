@@ -22,42 +22,29 @@ services:
         - requirements-ml.txt
         - main.py
     envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: affiliate-db
-          property: connectionString
       - key: DATABASE_HOST
-        fromDatabase:
-          name: affiliate-db
-          property: host
+        value: db.yyksfmfrsiewpiwajtzw.supabase.co
       - key: DATABASE_PORT
-        fromDatabase:
-          name: affiliate-db
-          property: port
+        value: 5432
       - key: DATABASE_NAME
-        fromDatabase:
-          name: affiliate-db
-          property: database
+        value: postgres
       - key: DATABASE_USER
-        fromDatabase:
-          name: affiliate-db
-          property: user
+        value: postgres
       - key: DATABASE_PASSWORD
-        fromDatabase:
-          name: affiliate-db
-          property: password
+        value: Ranjith123
       - key: CUELINKS_API_KEY
-        sync: false
+        value: MUmQPF2MLjDzMOHi0PSCdOwI082JAfj6vRLLT1QcY00
+      - key: CUELINKS_BASE_URL
+        value: https://www.cuelinks.com/api/v2
       - key: SECRET_KEY
-        sync: false
+        value: supersecret-affiliate-oauth-key-2025-production-ready
+      - key: DEBUG
+        value: False
+      - key: GOOGLE_CLIENT_ID
+        value: 1073044995927-280c34duigls0dfm2j05racte5rebfoa.apps.googleusercontent.com
+      - key: GOOGLE_CLIENT_SECRET
+        value: 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
+      - key: GOOGLE_REDIRECT_URI
+        value: https://affiliate-website-iomz.onrender.com/auth/callback
       - key: PORT
         value: 8000
-
-databases:
-  - name: affiliate-db
-    region: ohio
-    plan: free
-    databaseName: affiliate_website_db
-    user: affiliate_user
-    ipAllowList: []
-    postgresMajorVersion: 15
