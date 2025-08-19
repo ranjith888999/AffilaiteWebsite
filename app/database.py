@@ -9,27 +9,37 @@ import logging
 logger = logging.getLogger(__name__)
 load_dotenv()
 
-# Database configuration
-DATABASE_URL = f"postgresql://{os.getenv('DATABASE_USER')}:{os.getenv('DATABASE_PASSWORD')}@{os.getenv('DATABASE_HOST')}:{os.getenv('DATABASE_PORT')}/{os.getenv('DATABASE_NAME')}"
+# Database configuration for Supabase
+DATABASE_URL = f"postgresql://{os.getenv('DATABASE_USER')}:{os.getenv('DATABASE_PASSWORD')}@{os.getenv('DATABASE_HOST')}:{os.getenv('DATABASE_PORT')}/{os.getenv('DATABASE_NAME')}?sslmode=require"
 ASYNC_DATABASE_URL = f"postgresql+asyncpg://{os.getenv('DATABASE_USER')}:{os.getenv('DATABASE_PASSWORD')}@{os.getenv('DATABASE_HOST')}:{os.getenv('DATABASE_PORT')}/{os.getenv('DATABASE_NAME')}"
 
-# Create engine with optimized settings for faster startup
+# Create engine with optimized settings for Supabase
 engine = create_engine(
     DATABASE_URL,
     pool_size=5,
     max_overflow=10,
     pool_pre_ping=True,
     pool_recycle=300,
-    echo=False  # Disable SQL logging for better performance
+    echo=False,  # Disable SQL logging for better performance
+    connect_args={
+        "sslmode": "require",
+        "options": "-c timezone=utc"
+    }
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# Create async engine for embedding-based search
+# Create async engine for embedding-based search with Supabase settings
 async_engine = create_async_engine(
     ASYNC_DATABASE_URL,
     echo=False,
     pool_pre_ping=True,
-    pool_recycle=300
+    pool_recycle=300,
+    connect_args={
+        "ssl": "require",
+        "server_settings": {
+            "timezone": "utc"
+        }
+    }
 )
 AsyncSessionLocal = sessionmaker(
     async_engine, 
