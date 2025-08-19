@@ -129,12 +129,16 @@ pip install -r requirements.txt
 Create a `.env` file in the project root:
 
 ```env
-# Database Configuration
-DATABASE_HOST=aws-0-ap-south-1.pooler.supabase.com
-DATABASE_PORT=6543
+# Database Configuration - Supabase
+DATABASE_HOST=db.yyksfmfrsiewpiwajtzw.supabase.co
+DATABASE_PORT=5432
 DATABASE_NAME=postgres
-DATABASE_USER=postgres.yyksfmfrsiewpiwajtzw
+DATABASE_USER=postgres
 DATABASE_PASSWORD=Ranjith123
+
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=https://yyksfmfrsiewpiwajtzw.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3NmbWZyc2lld3Bpd2FqdHp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM1MjYzMjMsImV4cCI6MjA2OTEwMjMyM30.qXUi52X7HNChoCyiroSX5Nh48PZlNfVWhzkNquHh130
 
 # Cuelinks API Configuration
 CUELINKS_API_KEY=MUmQPF2MLjDzMOHi0PSCdOwI082JAfj6vRLLT1QcY00
