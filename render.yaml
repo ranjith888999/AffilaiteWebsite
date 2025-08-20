@@ -3,7 +3,7 @@ services:
     name: affiliate-website
     env: docker
     region: ohio
-    branch: feature/removed_unusedfiles
+    branch: feature/superbase_url
     plan: free
     healthCheckPath: /health
     dockerfilePath: ./Dockerfile.render
@@ -32,6 +32,10 @@ services:
         value: postgres
       - key: DATABASE_PASSWORD
         value: Ranjith123
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        value: https://yyksfmfrsiewpiwajtzw.supabase.co
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3NmbWZyc2lld3Bpd2FqdHp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM1MjYzMjMsImV4cCI6MjA2OTEwMjMyM30.qXUi52X7HNChoCyiroSX5Nh48PZlNfVWhzkNquHh130
       - key: CUELINKS_API_KEY
         value: MUmQPF2MLjDzMOHi0PSCdOwI082JAfj6vRLLT1QcY00
       - key: CUELINKS_BASE_URL
