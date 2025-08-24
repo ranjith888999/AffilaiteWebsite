@@ -35,13 +35,15 @@ services:
     command: |
       bash -c "
       apt-get update && apt-get install -y git gcc &&
-      rm -rf /app/* &&
-      git clone https://github.com/ranjith888999/AffilaiteWebsite.git /tmp/repo &&
-      cp -r /tmp/repo/* /app/ &&
+      rm -rf /app/* /tmp/repo* &&
+      REPO_DIR=/tmp/repo-$(date +%s) &&
+      git clone https://github.com/ranjith888999/AffilaiteWebsite.git \$REPO_DIR &&
+      cp -r \$REPO_DIR/* /app/ &&
       cd /app &&
-      git checkout feature/superbase_url &&
-      pip install fastapi uvicorn gunicorn sqlalchemy psycopg2-binary python-multipart jinja2 python-dotenv &&
+      git checkout feature/superbase_url 2>/dev/null || echo 'Already on correct branch' &&
+      pip install fastapi uvicorn gunicorn sqlalchemy psycopg2-binary python-multipart jinja2 python-dotenv requests &&
       mkdir -p /var/log/affiliate-website &&
+      echo 'Starting FastAPI application...' &&
       python -m uvicorn main:app --host 0.0.0.0 --port 8000
       "
     restart: unless-stopped
