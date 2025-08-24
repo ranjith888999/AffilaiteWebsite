@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  app:
+    image: python:3.11-alpine
+    container_name: affiliate_full
+    ports:
+      - "80:8000"
+    environment:
+      - DATABASE_HOST=db.yyksfmfrsiewpiwajtzw.supabase.co
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=postgres
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=Ranjith123
+      - NEXT_PUBLIC_SUPABASE_URL=https://yyksfmfrsiewpiwajtzw.supabase.co
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3NmbWZyc2lld3Bpd2FqdHp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM1MjYzMjMsImV4cCI6MjA2OTEwMjMyM30.qXUi52X7HNChoCyiroSX5Nh48PZlNfVWhzkNquHh130
+      - CUELINKS_API_KEY=MUmQPF2MLjDzMOHi0PSCdOwI082JAfj6vRLLT1QcY00
+      - CUELINKS_BASE_URL=https://www.cuelinks.com/api/v2
+      - SECRET_KEY=supersecret-affiliate-oauth-key-2025-production-ready
+      - DEBUG=False
+      - GOOGLE_CLIENT_ID=1073044995927-280c34duigls0dfm2j05racte5rebfoa.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=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
+      - GOOGLE_REDIRECT_URI=http://31.97.237.145/auth/callback
+    command: |
+      sh -c "
+      apk add --no-cache wget &&
+      pip install --no-cache-dir fastapi uvicorn jinja2 python-multipart requests psycopg2-binary sqlalchemy supabase &&
+      mkdir -p templates static/css static/js &&
+      wget -q -O main.py https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/main.py &&
+      wget -q -O templates/base.html https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/templates/base.html &&
+      wget -q -O templates/index.html https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/templates/index.html &&
+      wget -q -O templates/offers.html https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/templates/offers.html &&
+      wget -q -O templates/chat.html https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/templates/chat.html &&
+      wget -q -O static/css/style.css https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/static/css/style.css &&
+      echo 'Starting Full Affiliate Website...' &&
+      uvicorn main:app --host 0.0.0.0 --port 8000
+      "
+    restart: unless-stopped
