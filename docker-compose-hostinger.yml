@@ -3,7 +3,7 @@ version: '3.8'
 services:
   affiliate-app:
     image: python:3.11-slim
-    container_name: affiliate_website
+    container_name: affiliate_website_fixed
     working_dir: /app
     ports:
       - "80:8000"
@@ -34,18 +34,17 @@ services:
       
     command: |
       bash -c "
-      apt-get update && apt-get install -y git gcc g++ &&
-      git clone https://github.com/ranjith888999/AffilaiteWebsite.git . &&
+      apt-get update && apt-get install -y git gcc &&
+      rm -rf /app/* &&
+      git clone https://github.com/ranjith888999/AffilaiteWebsite.git /tmp/repo &&
+      cp -r /tmp/repo/* /app/ &&
+      cd /app &&
       git checkout feature/superbase_url &&
-      pip install --no-cache-dir -r requirements-hostinger.txt &&
-      python -m gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 120 main:app
+      pip install fastapi uvicorn gunicorn sqlalchemy psycopg2-binary python-multipart jinja2 python-dotenv &&
+      mkdir -p /var/log/affiliate-website &&
+      python -m uvicorn main:app --host 0.0.0.0 --port 8000
       "
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
 networks:
   default:
