@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  affiliate-app:
+    image: python:3.11-slim
+    container_name: affiliate_website_v3
+    working_dir: /app
+    ports:
+      - "80:8000"
+    environment:
+      - DATABASE_HOST=db.yyksfmfrsiewpiwajtzw.supabase.co
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=postgres
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=Ranjith123
+      - CUELINKS_API_KEY=MUmQPF2MLjDzMOHi0PSCdOwI082JAfj6vRLLT1QcY00
+      - SECRET_KEY=supersecret-affiliate-oauth-key-2025-production-ready
+    command: |
+      bash -c "
+      apt-get update && apt-get install -y curl wget &&
+      pip install fastapi uvicorn sqlalchemy psycopg2-binary python-multipart jinja2 python-dotenv requests supabase &&
+      wget -O main.py https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/main.py &&
+      mkdir -p templates static &&
+      wget -O templates/index.html https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/templates/index.html &&
+      echo 'FastAPI app starting...' &&
+      python -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+      "
+    restart: unless-stopped
+
+networks:
+  default:
+    name: affiliate_network
