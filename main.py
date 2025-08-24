@@ -11,13 +11,26 @@ from app.models.database import Offer
 import os
 import time
 from dotenv import load_dotenv
+import logging
 
 load_dotenv()
+
+# Setup logging for production
+if os.getenv("DEBUG", "False").lower() != "true":
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler('/var/log/affiliate-website/app.log'),
+            logging.StreamHandler()
+        ]
+    )
 
 app = FastAPI(
     title="Affiliate Website",
     description="A comprehensive affiliate marketing website with Cuelinks API integration",
-    version="1.0.0"
+    version="1.0.0",
+    debug=os.getenv("DEBUG", "False").lower() == "true"
 )
 
 # Add Session middleware for OAuth (MUST be added before other middleware)

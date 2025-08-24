@@ -328,6 +328,13 @@
             const response = await fetch(url);
             const data = await response.json();
             
+            // Check if this is a database error response (graceful fallback)
+            if (data.source === 'database_error' && data.error) {
+                console.warn('Database temporarily unavailable:', data.error.message);
+                showDatabaseErrorMessage(data.error);
+                return;
+            }
+            
             currentPage = page;
             totalPages = Math.ceil(data.total / 12);
             
@@ -335,7 +342,8 @@
                 currentPage, 
                 totalPages, 
                 total: data.total,
-                total_pages: data.total_pages 
+                total_pages: data.total_pages,
+                source: data.source 
             });
             
             displayOffers(data.offers);
@@ -636,6 +644,42 @@
         setTimeout(() => {
             notification.remove();
         }, 3000);
+    }
+
+    function showDatabaseErrorMessage(errorInfo) {
+        // Show a user-friendly message when database is temporarily unavailable
+        const offersContainer = document.getElementById('offersContainer');
+        if (offersContainer) {
+            offersContainer.innerHTML = `
+                <div class="database-error-message">
+                    <div class="error-icon">
+                        <i class="fas fa-database"></i>
+                        <i class="fas fa-exclamation-triangle error-overlay"></i>
+                    </div>
+                    <h3>${errorInfo.message}</h3>
+                    <p>${errorInfo.details || 'We apologize for the inconvenience.'}</p>
+                    <div class="suggestions">
+                        <h4>What you can try:</h4>
+                        <ul>
+                            ${errorInfo.suggestions ? errorInfo.suggestions.map(s => `<li>${s}</li>`).join('') : `
+                                <li>Refresh the page in a few seconds</li>
+                                <li>Check your internet connection</li>
+                                <li>Contact support if the issue persists</li>
+                            `}
+                        </ul>
+                    </div>
+                    <button onclick="loadOffers(1)" class="retry-btn">
+                        <i class="fas fa-sync-alt"></i> Try Again
+                    </button>
+                    <div class="tech-note">
+                        <small><i class="fas fa-info-circle"></i> ${errorInfo.note || 'Our team has been notified and is working to resolve this.'}</small>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Also show a brief notification
+        showError(errorInfo.message);
     }
 
     // Search on Enter key

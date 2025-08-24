@@ -126,11 +126,11 @@ async def get_offers_from_db(
     status: str = Query("all"),  # Changed default to "all" to bypass status filtering
     db: Session = Depends(get_db)
 ):
-    """Get offers from local database"""
+    """Get offers from local database with graceful error handling"""
     try:
         print(f"🔍 DEBUG: Starting query - page={page}, per_page={per_page}, status={status}, category={category}, campaign={campaign}, coupon_only={coupon_only}")
         
-        # Start with basic query - using only Offer table initially for debugging
+        # Start with basic query
         query = db.query(Offer)
         
         # Apply filters
@@ -142,7 +142,7 @@ async def get_offers_from_db(
             query = query.filter(
                 (Offer.title.ilike(search_term)) |
                 (Offer.description.ilike(search_term)) |
-                (Offer.campaign_name.ilike(search_term))  # Search in campaign name directly
+                (Offer.campaign_name.ilike(search_term))
             )
         
         if category and category.lower() != "all":
@@ -166,9 +166,20 @@ async def get_offers_from_db(
         # Convert to JSON response
         result = []
         for offer in offers:
-            # For debugging, let's print a sample offer
-            if len(result) == 0:
-                print(f"🔍 DEBUG: Sample offer ID: {offer.id}, Status: {offer.status}")
+            # Handle image URL with better validation
+            image_url = offer.image_url
+            if image_url:
+                image_url = image_url.strip()
+                if image_url.startswith('//'):
+                    image_url = f"https:{image_url}"
+                elif image_url.startswith(('http://', 'https://')):
+                    pass
+                elif image_url.startswith('/'):
+                    image_url = "/static/images/placeholder.jpg"
+                else:
+                    image_url = f"https://{image_url}"
+            else:
+                image_url = "/static/images/placeholder.jpg"
                 
             result.append({
                 "id": offer.id,
@@ -177,7 +188,7 @@ async def get_offers_from_db(
                 "description": offer.description,
                 "terms_and_conditions": offer.terms_and_conditions,
                 "coupon_code": offer.coupon_code,
-                "image_url": offer.image_url,
+                "image_url": image_url,
                 "offer_type": offer.offer_type,
                 "shipping_charge": offer.shipping_charge,
                 "status": offer.status,
@@ -191,7 +202,7 @@ async def get_offers_from_db(
                 "campaign": {
                     "id": offer.campaign_id,
                     "name": offer.campaign_name,
-                    "status": "active"  # Default value since we're not joining with Campaign
+                    "status": "active"
                 }
             })
         
@@ -200,78 +211,33 @@ async def get_offers_from_db(
             "page": page,
             "per_page": per_page,
             "total": total_count,
-            "total_pages": (total_count + per_page - 1) // per_page
+            "total_pages": (total_count + per_page - 1) // per_page,
+            "source": "database"
         }
         
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-        offset = (page - 1) * per_page
-        offers = query.offset(offset).limit(per_page).all()
-        print(f"🔍 DEBUG: Retrieved {len(offers)} offers for page {page}")
+    except Exception as db_error:
+        print(f"❌ DEBUG: Database connection error: {str(db_error)}")
         
-        # Format offers for response
-        offers_list = []
-        for offer in offers:
-            # Handle image URL with better validation
-            image_url = offer.image_url
-            if image_url:
-                image_url = image_url.strip()
-                # Fix common URL issues
-                if image_url and not image_url.startswith(('http://', 'https://')):
-                    # If it starts with //, add https:
-                    if image_url.startswith('//'):
-                        image_url = f"https:{image_url}"
-                    # If it's a relative path starting with /, treat as placeholder
-                    elif image_url.startswith('/'):
-                        image_url = "/static/images/placeholder.jpg"
-                    # Otherwise, assume it needs https://
-                    else:
-                        image_url = f"https://{image_url}"
-                # Validate that the URL looks reasonable
-                elif image_url and ('cuelinks.com' in image_url or 'cdn' in image_url or image_url.startswith(('http://', 'https://'))):
-                    # Keep the original URL if it looks like a valid CDN URL
-                    pass
-                else:
-                    image_url = "/static/images/placeholder.jpg"
-            else:
-                # Use local placeholder for empty URLs
-                image_url = "/static/images/placeholder.jpg"
-                
-            offers_list.append({
-                "id": offer.id,
-                "offer_id": offer.offer_id,
-                "campaign_id": offer.campaign_id,
-                "title": offer.title or "No Title",
-                "description": offer.description or "No Description",
-                "terms_and_conditions": offer.terms_and_conditions or "",
-                "coupon_code": offer.coupon_code or "",
-                "image_url": image_url,
-                "offer_type": offer.offer_type or "",
-                "shipping_charge": offer.shipping_charge or "",
-                "status": offer.status or "active",
-                "url": offer.url or "",
-                "affiliate_url": offer.affiliate_url or "",
-                "categories": offer.categories or "{}",
-                "start_date": offer.start_date.isoformat() if offer.start_date else None,
-                "end_date": offer.end_date.isoformat() if offer.end_date else None
-            })
-        
-        response = {
-            "total_count": total_count,
-            "offers": offers_list,
+        # Return a helpful error response without calling the API
+        return {
+            "offers": [],
             "page": page,
             "per_page": per_page,
-            "total_pages": (total_count + per_page - 1) // per_page
+            "total": 0,
+            "total_pages": 0,
+            "source": "database_error",
+            "error": {
+                "type": "database_connection_failed",
+                "message": "Database is temporarily unavailable. Please try again in a few moments.",
+                "details": "We're experiencing connectivity issues with our database. Your data is safe and we're working to resolve this.",
+                "suggestions": [
+                    "Refresh the page in a few seconds",
+                    "Check your internet connection", 
+                    "Contact support if the issue persists"
+                ]
+            },
+            "note": "Database connection failed. No API calls made to preserve daily limits."
         }
-        
-        print(f"🔍 DEBUG: Returning {len(offers_list)} offers")
-        return response
-        
-    except Exception as e:
-        print(f"❌ DEBUG: Error in database endpoint: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/categories_old")
 async def get_categories_old():
@@ -303,27 +269,9 @@ async def get_featured_offers(db: Session = Depends(get_db)):
             Offer.status == "live"
         ).order_by(Offer.created_at.desc()).limit(6).all()
         
-        # If no offers in database, fetch from API
+        # If no live offers, try all offers
         if len(offers) == 0:
-            try:
-                api_data = await cuelinks_service.get_offers(per_page=6)
-                if "offers" in api_data:
-                    featured_offers = []
-                    for offer_data in api_data["offers"]:
-                        featured_offers.append({
-                            "id": offer_data["id"],
-                            "title": offer_data.get("title", ""),
-                            "description": offer_data.get("description", ""),
-                            "image_url": offer_data.get("image_url", ""),
-                            "affiliate_url": offer_data.get("affiliate_url", ""),
-                            "coupon_code": offer_data.get("coupon_code", ""),
-                            "type": offer_data.get("type", ""),
-                            "categories": json.dumps(offer_data.get("categories", {}))
-                        })
-                    return {"offers": featured_offers}
-            except Exception as api_error:
-                print(f"API fallback failed: {api_error}")
-                return {"offers": []}
+            offers = db.query(Offer).order_by(Offer.created_at.desc()).limit(6).all()
         
         featured_offers = []
         for offer in offers:
@@ -360,26 +308,16 @@ async def get_featured_offers(db: Session = Depends(get_db)):
         return {"offers": featured_offers}
     
     except Exception as e:
-        # Fallback to API if database fails
-        try:
-            api_data = await cuelinks_service.get_offers(per_page=6)
-            if "offers" in api_data:
-                featured_offers = []
-                for offer_data in api_data["offers"]:
-                    featured_offers.append({
-                        "id": offer_data["id"],
-                        "title": offer_data.get("title", ""),
-                        "description": offer_data.get("description", ""),
-                        "image_url": offer_data.get("image_url", ""),
-                        "affiliate_url": offer_data.get("affiliate_url", ""),
-                        "coupon_code": offer_data.get("coupon_code", ""),
-                        "type": offer_data.get("type", ""),
-                        "categories": json.dumps(offer_data.get("categories", {}))
-                    })
-                return {"offers": featured_offers}
-        except:
-            pass
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"❌ DEBUG: Featured offers database error: {str(e)}")
+        # Return empty list instead of calling API to preserve API limits
+        return {
+            "offers": [],
+            "error": {
+                "type": "database_connection_failed",
+                "message": "Featured offers temporarily unavailable",
+                "note": "Database connection failed. No API calls made to preserve daily limits."
+            }
+        }
 
 @router.get("/campaigns")
 async def get_campaigns(db: Session = Depends(get_db)):
