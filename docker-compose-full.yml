@@ -32,7 +32,10 @@ services:
       wget -q -O templates/offers.html https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/templates/offers.html &&
       wget -q -O templates/chat.html https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/templates/chat.html &&
       wget -q -O static/css/style.css https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/static/css/style.css &&
-      echo 'Starting Full Affiliate Website...' &&
+      # Install Python packages
+      - |
+        echo "Starting Full Affiliate Website..."
+        pip install fastapi uvicorn jinja2 python-multipart requests psycopg2-binary sqlalchemy supabase itsdangerous
       uvicorn main:app --host 0.0.0.0 --port 8000
       "
     restart: unless-stopped
