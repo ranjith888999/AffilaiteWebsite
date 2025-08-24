@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  app:
+    image: python:3.11-alpine
+    container_name: affiliate_minimal
+    ports:
+      - "80:8000"
+    environment:
+      - DATABASE_HOST=db.yyksfmfrsiewpiwajtzw.supabase.co
+      - CUELINKS_API_KEY=MUmQPF2MLjDzMOHi0PSCdOwI082JAfj6vRLLT1QcY00
+      - SECRET_KEY=supersecret-affiliate-oauth-key-2025-production-ready
+    command: |
+      sh -c "
+      pip install --no-cache-dir fastapi uvicorn psycopg2-binary requests &&
+      echo 'from fastapi import FastAPI
+      app = FastAPI()
+      @app.get(\"/\")
+      def read_root():
+          return {\"message\": \"Affiliate Website is Running!\", \"status\": \"success\"}
+      @app.get(\"/health\")
+      def health():
+          return {\"status\": \"healthy\"}' > main.py &&
+      uvicorn main:app --host 0.0.0.0 --port 8000
+      "
+    restart: unless-stopped
