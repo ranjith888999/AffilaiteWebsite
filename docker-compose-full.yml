@@ -40,13 +40,14 @@ services:
       wget -q -O app/controllers/links_controller.py https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/app/controllers/links_controller.py &&
       wget -q -O app/controllers/images_controller.py https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/app/controllers/images_controller.py &&
       wget -q -O app/services/__init__.py https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/app/services/__init__.py &&
-      wget -q -O app/services/cuelinks_service.py https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/app/services/cuelinks_service.py &&
-      wget -q -O app/services/chat_service.py https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/app/services/chat_service.py &&
-      wget -q -O app/services/supabase_service.py https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/app/services/supabase_service.py &&
+      wget -q -O app/services/semantic_search_service.py https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/app/services/semantic_search_service.py &&
+      wget -q -O app/services/ultra_fast_service.py https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/app/services/ultra_fast_service.py &&
       wget -q -O templates/base.html https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/templates/base.html &&
       wget -q -O templates/index.html https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/templates/index.html &&
       wget -q -O templates/offers.html https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/templates/offers.html &&
       wget -q -O templates/chat.html https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/templates/chat.html &&
+      wget -q -O templates/categories.html https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/templates/categories.html &&
+      wget -q -O templates/link_generator.html https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/templates/link_generator.html &&
       wget -q -O static/css/style.css https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/static/css/style.css &&
       echo 'Starting Full Affiliate Website...' &&
       uvicorn main:app --host 0.0.0.0 --port 8000
