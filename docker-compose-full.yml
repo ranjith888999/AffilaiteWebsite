@@ -49,7 +49,7 @@ services:
       wget -q -O templates/categories.html https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/templates/categories.html &&
       wget -q -O templates/link_generator.html https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/templates/link_generator.html &&
       wget -q -O static/css/style.css https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/static/css/style.css &&
-      wget -q -O app/services/cuelinks_service.py /app/services/cuelinks_service.py https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/app/services/cuelinks_service.py &&
+      wget -q -O app/services/cuelinks_service.py https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/app/services/cuelinks_service.py &&
       echo 'Starting Full Affiliate Website...' &&
       uvicorn main:app --host 0.0.0.0 --port 8000
       "
