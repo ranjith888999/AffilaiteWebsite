@@ -24,7 +24,7 @@ services:
     command: |
       sh -c "
       apk add --no-cache wget &&
-      pip install --no-cache-dir fastapi uvicorn jinja2 python-multipart requests psycopg2-binary sqlalchemy supabase itsdangerous python-dotenv &&
+      pip install --no-cache-dir fastapi uvicorn jinja2 python-multipart requests psycopg2-binary sqlalchemy supabase itsdangerous python-dotenv asyncpg &&
       mkdir -p templates static/css static/js app/models app/controllers app/services config &&
       wget -q -O main.py https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/main.py &&
       wget -q -O app/__init__.py https://raw.githubusercontent.com/ranjith888999/AffilaiteWebsite/feature/superbase_url/app/__init__.py &&
