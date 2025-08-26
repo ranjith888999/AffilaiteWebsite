@@ -23,6 +23,7 @@ services:
       - GOOGLE_REDIRECT_URI=http://31.97.237.145/auth/callback
     command: |
       sh -c "
+      mkdir -p /var/log/affiliate-website/ && touch /var/log/affiliate-website/app.log &&
       apk add --no-cache wget &&
       pip install --no-cache-dir fastapi uvicorn jinja2 python-multipart requests psycopg2-binary sqlalchemy supabase itsdangerous python-dotenv asyncpg authlib &&
       mkdir -p templates static/css static/js app/models app/controllers app/services config &&
