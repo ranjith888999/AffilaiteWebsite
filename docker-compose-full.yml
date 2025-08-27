@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    image: python:3.11-alpine
+    image: python:3.10-slim
     container_name: affiliate_full
     ports:
       - "80:8000"
@@ -25,10 +25,14 @@ services:
 
     command: |
       sh -c "
-      apk add --no-cache git && \
-      git clone -b feature/superbase_url https://github.com/ranjith888999/AffilaiteWebsite.git . && \
+      apt-get update && apt-get install -y git && \
+      if [ -z \"$(ls -A /app)\" ]; then \
+        git clone -b feature/superbase_url https://github.com/ranjith888999/AffilaiteWebsite.git /app; \
+      else \
+        echo 'Repo already cloned.'; \
+      fi && \
       pip install --no-cache-dir -r requirements.txt && \
       uvicorn main:app --host 0.0.0.0 --port 8000
       "
-      
+
     restart: unless-stopped
