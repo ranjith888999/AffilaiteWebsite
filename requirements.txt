@@ -43,6 +43,6 @@ supabase==2.0.0
 loguru==0.7.0
 
 # Additional LangChain dependencies
-ollama==0.5.3
+# ollama==0.5.3   # <-- Commented out due to httpx version conflict
 # tf-keras==2.15.0
 
