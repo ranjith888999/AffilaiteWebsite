@@ -16,7 +16,7 @@ sentence-transformers==2.2.2
 langchain==0.0.267
 langchain-community==0.0.10
 langchain-openai==0.0.2
-langchain-core==0.1.0
+langchain-core==0.1.8
 
 # Additional requirements identified
 pgvector==0.2.0
