@@ -19,10 +19,10 @@ load_dotenv()
 # Setup logging for production
 if os.getenv("DEBUG", "False").lower() != "true":
     try:
-        # Ensure logs directory exists
-        log_dir = os.path.join(os.getcwd(), 'logs')
-        os.makedirs(log_dir, exist_ok=True)
-        log_file = os.path.join(log_dir, 'app.log')
+        # Create logs directory outside the app directory to avoid file watcher issues
+        logs_dir = os.path.join(os.path.dirname(os.getcwd()), 'app-logs')
+        os.makedirs(logs_dir, exist_ok=True)
+        log_file = os.path.join(logs_dir, 'affiliate-website.log')
         
         logging.basicConfig(
             level=logging.INFO,
@@ -190,5 +190,33 @@ async def admin_feedback_page(request: Request):
 
 if __name__ == "__main__":
     import uvicorn
-    print("🚀 Starting server in debug mode with auto-reload...")
-    uvicorn.run("main:app", host="0.0.0.0", port=8003, reload=True)
+    
+    # Detect if we're in a production/deployment environment
+    is_production = (
+        os.getenv("ENVIRONMENT") == "production" or
+        os.getenv("EASYPANEL") == "true" or
+        os.getenv("EASYPANEL_PROJECT") or  # Easypanel sets this
+        os.getenv("RAILWAY_ENVIRONMENT") or
+        os.getenv("RENDER") or
+        os.getenv("DYNO") or  # Heroku
+        not os.getenv("DEBUG", "False").lower() == "true"
+    )
+    
+    if is_production:
+        print("🚀 Starting server in production mode...")
+        uvicorn.run(
+            "main:app", 
+            host="0.0.0.0", 
+            port=int(os.getenv("PORT", 8003)), 
+            reload=False
+        )
+    else:
+        print("🚀 Starting server in debug mode with auto-reload...")
+        uvicorn.run(
+            "main:app", 
+            host="0.0.0.0", 
+            port=8003, 
+            reload=True,
+            reload_dirs=["."],  # Only watch the current directory
+            reload_excludes=["*.log", "*.pyc", "__pycache__/*", "logs/*", ".git/*"]
+        )
