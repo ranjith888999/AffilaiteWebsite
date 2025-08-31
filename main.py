@@ -18,14 +18,28 @@ load_dotenv()
 
 # Setup logging for production
 if os.getenv("DEBUG", "False").lower() != "true":
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler('/var/log/affiliate-website/app.log'),
-            logging.StreamHandler()
-        ]
-    )
+    try:
+        # Ensure logs directory exists
+        log_dir = os.path.join(os.getcwd(), 'logs')
+        os.makedirs(log_dir, exist_ok=True)
+        log_file = os.path.join(log_dir, 'app.log')
+        
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.FileHandler(log_file),
+                logging.StreamHandler()
+            ]
+        )
+    except (OSError, IOError) as e:
+        # Fallback to console-only logging if file logging fails
+        print(f"Warning: Could not set up file logging: {e}")
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            handlers=[logging.StreamHandler()]
+        )
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

@@ -3,7 +3,10 @@ Gunicorn configuration for production deployment
 """
 
 # Server socket
-bind = "unix:/var/www/AffilaiteWebsite/affiliate-website.sock"
+import os
+socket_dir = os.path.join(os.getcwd(), 'sockets')
+os.makedirs(socket_dir, exist_ok=True)
+bind = f"unix:{os.path.join(socket_dir, 'affiliate-website.sock')}"
 backlog = 2048
 
 # Worker processes
@@ -19,8 +22,11 @@ max_requests_jitter = 50
 preload_app = True
 
 # Logging
-accesslog = "/var/log/affiliate-website/access.log"
-errorlog = "/var/log/affiliate-website/error.log"
+import os
+log_dir = os.path.join(os.getcwd(), 'logs')
+os.makedirs(log_dir, exist_ok=True)
+accesslog = os.path.join(log_dir, "access.log")
+errorlog = os.path.join(log_dir, "error.log")
 loglevel = "info"
 access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
 
@@ -29,9 +35,10 @@ proc_name = 'affiliate-website'
 
 # Server mechanics
 daemon = False
-pidfile = '/var/run/affiliate-website.pid'
-user = 'www-data'
-group = 'www-data'
+pidfile = os.path.join(os.getcwd(), 'affiliate-website.pid')
+# Comment out user/group for container environments
+# user = 'www-data'
+# group = 'www-data'
 tmp_upload_dir = None
 
 # SSL (if needed)
