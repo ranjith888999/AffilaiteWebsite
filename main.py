@@ -5,13 +5,14 @@ from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy.orm import Session
-from app.database import get_db, create_tables
+from app.database import get_db, create_tables, db_available
 from app.controllers import campaigns_controller, offers_controller, chat_controller, links_controller, auth_controller, images_controller
 from app.models.database import Offer
 import os
 import time
 from dotenv import load_dotenv
 import logging
+from contextlib import asynccontextmanager
 
 load_dotenv()
 
@@ -26,11 +27,30 @@ if os.getenv("DEBUG", "False").lower() != "true":
         ]
     )
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    try:
+        start_time = time.time()
+        if db_available:
+            create_tables()
+            startup_time = time.time() - start_time
+            print(f"✅ Database tables created/verified in {startup_time:.2f}s")
+        else:
+            print("⚠️ Database not available, skipping table creation.")
+    except Exception as e:
+        print(f"⚠️ Database startup warning: {e}")
+        # Don't fail startup if tables already exist
+    yield
+    # Shutdown
+    print("Application shutdown complete.")
+
 app = FastAPI(
     title="Affiliate Website",
     description="A comprehensive affiliate marketing website with Cuelinks API integration",
     version="1.0.0",
-    debug=os.getenv("DEBUG", "False").lower() == "true"
+    debug=os.getenv("DEBUG", "False").lower() == "true",
+    lifespan=lifespan
 )
 
 # Add Session middleware for OAuth (MUST be added before other middleware)
@@ -101,28 +121,23 @@ app.include_router(auth_controller.router, prefix="/auth")
 app.include_router(images_controller.router, prefix="/api")
 
 # Create database tables on startup
-@app.on_event("startup")
-async def startup_event():
-    try:
-        start_time = time.time()
-        create_tables()
-        startup_time = time.time() - start_time
-        print(f"✅ Database tables created/verified in {startup_time:.2f}s")
-    except Exception as e:
-        print(f"⚠️ Database startup warning: {e}")
-        # Don't fail startup if tables already exist
+# Moved to lifespan event
 
 # Root route - Homepage
 @app.get("/", response_class=HTMLResponse)
 async def homepage(request: Request, db: Session = Depends(get_db)):
     # Get featured offers for homepage (optimized query)
-    try:
-        featured_offers = db.query(Offer).filter(
-            Offer.status == "live"
-        ).order_by(Offer.created_at.desc()).limit(6).all()
-    except Exception as e:
-        print(f"⚠️ Database query warning: {e}")
-        featured_offers = []  # Fallback to empty list
+    featured_offers = []
+    if db is not None:
+        try:
+            featured_offers = db.query(Offer).filter(
+                Offer.status == "live"
+            ).order_by(Offer.created_at.desc()).limit(6).all()
+        except Exception as e:
+            print(f"⚠️ Database query warning: {e}")
+            featured_offers = []  # Fallback to empty list
+    else:
+        print("⚠️ Database not available, using empty offers list.")
     
     return templates.TemplateResponse("index.html", {
         "request": request,

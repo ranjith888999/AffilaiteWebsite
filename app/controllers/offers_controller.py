@@ -23,6 +23,8 @@ async def get_offers(
     db: Session = Depends(get_db)
 ):
     """Get offers from Cuelinks API and store in database"""
+    if db is None:
+        return {"offers": [], "message": "Database not available, showing API data only."}
     try:
         # Fetch from Cuelinks API
         offers_data = await cuelinks_service.get_offers(
