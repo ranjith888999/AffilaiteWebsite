@@ -23,10 +23,11 @@ preload_app = True
 
 # Logging
 import os
-log_dir = os.path.join(os.getcwd(), 'logs')
-os.makedirs(log_dir, exist_ok=True)
-accesslog = os.path.join(log_dir, "access.log")
-errorlog = os.path.join(log_dir, "error.log")
+# Use external logs directory to avoid file watcher issues
+logs_dir = os.path.join(os.path.dirname(os.getcwd()), 'app-logs')
+os.makedirs(logs_dir, exist_ok=True)
+accesslog = os.path.join(logs_dir, "access.log")
+errorlog = os.path.join(logs_dir, "error.log")
 loglevel = "info"
 access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
 
