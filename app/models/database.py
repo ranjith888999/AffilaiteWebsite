@@ -5,6 +5,14 @@ from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from datetime import datetime
 import uuid
 
+# Try to import pgvector, fallback to ARRAY if not available
+try:
+    from pgvector.sqlalchemy import Vector
+    PGVECTOR_AVAILABLE = True
+except ImportError:
+    PGVECTOR_AVAILABLE = False
+    Vector = None
+
 Base = declarative_base()
 
 class User(Base):
@@ -93,7 +101,8 @@ class OfferEmbedding(Base):
     chunk_id = Column(String(100), index=True)  # For document chunking
     content = Column(Text)  # The actual text content
     content_type = Column(String(50))  # 'title', 'description', 'combined', 'terms', 'campaign'
-    embedding = Column(ARRAY(Float))  # Vector embedding (384 dimensions for sentence-transformers)
+    # Use pgvector if available, otherwise fallback to ARRAY
+    embedding = Column(Vector(384) if PGVECTOR_AVAILABLE else ARRAY(Float))  # Vector embedding (384 dimensions for sentence-transformers)
     meta_data = Column(Text)  # JSON metadata for filtering (renamed from metadata)
     created_at = Column(DateTime, default=datetime.utcnow)
     

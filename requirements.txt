@@ -21,6 +21,7 @@ langchain-core==0.1.8
 
 # Additional requirements identified
 pgvector==0.2.0
+psycopg2-binary==2.9.9  # Required for pgvector
 tensorflow==2.17.0
 scikit-learn==1.3.2
 pydantic-settings==2.0.0
