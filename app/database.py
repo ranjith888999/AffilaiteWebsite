@@ -16,7 +16,8 @@ DATABASE_HOST = os.getenv('DATABASE_HOST', 'localhost')
 DATABASE_PORT = os.getenv('DATABASE_PORT', '5432')
 DATABASE_NAME = os.getenv('DATABASE_NAME', 'default_db')
 
-DATABASE_URL = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}?sslmode=require"
+# For Easypanel PostgreSQL, use sslmode=disable instead of require
+DATABASE_URL = f"postgresql://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}?sslmode=disable"
 ASYNC_DATABASE_URL = f"postgresql+asyncpg://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
 
 # Global variables for engines
@@ -32,7 +33,7 @@ def initialize_database():
         return
         
     try:
-        # Create engine with optimized settings for Supabase
+        # Create engine with optimized settings for Easypanel PostgreSQL
         engine = create_engine(
             DATABASE_URL,
             pool_size=5,
@@ -41,21 +42,19 @@ def initialize_database():
             pool_recycle=300,
             echo=False,  # Disable SQL logging for better performance
             connect_args={
-                "sslmode": "require",
                 "options": "-c timezone=utc",
                 "connect_timeout": 10  # Add connection timeout
             }
         )
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-        # Create async engine for embedding-based search with Supabase settings
+        # Create async engine for embedding-based search with Easypanel PostgreSQL settings
         async_engine = create_async_engine(
             ASYNC_DATABASE_URL,
             echo=False,
             pool_pre_ping=True,
             pool_recycle=300,
             connect_args={
-                "ssl": "require",
                 "server_settings": {
                     "timezone": "utc"
                 },
@@ -78,10 +77,30 @@ def initialize_database():
 
 def create_tables():
     """Create tables if they don't exist"""
+    if not db_available:
+        initialize_database()  # Try to initialize if not already done
     if not db_available or engine is None:
         logger.warning("Database not available, skipping table creation.")
         return
-    Base.metadata.create_all(bind=engine)
+    try:
+        logger.info("Creating database tables...")
+        
+        # First, try to create the pgvector extension
+        try:
+            with engine.connect() as conn:
+                conn.execute("CREATE EXTENSION IF NOT EXISTS vector;")
+                conn.commit()
+                logger.info("pgvector extension created/verified.")
+        except Exception as e:
+            logger.warning(f"Could not create pgvector extension: {e}")
+            logger.warning("Vector similarity search may not work optimally.")
+        
+        # Create all tables
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables created successfully.")
+    except Exception as e:
+        logger.error(f"Error creating tables: {e}")
+        raise
 
 def reset_database():
     """Drop all tables and recreate them (WARNING: all data will be lost)"""

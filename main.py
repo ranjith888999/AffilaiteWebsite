@@ -45,16 +45,23 @@ if os.getenv("DEBUG", "False").lower() != "true":
 async def lifespan(app: FastAPI):
     # Startup
     try:
+        print("🔄 Initializing database connection...")
         start_time = time.time()
-        if db_available:
-            create_tables()
-            startup_time = time.time() - start_time
-            print(f"✅ Database tables created/verified in {startup_time:.2f}s")
-        else:
-            print("⚠️ Database not available, skipping table creation.")
+        
+        # Force database initialization
+        from app.database import initialize_database
+        initialize_database()
+        
+        # Create tables
+        create_tables()
+        
+        startup_time = time.time() - start_time
+        print(f"✅ Database initialized and tables created/verified in {startup_time:.2f}s")
+        
     except Exception as e:
-        print(f"⚠️ Database startup warning: {e}")
-        # Don't fail startup if tables already exist
+        print(f"⚠️ Database startup error: {e}")
+        print("⚠️ Application will continue but database features may not work.")
+        # Don't fail startup - allow app to run without database
     yield
     # Shutdown
     print("Application shutdown complete.")
