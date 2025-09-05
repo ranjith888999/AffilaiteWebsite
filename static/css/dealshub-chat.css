@@ -1,0 +1,750 @@
+/* DealsHub AI Chat Interface - Stunning Design */
+:root {
+    --dealshub-primary: #3b82f6;
+    --dealshub-secondary: #6366f1;
+    --dealshub-accent: #8b5cf6;
+    --dealshub-success: #10b981;
+    --dealshub-warning: #f59e0b;
+    --dealshub-danger: #ef4444;
+    --dealshub-bg: #ffffff;
+    --dealshub-surface: #f8fafc;
+    --dealshub-surface-dark: #f1f5f9;
+    --dealshub-border: #e2e8f0;
+    --dealshub-text: #1e293b;
+    --dealshub-text-secondary: #64748b;
+    --dealshub-text-muted: #94a3b8;
+    --dealshub-radius: 16px;
+    --dealshub-radius-lg: 24px;
+    --dealshub-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --dealshub-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --dealshub-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --dealshub-bg: #0f172a;
+        --dealshub-surface: #1e293b;
+        --dealshub-surface-dark: #334155;
+        --dealshub-border: #475569;
+        --dealshub-text: #f1f5f9;
+        --dealshub-text-secondary: #cbd5e1;
+        --dealshub-text-muted: #94a3b8;
+    }
+}
+
+/* Reset and base styles */
+.dealshub-chat-section {
+    min-height: 100vh;
+    background: var(--dealshub-bg);
+    background-image: 
+        radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+    color: var(--dealshub-text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.dealshub-container {
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 0 24px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Header with stunning DealsHub branding */
+.dealshub-header {
+    padding: 32px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dealshub-logo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    opacity: 0;
+    animation: fadeInUp 1s ease-out 0.5s forwards;
+}
+
+.logo-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--dealshub-primary), var(--dealshub-secondary));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+    box-shadow: var(--dealshub-shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.logo-icon::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transform: rotate(45deg);
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+.logo-text {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.brand-name {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--dealshub-text);
+    letter-spacing: -0.5px;
+}
+
+.brand-ai {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--dealshub-primary), var(--dealshub-accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+}
+
+.brand-ai::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    right: -12px;
+    width: 8px;
+    height: 8px;
+    background: linear-gradient(135deg, var(--dealshub-primary), var(--dealshub-accent));
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.6);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Main content area with stunning animations */
+.dealshub-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
+    position: relative;
+}
+
+/* Welcome state with beautiful design */
+.dealshub-welcome {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto;
+    opacity: 0;
+    animation: fadeInUp 1s ease-out 1s forwards;
+}
+
+.welcome-icon {
+    margin-bottom: 32px;
+    display: flex;
+    justify-content: center;
+}
+
+.icon-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-container i {
+    font-size: 40px;
+    color: var(--dealshub-primary);
+    z-index: 2;
+    position: relative;
+}
+
+.icon-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: glow 3s ease-in-out infinite alternate;
+}
+
+.welcome-title {
+    font-size: 56px;
+    font-weight: 800;
+    margin: 0 0 24px 0;
+    background: linear-gradient(135deg, var(--dealshub-text), var(--dealshub-text-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.1;
+    letter-spacing: -1px;
+}
+
+.welcome-subtitle {
+    font-size: 20px;
+    color: var(--dealshub-text-secondary);
+    margin: 0 0 48px 0;
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+/* Feature grid with stunning cards */
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeInUp 1s ease-out 1.5s forwards;
+}
+
+.feature-item {
+    background: var(--dealshub-surface);
+    border: 1px solid var(--dealshub-border);
+    border-radius: var(--dealshub-radius);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.feature-item:hover::before {
+    left: 100%;
+}
+
+.feature-item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--dealshub-shadow-lg);
+    border-color: var(--dealshub-primary);
+}
+
+.feature-item i {
+    font-size: 24px;
+    color: var(--dealshub-primary);
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover i {
+    transform: scale(1.1);
+    color: var(--dealshub-secondary);
+}
+
+.feature-item span {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dealshub-text);
+    text-align: center;
+}
+
+/* Chat messages area */
+.dealshub-messages {
+    width: 100%;
+    max-width: 768px;
+    margin: 0 auto;
+    padding: 20px 0;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.dealshub-message {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 0 16px;
+    opacity: 0;
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.message-avatar {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--dealshub-primary), var(--dealshub-secondary));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    box-shadow: var(--dealshub-shadow);
+}
+
+.message-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.message-text {
+    color: var(--dealshub-text);
+    line-height: 1.6;
+    margin-bottom: 8px;
+    font-size: 16px;
+}
+
+.message-timestamp {
+    color: var(--dealshub-text-muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Stunning input area */
+.dealshub-input-area {
+    position: sticky;
+    bottom: 0;
+    background: var(--dealshub-bg);
+    padding: 24px 0 32px 0;
+    border-top: 1px solid var(--dealshub-border);
+    backdrop-filter: blur(20px) saturate(180%);
+    z-index: 10;
+    opacity: 0;
+    animation: fadeInUp 1s ease-out 2s forwards;
+}
+
+.dealshub-form {
+    width: 100%;
+}
+
+.dealshub-input-container {
+    position: relative;
+    background: var(--dealshub-surface);
+    border: 2px solid var(--dealshub-border);
+    border-radius: var(--dealshub-radius-lg);
+    box-shadow: var(--dealshub-shadow-lg);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.dealshub-input-container:focus-within {
+    border-color: var(--dealshub-primary);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1), var(--dealshub-shadow-xl);
+    transform: translateY(-2px);
+}
+
+.input-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--dealshub-text-muted);
+    font-size: 18px;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.dealshub-input-container:focus-within .input-icon {
+    color: var(--dealshub-primary);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.dealshub-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 20px 200px 20px 60px;
+    font-size: 16px;
+    color: var(--dealshub-text);
+    resize: none;
+    font-family: inherit;
+    line-height: 1.5;
+    min-height: 24px;
+    font-weight: 500;
+}
+
+.dealshub-input::placeholder {
+    color: var(--dealshub-text-muted);
+    font-weight: 400;
+}
+
+.dealshub-actions {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.dealshub-btn {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dealshub-text-muted);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+    font-size: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.dealshub-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    transform: translate(-50%, -50%);
+}
+
+.dealshub-btn:hover::before {
+    width: 100%;
+    height: 100%;
+}
+
+.dealshub-btn:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--dealshub-primary);
+    transform: translateY(-1px);
+}
+
+.dealshub-btn:active {
+    transform: translateY(0) scale(0.95);
+}
+
+.dealshub-btn-send {
+    background: linear-gradient(135deg, var(--dealshub-primary), var(--dealshub-secondary));
+    color: white;
+    box-shadow: var(--dealshub-shadow);
+}
+
+.dealshub-btn-send:hover {
+    background: linear-gradient(135deg, var(--dealshub-secondary), var(--dealshub-accent));
+    box-shadow: var(--dealshub-shadow-lg);
+    transform: translateY(-2px);
+}
+
+/* Beautiful suggestion pills */
+.dealshub-suggestions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.suggestion-pill {
+    background: var(--dealshub-surface);
+    border: 1px solid var(--dealshub-border);
+    border-radius: 20px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--dealshub-text);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+}
+
+.suggestion-pill::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.suggestion-pill:hover::before {
+    left: 100%;
+}
+
+.suggestion-pill:hover {
+    background: var(--dealshub-primary);
+    color: white;
+    border-color: var(--dealshub-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--dealshub-shadow-lg);
+}
+
+.suggestion-pill i {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* Stunning loading indicator */
+.dealshub-loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--dealshub-surface);
+    border: 1px solid var(--dealshub-border);
+    border-radius: var(--dealshub-radius-lg);
+    padding: 32px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    box-shadow: var(--dealshub-shadow-xl);
+    backdrop-filter: blur(20px) saturate(180%);
+    z-index: 1000;
+}
+
+.loading-animation {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--dealshub-border);
+    border-top: 3px solid var(--dealshub-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.loading-dots span {
+    width: 8px;
+    height: 8px;
+    background: var(--dealshub-primary);
+    border-radius: 50%;
+    animation: loadingDots 1.5s infinite;
+}
+
+.loading-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.loading-text {
+    color: var(--dealshub-text);
+    font-weight: 500;
+    font-size: 16px;
+}
+
+/* Stunning animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+    100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+    }
+}
+
+@keyframes glow {
+    0% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes loadingDots {
+    0%, 60%, 100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+    30% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .dealshub-container {
+        padding: 0 16px;
+    }
+    
+    .welcome-title {
+        font-size: 42px;
+    }
+    
+    .welcome-subtitle {
+        font-size: 18px;
+    }
+    
+    .feature-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .dealshub-input {
+        padding: 16px 160px 16px 50px;
+        font-size: 15px;
+    }
+    
+    .dealshub-actions {
+        gap: 4px;
+    }
+    
+    .dealshub-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+    }
+    
+    .suggestion-pill {
+        font-size: 13px;
+        padding: 10px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dealshub-header {
+        padding: 24px 0;
+    }
+    
+    .logo-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+    
+    .brand-name, .brand-ai {
+        font-size: 24px;
+    }
+    
+    .welcome-title {
+        font-size: 32px;
+    }
+    
+    .feature-grid {
+        margin-bottom: 32px;
+    }
+    
+    .dealshub-input-area {
+        padding: 16px 0 24px 0;
+    }
+    
+    .dealshub-suggestions {
+        gap: 8px;
+    }
+}
+
+/* Focus states for accessibility */
+.dealshub-input:focus,
+.dealshub-btn:focus,
+.suggestion-pill:focus,
+.feature-item:focus {
+    outline: 2px solid var(--dealshub-primary);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .dealshub-input-container {
+        border-width: 3px;
+    }
+    
+    .suggestion-pill {
+        border-width: 2px;
+    }
+    
+    .feature-item {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
