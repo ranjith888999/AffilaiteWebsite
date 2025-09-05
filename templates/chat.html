@@ -1,253 +1,83 @@
 {% extends "base.html" %}
 
-{% block title %}Chat Support - Affiliate Deals Hub{% endblock %}
+{% block title %}DealsHub AI - Your Smart Shopping Assistant{% endblock %}
 
 {% block content %}
-<!-- Chat Section -->
-<section class="chat-section">
-    <div class="container">
-        <div class="chat-container">
-            <div class="chat-header" id="chatHeader">
-                <div class="chat-header-info">
-                    <div class="bot-avatar">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <div class="bot-details">
-                        <span class="bot-name">DealsHub Assistant</span>
-                        <span class="status online">Ready to help you</span>
-                    </div>
+<!-- DealsHub AI Chat Interface - Minimal Design -->
+<section class="dealshub-chat-section">
+    <div class="dealshub-container">
+        <!-- Header with DealsHub Logo -->
+        <div class="dealshub-header">
+            <div class="dealshub-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-percentage"></i>
                 </div>
-                <div class="chat-actions">
-                    <button class="btn-maximize" id="maximizeBtn" title="Maximize chat" data-action="maximize">
-                        <i class="fas fa-expand"></i>
-                    </button>
-                    <button class="btn-clear" title="Clear chat" data-action="clear">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                    <button class="btn-help" title="Show help" data-action="help">
-                        <i class="fas fa-info-circle"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <div class="chat-info-block" id="chatHelpInfo">
-                <h3>Welcome to DealsHub Chat Support!</h3>
-                <p>Our AI assistant can help you find the best deals and answer questions about:</p>
-                <ul>
-                    <li><span class="feature-highlight">Product Recommendations</span> - Get personalized suggestions</li>
-                    <li><span class="feature-highlight">Deal Information</span> - Learn about current promotions</li>
-                    <li><span class="feature-highlight">Coupon Codes</span> - Find discount codes for your favorite brands</li>
-                    <li><span class="feature-highlight">Shopping Advice</span> - Get help with your purchase decisions</li>
-                </ul>
-                <p><span class="feature-highlight">NEW!</span> Use voice input by clicking the microphone icon or pressing Ctrl+Shift+V</p>
-                <p>Try asking about these popular topics:</p>
-                <div class="chat-help-tags">
-                    <span class="chat-help-tag" data-suggestion="Best electronics deals">Best electronics deals</span>
-                    <span class="chat-help-tag" data-suggestion="Fashion discounts">Fashion discounts</span>
-                    <span class="chat-help-tag" data-suggestion="Travel offers">Travel offers</span>
-                    <span class="chat-help-tag" data-suggestion="Food delivery coupons">Food delivery coupons</span>
-                    <span class="chat-help-tag" data-suggestion="Compare laptop deals">Compare laptop deals</span>
-                </div>
-            </div>
-            
-            <div class="chat-messages-container" id="chatMessagesContainer">
-                <div class="chat-messages" id="chatMessages">
-                    <div class="message bot-message animate__animated animate__fadeInUp">
-                        <div class="message-avatar">
-                            <i class="fas fa-robot"></i>
-                        </div>
-                        <div class="message-content">
-                            <div class="message-bubble">
-                                <p>👋 <strong>Welcome to DealsHub!</strong> I'm your personal shopping assistant.</p>
-                                <p>I can help you find the best deals across:</p>
-                                <ul>
-                                    <li>🛍️ <strong>Fashion</strong> - Clothing, shoes, accessories</li>
-                                    <li>🔌 <strong>Electronics</strong> - Gadgets, computers, phones</li>
-                                    <li>✈️ <strong>Travel</strong> - Hotels, flights, vacation packages</li>
-                                    <li>🍔 <strong>Food</strong> - Restaurant deals, delivery discounts</li>
-                                    <li>🏠 <strong>Home</strong> - Furniture, appliances, decor</li>
-                                </ul>
-                                <p>Just tell me what you're looking for or try one of the suggested questions below!</p>
-                                <p><strong>💡 Pro tip:</strong> Try voice input by clicking the microphone icon!</p>
-                            </div>
-                            <div class="message-time">Just now</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="loading-indicator" id="loadingIndicator">
-                <div class="loading-spinner"></div>
-                <span>Finding the best deals for you...</span>
-            </div>
-            
-            <div class="chat-input-container">
-                <form id="chatOffersForm">
-                    <div class="chat-input-wrapper">
-                        <input type="text" id="userMessage" placeholder="Ask about deals or use the mic 🎤 for voice input..." autocomplete="off" />
-                        <div class="chat-input-actions">
-                            <button type="button" class="btn-voice" id="voiceInputBtn" title="Voice input">
-                                <i class="fas fa-microphone"></i>
-                            </button>
-                            <div class="sound-wave">
-                                <div class="sound-wave-bar"></div>
-                                <div class="sound-wave-bar"></div>
-                                <div class="sound-wave-bar"></div>
-                                <div class="sound-wave-bar"></div>
-                            </div>
-                            <button type="submit" class="btn-send" title="Send message">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-                <div class="chat-suggestions">
-                    <span class="chat-suggestion-title">Try asking about:</span>
-                    <div class="chat-suggestion-tags">
-                        <span class="chat-suggestion" data-suggestion="Best deals today">Best deals today</span>
-                        <span class="chat-suggestion" data-suggestion="Trending offers">Trending offers</span>
-                        <span class="chat-suggestion" data-suggestion="Electronics under $100">Electronics under $100</span>
-                        <span class="chat-suggestion" data-suggestion="Compare phone prices">Compare phone prices</span>
-                        <span class="chat-suggestion" data-suggestion="Fashion discount codes">Fashion discount codes</span>
-                        <span class="chat-suggestion" data-suggestion="Travel deals for summer">Travel deals for summer</span>
-                    </div>
+                <div class="logo-text">
+                    <span class="brand-name">dealshub</span>
+                    <span class="brand-ai">AI</span>
                 </div>
             </div>
         </div>
+
+        
+        <!-- Search Input Area -->
+        <div class="dealshub-input-area">
+            <form id="dealshubForm" class="dealshub-form">
+                <div class="dealshub-input-container">
+                    <input 
+                        type="text" 
+                        id="dealshubInput" 
+                        class="dealshub-input" 
+                        placeholder="Ask anything about deals or products..."
+                        autocomplete="off"
+                        maxlength="500"
+                    />
+                    
+                    <!-- Simple Actions -->
+                    <div class="dealshub-actions">
+                        <button type="button" class="dealshub-btn dealshub-btn-voice" id="voiceBtn" title="Voice search">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        
+                        <button type="submit" class="dealshub-btn dealshub-btn-send" title="Search">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div class="dealshub-loading" id="loadingIndicator" style="display: none;">
+            <div class="loading-spinner"></div>
+            <span class="loading-text">Searching for deals...</span>
+        </div>
     </div>
 </section>
+
+<!-- Chat Message Template -->
+<template id="messageTemplate">
+    <div class="dealshub-message">
+        <div class="message-avatar">
+            <div class="avatar-icon">
+                <i class="fas fa-percentage"></i>
+            </div>
+        </div>
+        <div class="message-content">
+            <div class="message-text"></div>
+            <div class="message-timestamp"></div>
+        </div>
+    </div>
+</template>
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/js/chat-ui-enhanced.js"></script>
-<script src="/static/js/offers-display.js"></script>
+<script src="/static/js/dealshub-chat.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // All chat variables
-        let sessionId = null;
-        let isLoading = false;
-        let isMaximized = false;
-        let isHelpVisible = false;
-
-        // Event Listeners
-        document.getElementById('chatOffersForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const message = document.getElementById('userMessage').value;
-            if (message.trim()) {
-                // This function should be in chat-ui-enhanced.js
-                if (window.sendMessage) {
-                    window.sendMessage(message);
-                } else {
-                    console.error('sendMessage function not found.');
-                }
-            }
-        });
-
-        document.querySelector('.btn-clear').addEventListener('click', clearChat);
-        document.getElementById('maximizeBtn').addEventListener('click', toggleMaximize);
-        document.querySelector('.btn-help').addEventListener('click', toggleHelpInfo);
-
-        document.querySelectorAll('.chat-suggestion, .chat-help-tag').forEach(tag => {
-            tag.addEventListener('click', function() {
-                insertChatSuggestion(this.dataset.suggestion);
-            });
-        });
-
-        // Toggle maximize/minimize chat
-        function toggleMaximize() {
-            const chatContainer = document.querySelector('.chat-container');
-            const icon = document.querySelector('#maximizeBtn i');
-            isMaximized = !isMaximized;
-            if (isMaximized) {
-                chatContainer.classList.add('maximized');
-                icon.classList.remove('fa-expand');
-                icon.classList.add('fa-compress');
-            } else {
-                chatContainer.classList.remove('maximized');
-                icon.classList.remove('fa-compress');
-                icon.classList.add('fa-expand');
-            }
-        }
-
-        // Toggle help information
-        function toggleHelpInfo() {
-            const helpInfo = document.getElementById('chatHelpInfo');
-            isHelpVisible = !isHelpVisible;
-            if (isHelpVisible) {
-                helpInfo.style.display = 'block';
-                setTimeout(() => {
-                    helpInfo.classList.add('visible');
-                }, 10);
-            } else {
-                helpInfo.classList.remove('visible');
-                setTimeout(() => {
-                    helpInfo.style.display = 'none';
-                }, 300);
-            }
-        }
-
-        // Insert chat suggestion into input field
-        function insertChatSuggestion(text) {
-            document.getElementById('userMessage').value = text;
-            document.getElementById('userMessage').focus();
-        }
-
-        // Clear chat messages
-        function clearChat() {
-            const chatMessages = document.getElementById('chatMessages');
-            // Remove all messages except the first welcome message
-            while (chatMessages.childNodes.length > 1) {
-                chatMessages.removeChild(chatMessages.lastChild);
-            }
-        }
-
-        // Copy to clipboard function
-        window.copyToClipboard = function(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                // Show toast notification
-                const toast = document.createElement('div');
-                toast.className = 'toast-notification animate__animated animate__fadeIn';
-                toast.innerHTML = '<i class="fas fa-check-circle"></i> Coupon code copied!';
-                document.body.appendChild(toast);
-                setTimeout(() => {
-                    toast.classList.add('animate__fadeOut');
-                    setTimeout(() => {
-                        document.body.removeChild(toast);
-                    }, 300);
-                }, 2000);
-            });
-        }
-
-        // Voice input functionality
-        function startVoiceInput() {
-            const voiceBtn = document.getElementById('voiceInputBtn');
-            const userMessageInput = document.getElementById('userMessage');
-            voiceBtn.classList.add('recording');
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'en-US';
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
-            recognition.start();
-            recognition.onresult = function(event) {
-                const speechResult = event.results[0][0].transcript;
-                userMessageInput.value = speechResult;
-                userMessageInput.focus();
-            };
-            recognition.onend = function() {
-                voiceBtn.classList.remove('recording');
-            };
-            recognition.onerror = function(event) {
-                voiceBtn.classList.remove('recording');
-                console.error('Speech recognition error', event.error);
-            };
-        }
-
-        // Initialize voice input if supported
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            document.getElementById('voiceInputBtn').addEventListener('click', startVoiceInput);
-        } else {
-            document.getElementById('voiceInputBtn').style.display = 'none';
+        // Initialize DealsHub AI Chat
+        if (window.DealsHubChat) {
+            window.DealsHubChat.init();
         }
     });
 </script>
