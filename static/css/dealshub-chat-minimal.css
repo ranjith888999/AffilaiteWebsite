@@ -1,0 +1,494 @@
+/* DealsHub AI Chat - Minimal Design inspired.dealshub-container {
+    max-width: none;
+    margin: 0 auto;
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+}exity */
+:root {
+    --dealshub-primary: #0ea5e9;
+    --dealshub-primary-dark: #0284c7;
+    --dealshub-secondary: #06b6d4;
+    --dealshub-accent: #8b5cf6;
+    --dealshub-bg: #ffffff;
+    --dealshub-bg-secondary: #f8fafc;
+    --dealshub-text: #1e293b;
+    --dealshub-text-secondary: #64748b;
+    --dealshub-text-muted: #94a3b8;
+    --dealshub-border: #e2e8f0;
+    --dealshub-border-light: #f1f5f9;
+    --dealshub-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --dealshub-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --dealshub-radius: 12px;
+    --dealshub-radius-sm: 8px;
+    --dealshub-transition: all 0.2s ease;
+    --dealshub-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--dealshub-font-family);
+    margin: 0;
+    padding: 0;
+    background: var(--dealshub-bg);
+    color: var(--dealshub-text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Main Chat Section */
+.dealshub-chat-section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--dealshub-bg);
+    position: relative;
+}
+
+.dealshub-container {
+    max-width: 10000px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Header with Logo */
+.dealshub-header {
+    padding: 100px 0 80px 0;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+}
+
+.dealshub-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0;
+    text-decoration: none;
+    transition: var(--dealshub-transition);
+}
+
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--dealshub-primary), var(--dealshub-secondary));
+    border-radius: var(--dealshub-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    position: relative;
+    overflow: hidden;
+}
+
+.logo-icon::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.dealshub-logo:hover .logo-icon::before {
+    left: 100%;
+}
+
+.logo-text {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.brand-name {
+    font-size: 46px;
+    font-weight: 700;
+    color: var(--dealshub-text);
+    letter-spacing: -0.02em;
+}
+
+.brand-ai {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dealshub-primary);
+    background: linear-gradient(135deg, var(--dealshub-primary), var(--dealshub-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    border: 1px solid var(--dealshub-primary);
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin-left: 2px;
+}
+
+/* Main Content Area */
+.dealshub-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    position: relative;
+    min-height: 400px;
+    padding: 60px 0;
+}
+
+/* Welcome State */
+.dealshub-welcome {
+    text-align: center;
+    padding: 40px 0;
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+.welcome-content {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.welcome-title {
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--dealshub-text);
+    margin: 0 0 16px 0;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.welcome-subtitle {
+    font-size: 18px;
+    color: var(--dealshub-text-secondary);
+    margin: 0 0 40px 0;
+    line-height: 1.5;
+}
+
+/* Chat Messages */
+.dealshub-messages {
+    flex: 1;
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.dealshub-message {
+    display: flex;
+    gap: 12px;
+    animation: fadeInUp 0.4s ease forwards;
+}
+
+.message-avatar {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+}
+
+.avatar-icon {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--dealshub-primary), var(--dealshub-secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+}
+
+.message-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.message-text {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--dealshub-text);
+    margin-bottom: 8px;
+}
+
+.message-timestamp {
+    font-size: 12px;
+    color: var(--dealshub-text-muted);
+}
+
+/* Input Area */
+.dealshub-input-area {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-left: 0;
+}
+
+.dealshub-form {
+    margin-bottom: 0;
+    width: 100%;
+}
+
+.dealshub-input-container {
+    display: flex;
+    align-items: center;
+    background: var(--dealshub-bg);
+    border: 2px solid var(--dealshub-border);
+    border-radius: 24px;
+    padding: 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: var(--dealshub-transition);
+    position: relative;
+    overflow: hidden;
+    width: 70vw;
+    max-width: none;
+    min-height: 70px;
+    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.dealshub-input-container:focus-within {
+    border-color: var(--dealshub-primary);
+    box-shadow: 0 6px 25px rgba(14, 165, 233, 0.15);
+    transform: translateY(-2px);
+}
+
+.dealshub-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 24px 32px;
+    font-size: 20px;
+    color: var(--dealshub-text);
+    outline: none;
+    font-family: inherit;
+    line-height: 1.5;
+    min-height: 28px;
+}
+
+.dealshub-input::placeholder {
+    color: var(--dealshub-text-muted);
+}
+
+.dealshub-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 24px;
+}
+
+.dealshub-btn {
+    width: 52px;
+    height: 52px;
+    border: none;
+    background: transparent;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--dealshub-transition);
+    color: var(--dealshub-text-secondary);
+    font-size: 22px;
+    position: relative;
+    overflow: hidden;
+}
+
+.dealshub-btn:hover {
+    background: var(--dealshub-bg-secondary);
+    color: var(--dealshub-primary);
+    transform: translateY(-1px);
+}
+
+.dealshub-btn-send {
+    background: var(--dealshub-primary);
+    color: white;
+}
+
+.dealshub-btn-send:hover {
+    background: var(--dealshub-primary-dark);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.dealshub-btn-voice.recording {
+    background: #ef4444;
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+/* Ripple Effect */
+.dealshub-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(14, 165, 233, 0.3);
+    transition: width 0.3s ease, height 0.3s ease;
+    transform: translate(-50%, -50%);
+}
+
+.dealshub-btn:active::before {
+    width: 52px;
+    height: 52px;
+}
+
+/* Loading Indicator */
+.dealshub-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: var(--dealshub-bg);
+    padding: 20px;
+    border-radius: var(--dealshub-radius);
+    box-shadow: var(--dealshub-shadow-lg);
+    border: 1px solid var(--dealshub-border);
+    z-index: 100;
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--dealshub-border);
+    border-top: 3px solid var(--dealshub-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 12px auto;
+}
+
+.loading-text {
+    font-size: 14px;
+    color: var(--dealshub-text-secondary);
+    font-weight: 500;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dealshub-container {
+        padding: 0 16px;
+    }
+    
+    .dealshub-header {
+        padding: 40px 0 30px 0;
+    }
+    
+    .welcome-title {
+        font-size: 36px;
+    }
+    
+    .welcome-subtitle {
+        font-size: 16px;
+    }
+    
+    .dealshub-input-area {
+        padding: 30px 0 40px 0;
+    }
+    
+    .dealshub-input {
+        padding: 14px 16px;
+        font-size: 16px;
+    }
+    
+    .dealshub-actions {
+        padding: 6px 8px;
+    }
+    
+    .dealshub-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .welcome-title {
+        font-size: 28px;
+    }
+    
+    .brand-name {
+        font-size: 24px;
+    }
+    
+    .logo-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+    }
+}
+
+/* Focus and Accessibility */
+.dealshub-btn:focus-visible {
+    outline: 2px solid var(--dealshub-primary);
+    outline-offset: 2px;
+}
+
+.dealshub-input:focus {
+    outline: none;
+}
+
+/* Smooth scrolling */
+.dealshub-messages {
+    scroll-behavior: smooth;
+}
+
+.dealshub-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dealshub-messages::-webkit-scrollbar-track {
+    background: var(--dealshub-bg-secondary);
+    border-radius: 3px;
+}
+
+.dealshub-messages::-webkit-scrollbar-thumb {
+    background: var(--dealshub-border);
+    border-radius: 3px;
+}
+
+.dealshub-messages::-webkit-scrollbar-thumb:hover {
+    background: var(--dealshub-text-muted);
+}
