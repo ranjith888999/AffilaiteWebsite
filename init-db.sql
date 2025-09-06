@@ -1,2 +1,2 @@
 -- Initialize database for Docker deployment
-CREATE EXTENSION IF NOT EXISTS vector;
+-- CREATE EXTENSION IF NOT EXISTS vector;

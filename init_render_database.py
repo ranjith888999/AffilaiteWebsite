@@ -44,7 +44,7 @@ def init_database():
             
             if not has_vector:
                 logger.info("Creating pgvector extension...")
-                conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+                # conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
                 conn.commit()
                 logger.info("pgvector extension created successfully.")
             else:

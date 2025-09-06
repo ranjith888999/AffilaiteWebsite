@@ -88,7 +88,7 @@ def create_tables():
         # First, try to create the pgvector extension
         try:
             with engine.connect() as conn:
-                conn.execute("CREATE EXTENSION IF NOT EXISTS vector;")
+                # conn.execute("CREATE EXTENSION IF NOT EXISTS vector;")
                 conn.commit()
                 logger.info("pgvector extension created/verified.")
         except Exception as e:
