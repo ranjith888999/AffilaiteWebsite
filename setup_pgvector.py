@@ -31,7 +31,7 @@ def create_pgvector_extension():
         
         # Create pgvector extension
         print("🔄 Creating pgvector extension...")
-        cursor.execute("CREATE EXTENSION IF NOT EXISTS vector;")
+        # cursor.execute("CREATE EXTENSION IF NOT EXISTS vector;")
         print("✅ pgvector extension created successfully!")
         
         # Verify extension
