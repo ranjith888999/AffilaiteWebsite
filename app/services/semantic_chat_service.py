@@ -5,14 +5,28 @@ import json
 import os
 import re
 
-# Try to import sentence transformers, fallback to a simple hash-based approach
-try:
-    from sentence_transformers import SentenceTransformer
-    EMBEDDINGS_AVAILABLE = True
-except ImportError:
-    EMBEDDINGS_AVAILABLE = False
-    SentenceTransformer = None
-    print("⚠️ Warning: sentence-transformers not available. Using basic text processing for embeddings.")
+# Delayed import approach - only import when actually needed
+EMBEDDINGS_AVAILABLE = False
+SentenceTransformer = None
+
+def _import_sentence_transformers():
+    """Import sentence transformers only when needed"""
+    global EMBEDDINGS_AVAILABLE, SentenceTransformer
+    if SentenceTransformer is None:
+        try:
+            from sentence_transformers import SentenceTransformer as ST
+            SentenceTransformer = ST
+            EMBEDDINGS_AVAILABLE = True
+            print("✅ sentence-transformers loaded successfully")
+        except ImportError as e:
+            EMBEDDINGS_AVAILABLE = False
+            SentenceTransformer = None
+            print(f"⚠️ Warning: sentence-transformers not available: {e}")
+        except Exception as e:
+            EMBEDDINGS_AVAILABLE = False
+            SentenceTransformer = None
+            print(f"⚠️ Warning: Error loading sentence-transformers: {e}")
+    return EMBEDDINGS_AVAILABLE
 
 # Import OpenAI for LLM-based response generation
 try:
@@ -42,7 +56,12 @@ class SemanticChatService:
             'hello', 'hi', 'hey', 'good morning', 'good afternoon', 'good evening',
             'how are you', 'whats up', "what's up", 'greetings', 'howdy'
         ]
-        if EMBEDDINGS_AVAILABLE:
+        # Defer loading of sentence transformers until actually needed
+        self.embedding_model = None
+    
+    def _load_embedding_model(self):
+        """Lazy load the embedding model"""
+        if self.embedding_model is None and _import_sentence_transformers():
             try:
                 # Using a smaller, efficient model suitable for semantic search
                 self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -50,6 +69,7 @@ class SemanticChatService:
             except Exception as e:
                 logger.error(f"Failed to load embedding model for semantic search: {e}")
                 self.embedding_model = None
+        return self.embedding_model
     
     def is_greeting(self, query: str) -> bool:
         """Check if the query is a greeting"""
@@ -134,7 +154,9 @@ class SemanticChatService:
         if self.is_greeting(query):
             return self.get_greeting_response()
         
-        if not self.embedding_model:
+        # Try to load the embedding model
+        embedding_model = self._load_embedding_model()
+        if not embedding_model:
             logger.warning("No embedding model available. Falling back to text search.")
             offers = await self.fallback_search(query, db, top_k)
             message = await self._generate_llm_response(query, offers)
@@ -147,7 +169,7 @@ class SemanticChatService:
             
         try:
             # 1. Generate embedding for the user query
-            query_embedding = self.embedding_model.encode(query).tolist()
+            query_embedding = embedding_model.encode(query).tolist()
             
             # 2. Perform vector similarity search in the public.offer_embeddings table
             # The query uses the <=> operator for cosine distance (1 - cosine_similarity)
