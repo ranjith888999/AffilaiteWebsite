@@ -129,6 +129,11 @@ async def categories_page(request: Request):
 async def link_generator_page(request: Request):
     return templates.TemplateResponse("link_generator.html", {"request": request})
 
+@app.get("/admin/sync", response_class=HTMLResponse)
+async def sync_admin_page(request: Request):
+    """Admin interface for managing offers sync"""
+    return templates.TemplateResponse("offers_sync_admin.html", {"request": request})
+
 @app.get("/health")
 async def health_check_detailed():
     return {"status": "ok", "timestamp": time.time()}
@@ -140,6 +145,19 @@ app.include_router(chat_controller.router, prefix="/api")
 app.include_router(links_controller.router)
 app.include_router(auth_controller.router, prefix="/auth")
 app.include_router(images_controller.router, prefix="/api")
+
+# Include new sync and scheduler routers
+try:
+    from app.controllers.offers_sync_controller import router as offers_sync_router
+    from app.controllers.scheduler_controller import router as scheduler_router
+    from app.controllers.semantic_chat_controller import router as semantic_chat_router
+    app.include_router(offers_sync_router)
+    app.include_router(scheduler_router)
+    app.include_router(semantic_chat_router)
+    print("✅ Sync, scheduler, and semantic chat routes loaded successfully")
+except ImportError as e:
+    print(f"⚠️ Could not load additional routes: {e}")
+    print("⚠️ Advanced features may not be available")
 
 # Create database tables on startup
 # Moved to lifespan event

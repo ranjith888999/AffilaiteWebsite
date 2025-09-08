@@ -3,81 +3,188 @@
 {% block title %}DealsHub AI - Your Smart Shopping Assistant{% endblock %}
 
 {% block content %}
-<!-- DealsHub AI Chat Interface - Minimal Design -->
-<section class="dealshub-chat-section">
-    <div class="dealshub-container">
-        <!-- Header with DealsHub Logo -->
-        <div class="dealshub-header">
-            <div class="dealshub-logo">
-                <div class="logo-icon">
-                    <i class="fas fa-percentage"></i>
-                </div>
-                <div class="logo-text">
-                    <span class="brand-name">dealshub</span>
-                    <span class="brand-ai">AI</span>
+<!-- Modern DealsHub AI Chat Interface -->
+<section class="modern-chat-section">
+    <div class="chat-container">
+        <!-- Main Header with Beautiful Logo (Welcome State) -->
+        <header id="mainHeader" class="main-header">
+            <div class="logo-container">
+                <div class="brand-text">
+                    <h1 class="brand-title">
+                        <span class="brand-deals">Deals</span><span class="brand-hub">Hub</span>
+                        <span class="brand-ai">AI</span>
+                    </h1>
+                    <p class="brand-subtitle">Your Smart Shopping Assistant</p>
                 </div>
             </div>
-        </div>
+        </header>
 
-        
-        <!-- Search Input Area -->
-        <div class="dealshub-input-area">
-            <form id="dealshubForm" class="dealshub-form">
-                <div class="dealshub-input-container">
-                    <input 
-                        type="text" 
-                        id="dealshubInput" 
-                        class="dealshub-input" 
-                        placeholder="Ask anything about deals or products..."
-                        autocomplete="off"
-                        maxlength="500"
-                    />
-                    
-                    <!-- Simple Actions -->
-                    <div class="dealshub-actions">
-                        <button type="button" class="dealshub-btn dealshub-btn-voice" id="voiceBtn" title="Voice search">
-                            <i class="fas fa-microphone"></i>
-                        </button>
-                        
-                        <button type="submit" class="dealshub-btn dealshub-btn-send" title="Search">
-                            <i class="fas fa-arrow-right"></i>
+        <!-- Compact Header for Conversation Mode -->
+        <header id="conversationHeader" class="conversation-header" style="display: none;">
+            <div class="compact-brand">
+                <div class="compact-logo">
+                    <i class="fas fa-sparkles"></i>
+                </div>
+                <span class="compact-title">DealsHub AI</span>
+            </div>
+            <div class="header-actions">
+                <button id="fullscreenToggle" class="header-action-btn" title="Toggle Fullscreen">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button id="backToSearch" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>New Search</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Welcome State with Beautiful Design -->
+        <main id="welcomeState" class="welcome-section">
+            <!-- Search Input -->
+            <div class="search-section">
+                <form id="dealshubForm" class="search-form">
+                    <div class="search-input-wrapper">
+                        <div class="search-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="dealshubInput" 
+                            class="search-input" 
+                            placeholder="Ask about deals, products, brands, or categories..."
+                            autocomplete="off"
+                            maxlength="500"
+                        />
+                        <div class="input-actions">
+                            <button type="button" class="action-btn voice-btn" id="voiceBtn" title="Voice search">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            <button type="submit" class="action-btn send-btn" title="Search">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Quick Action Cards -->
+            <div class="quick-actions">
+                <div class="action-card" data-query="electronics deals">
+                    <div class="card-icon">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <h3>Electronics</h3>
+                    <p>Gadgets & Tech</p>
+                </div>
+                <div class="action-card" data-query="fashion discounts">
+                    <div class="card-icon">
+                        <i class="fas fa-tshirt"></i>
+                    </div>
+                    <h3>Fashion</h3>
+                    <p>Clothing & Style</p>
+                </div>
+                <div class="action-card" data-query="food coupons">
+                    <div class="card-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3>Food & Dining</h3>
+                    <p>Restaurants & Grocery</p>
+                </div>
+                <div class="action-card" data-query="travel offers">
+                    <div class="card-icon">
+                        <i class="fas fa-plane"></i>
+                    </div>
+                    <h3>Travel</h3>
+                    <p>Hotels & Flights</p>
+                </div>
+            </div>
+
+            <!-- Trending Suggestions -->
+            <div class="trending-section">
+                <h3 class="trending-title">
+                    <i class="fas fa-fire"></i> Trending Searches
+                </h3>
+                <div class="suggestion-pills">
+                    <button class="suggestion-pill" data-query="iPhone 15 deals">
+                        <i class="fab fa-apple"></i> iPhone 15 deals
+                    </button>
+                    <button class="suggestion-pill" data-query="Black Friday offers">
+                        <i class="fas fa-tags"></i> Black Friday offers
+                    </button>
+                    <button class="suggestion-pill" data-query="laptop discounts">
+                        <i class="fas fa-laptop"></i> Laptop discounts
+                    </button>
+                    <button class="suggestion-pill" data-query="gaming deals">
+                        <i class="fas fa-gamepad"></i> Gaming deals
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Conversation State -->
+        <main id="conversationState" class="conversation-section" style="display: none;">
+            <div id="chatMessages" class="messages-container">
+                <!-- Dynamic messages will be added here -->
+            </div>
+            
+            <!-- Conversation Input -->
+            <div class="conversation-input-section">
+                <form id="conversationForm" class="conversation-form">
+                    <div class="conversation-input-wrapper">
+                        <input 
+                            type="text" 
+                            id="conversationInput" 
+                            class="conversation-input" 
+                            placeholder="Ask me anything..."
+                            autocomplete="off"
+                        />
+                        <button type="submit" class="conversation-send-btn">
+                            <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        </main>
 
         <!-- Loading Indicator -->
-        <div class="dealshub-loading" id="loadingIndicator" style="display: none;">
-            <div class="loading-spinner"></div>
-            <span class="loading-text">Searching for deals...</span>
+        <div class="loading-overlay" id="loadingIndicator" style="display: none;">
+            <div class="loading-content">
+                <div class="loading-spinner">
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring"></div>
+                </div>
+                <p class="loading-text">Finding amazing deals for you...</p>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- Chat Message Template -->
-<template id="messageTemplate">
-    <div class="dealshub-message">
-        <div class="message-avatar">
-            <div class="avatar-icon">
-                <i class="fas fa-percentage"></i>
-            </div>
-        </div>
-        <div class="message-content">
-            <div class="message-text"></div>
-            <div class="message-timestamp"></div>
-        </div>
+<!-- Feedback Success Alert -->
+<div id="feedbackAlert" class="feedback-alert" style="display: none;">
+    <div class="alert-content">
+        <i class="fas fa-check-circle"></i>
+        <span>Thank you for your feedback!</span>
     </div>
-</template>
+</div>
+
+<!-- Background Elements -->
+<div class="bg-elements">
+    <div class="floating-shape shape-1"></div>
+    <div class="floating-shape shape-2"></div>
+    <div class="floating-shape shape-3"></div>
+    <div class="floating-shape shape-4"></div>
+</div>
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/js/dealshub-chat.js"></script>
+<link rel="stylesheet" href="/static/css/modern-chat.css">
+<script src="/static/js/modern-dealshub-chat.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize DealsHub AI Chat
-        if (window.DealsHubChat) {
-            window.DealsHubChat.init();
+        // Initialize Enhanced DealsHub AI Chat
+        if (window.EnhancedDealsHubChat) {
+            window.EnhancedDealsHubChat.init();
         }
     });
 </script>

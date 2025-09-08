@@ -143,6 +143,15 @@ def get_db_sync():
     finally:
         db.close()
 
+def get_sync_db_session():
+    """Get a synchronous database session for sync operations"""
+    if not db_available:
+        initialize_database()  # Try to initialize if not already done
+    if not db_available or SessionLocal is None:
+        logger.warning("Database not available, returning None.")
+        return None
+    return SessionLocal()
+
 async def get_async_db():
     """Async database session for embedding-based search"""
     if not db_available:
@@ -159,3 +168,12 @@ async def get_async_db():
             logger.error(f"Database error: {e}")
             raise
         # Don't explicitly close the session here - it will be closed by the context manager
+
+async def get_async_db_session():
+    """Get an async database session for async operations"""
+    if not db_available:
+        initialize_database()  # Try to initialize if not already done
+    if not db_available or AsyncSessionLocal is None:
+        logger.warning("Database not available, returning None.")
+        return None
+    return AsyncSessionLocal()
