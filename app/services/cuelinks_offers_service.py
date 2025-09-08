@@ -9,14 +9,28 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 import logging
 
-# Try to import sentence transformers, fallback to a simple hash-based approach
-try:
-    from sentence_transformers import SentenceTransformer
-    EMBEDDINGS_AVAILABLE = True
-except ImportError:
-    EMBEDDINGS_AVAILABLE = False
-    SentenceTransformer = None
-    print("⚠️ Warning: sentence-transformers not available. Using basic text processing for embeddings.")
+# Delayed import approach - only import when actually needed
+EMBEDDINGS_AVAILABLE = False
+SentenceTransformer = None
+
+def _import_sentence_transformers():
+    """Import sentence transformers only when needed"""
+    global EMBEDDINGS_AVAILABLE, SentenceTransformer
+    if SentenceTransformer is None:
+        try:
+            from sentence_transformers import SentenceTransformer as ST
+            SentenceTransformer = ST
+            EMBEDDINGS_AVAILABLE = True
+            print("✅ sentence-transformers loaded successfully")
+        except ImportError as e:
+            EMBEDDINGS_AVAILABLE = False
+            SentenceTransformer = None
+            print(f"⚠️ Warning: sentence-transformers not available: {e}")
+        except Exception as e:
+            EMBEDDINGS_AVAILABLE = False
+            SentenceTransformer = None
+            print(f"⚠️ Warning: Error loading sentence-transformers: {e}")
+    return EMBEDDINGS_AVAILABLE
 
 from app.database import get_sync_db_session, get_async_db_session
 from app.models.database import Campaign, Offer, OfferEmbedding, OfferSyncLog
@@ -35,7 +49,7 @@ class CuelinksOffersService:
         
     def get_embedding_model(self):
         """Lazy load the embedding model"""
-        if not EMBEDDINGS_AVAILABLE:
+        if not _import_sentence_transformers():
             return None
             
         if self.embedding_model is None:
