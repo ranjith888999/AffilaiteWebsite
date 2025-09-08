@@ -159,6 +159,25 @@ class ChatFeedback(Base):
         Index('idx_chat_feedback_timestamp', 'timestamp'),
     )
 
+class OfferSyncLog(Base):
+    __tablename__ = "offer_sync_logs"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    last_run_date = Column(DateTime, default=datetime.utcnow)
+    total_offers_retrieved = Column(Integer, default=0)
+    status = Column(String(50), default='running')  # running, completed, failed
+    error_message = Column(Text, nullable=True)
+    sync_type = Column(String(50), default='auto')  # auto, manual
+    execution_time_seconds = Column(Float, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # Add index for efficient querying
+    __table_args__ = (
+        Index('idx_sync_logs_date', 'last_run_date'),
+        Index('idx_sync_logs_status', 'status'),
+        Index('idx_sync_logs_type', 'sync_type'),
+    )
+
 class Link(Base):
     __tablename__ = "links"
     

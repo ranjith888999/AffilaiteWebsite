@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offers Sync Management - Affiliate Website</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .status-card {
+            border-left: 4px solid #007bff;
+        }
+        .status-running {
+            border-left-color: #28a745;
+        }
+        .status-error {
+            border-left-color: #dc3545;
+        }
+        .status-warning {
+            border-left-color: #ffc107;
+        }
+        .sync-history {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .log-item {
+            border-left: 3px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        .log-item.success {
+            border-left-color: #28a745;
+        }
+        .log-item.failed {
+            border-left-color: #dc3545;
+        }
+        .log-item.running {
+            border-left-color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1><i class="bi bi-arrow-repeat"></i> Offers Sync Management</h1>
+                    <div>
+                        <button class="btn btn-outline-primary" onclick="refreshAll()">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh All
+                        </button>
+                        <a href="/" class="btn btn-outline-secondary">
+                            <i class="bi bi-house"></i> Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Overview -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card status-card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-database"></i> Database Status</h5>
+                        <div id="db-status">Loading...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card status-card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-clock"></i> Scheduler Status</h5>
+                        <div id="scheduler-status">Loading...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card status-card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="bi bi-cloud-download"></i> Last Sync</h5>
+                        <div id="last-sync-status">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="bi bi-gear"></i> Control Panel</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Manual Sync Operations</h6>
+                                <div class="btn-group-vertical d-grid gap-2" role="group">
+                                    <button class="btn btn-primary" onclick="testApi()">
+                                        <i class="bi bi-wifi"></i> Test Cuelinks API
+                                    </button>
+                                    <button class="btn btn-success" onclick="syncNow()">
+                                        <i class="bi bi-download"></i> Sync Now (Clear & Update)
+                                    </button>
+                                    <button class="btn btn-warning" onclick="syncNow(false)">
+                                        <i class="bi bi-plus-circle"></i> Sync Now (Append Only)
+                                    </button>
+                                    <button class="btn btn-danger" onclick="clearData()">
+                                        <i class="bi bi-trash"></i> Clear All Data
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Scheduler Controls</h6>
+                                <div class="btn-group-vertical d-grid gap-2" role="group">
+                                    <button class="btn btn-outline-success" onclick="startScheduler()">
+                                        <i class="bi bi-play"></i> Start Scheduler
+                                    </button>
+                                    <button class="btn btn-outline-warning" onclick="stopScheduler()">
+                                        <i class="bi bi-stop"></i> Stop Scheduler
+                                    </button>
+                                    <button class="btn btn-outline-info" onclick="restartScheduler()">
+                                        <i class="bi bi-arrow-clockwise"></i> Restart Scheduler
+                                    </button>
+                                    <div class="input-group mt-2">
+                                        <input type="time" class="form-control" id="sync-time" value="02:00">
+                                        <button class="btn btn-outline-primary" onclick="updateSyncTime()">
+                                            <i class="bi bi-clock"></i> Update Time
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sync History -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5><i class="bi bi-clock-history"></i> Sync History</h5>
+                        <button class="btn btn-sm btn-outline-primary" onclick="loadSyncHistory()">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div id="sync-history" class="sync-history">
+                            Loading sync history...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Container -->
+        <div id="alert-container" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let isLoading = false;
+
+        // Utility functions
+        function showAlert(message, type = 'info') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.getElementById('alert-container').appendChild(alertDiv);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+
+        function setLoading(loading) {
+            isLoading = loading;
+            document.body.classList.toggle('loading', loading);
+        }
+
+        function formatDateTime(dateString) {
+            if (!dateString) return 'Never';
+            return new Date(dateString).toLocaleString();
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds) return 'N/A';
+            if (seconds < 60) return `${seconds.toFixed(1)}s`;
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}m ${remainingSeconds.toFixed(1)}s`;
+        }
+
+        // API functions
+        async function apiCall(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.detail || `HTTP ${response.status}`);
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('API call failed:', error);
+                throw error;
+            }
+        }
+
+        // Status loading functions
+        async function loadDatabaseStatus() {
+            try {
+                const data = await apiCall('/api/offers-sync/status');
+                const dbData = data.data;
+                
+                document.getElementById('db-status').innerHTML = `
+                    <div class="mb-2">
+                        <strong>Campaigns:</strong> ${dbData.database_counts.campaigns.toLocaleString()}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Offers:</strong> ${dbData.database_counts.offers.toLocaleString()}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Embeddings:</strong> ${dbData.database_counts.embeddings.toLocaleString()}
+                    </div>
+                    <div>
+                        <span class="badge ${dbData.embedding_model_loaded ? 'bg-success' : 'bg-warning'}">
+                            Embedding Model: ${dbData.embedding_model_loaded ? 'Loaded' : 'Not Loaded'}
+                        </span>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('db-status').innerHTML = `
+                    <div class="text-danger">
+                        <i class="bi bi-exclamation-triangle"></i> Error loading status
+                    </div>
+                `;
+                console.error('Failed to load database status:', error);
+            }
+        }
+
+        async function loadSchedulerStatus() {
+            try {
+                const data = await apiCall('/api/scheduler/status');
+                const status = data.data;
+                
+                document.getElementById('scheduler-status').innerHTML = `
+                    <div class="mb-2">
+                        <span class="badge ${status.is_running ? 'bg-success' : 'bg-secondary'}">
+                            ${status.is_running ? 'Running' : 'Stopped'}
+                        </span>
+                    </div>
+                    <div class="mb-2">
+                        <strong>Sync Time:</strong> ${status.sync_time}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Next Sync:</strong> ${formatDateTime(status.next_sync)}
+                    </div>
+                    <div>
+                        <small class="text-muted">
+                            Thread: ${status.thread_alive ? 'Active' : 'Inactive'}
+                        </small>
+                    </div>
+                `;
+                
+                // Update sync time input
+                document.getElementById('sync-time').value = status.sync_time;
+            } catch (error) {
+                document.getElementById('scheduler-status').innerHTML = `
+                    <div class="text-danger">
+                        <i class="bi bi-exclamation-triangle"></i> Error loading status
+                    </div>
+                `;
+                console.error('Failed to load scheduler status:', error);
+            }
+        }
+
+        async function loadLastSyncStatus() {
+            try {
+                const data = await apiCall('/api/offers-sync/last-sync');
+                const lastSync = data.data;
+                
+                if (lastSync) {
+                    const statusClass = lastSync.status === 'completed' ? 'success' : 
+                                      lastSync.status === 'failed' ? 'danger' : 'warning';
+                    
+                    document.getElementById('last-sync-status').innerHTML = `
+                        <div class="mb-2">
+                            <span class="badge bg-${statusClass}">
+                                ${lastSync.status.toUpperCase()}
+                            </span>
+                        </div>
+                        <div class="mb-2">
+                            <strong>Date:</strong> ${formatDateTime(lastSync.last_run_date)}
+                        </div>
+                        <div class="mb-2">
+                            <strong>Offers:</strong> ${lastSync.total_offers_retrieved.toLocaleString()}
+                        </div>
+                        <div class="mb-2">
+                            <strong>Duration:</strong> ${formatDuration(lastSync.execution_time_seconds)}
+                        </div>
+                        <div>
+                            <strong>Type:</strong> ${lastSync.sync_type}
+                        </div>
+                        ${lastSync.error_message ? `
+                            <div class="mt-2">
+                                <small class="text-danger">${lastSync.error_message}</small>
+                            </div>
+                        ` : ''}
+                    `;
+                } else {
+                    document.getElementById('last-sync-status').innerHTML = `
+                        <div class="text-muted">
+                            <i class="bi bi-info-circle"></i> No sync operations yet
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('last-sync-status').innerHTML = `
+                    <div class="text-danger">
+                        <i class="bi bi-exclamation-triangle"></i> Error loading status
+                    </div>
+                `;
+                console.error('Failed to load last sync status:', error);
+            }
+        }
+
+        async function loadSyncHistory() {
+            try {
+                const data = await apiCall('/api/offers-sync/sync-history');
+                const history = data.data;
+                
+                if (history.length > 0) {
+                    document.getElementById('sync-history').innerHTML = history.map(sync => {
+                        const statusClass = sync.status === 'completed' ? 'success' : 
+                                          sync.status === 'failed' ? 'failed' : 'running';
+                        
+                        return `
+                            <div class="log-item ${statusClass} p-3 mb-2 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>Sync #${sync.id}</strong>
+                                        <span class="badge bg-${sync.status === 'completed' ? 'success' : 
+                                                               sync.status === 'failed' ? 'danger' : 'warning'} ms-2">
+                                            ${sync.status.toUpperCase()}
+                                        </span>
+                                    </div>
+                                    <small class="text-muted">${formatDateTime(sync.last_run_date)}</small>
+                                </div>
+                                <div class="mt-2">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <strong>Offers:</strong> ${sync.total_offers_retrieved.toLocaleString()}
+                                        </div>
+                                        <div class="col-md-3">
+                                            <strong>Duration:</strong> ${formatDuration(sync.execution_time_seconds)}
+                                        </div>
+                                        <div class="col-md-3">
+                                            <strong>Type:</strong> ${sync.sync_type}
+                                        </div>
+                                    </div>
+                                    ${sync.error_message ? `
+                                        <div class="mt-2">
+                                            <small class="text-danger">
+                                                <i class="bi bi-exclamation-triangle"></i> ${sync.error_message}
+                                            </small>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    document.getElementById('sync-history').innerHTML = `
+                        <div class="text-center text-muted p-4">
+                            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                            <p>No sync history available</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('sync-history').innerHTML = `
+                    <div class="text-danger text-center p-4">
+                        <i class="bi bi-exclamation-triangle"></i> Error loading sync history
+                    </div>
+                `;
+                console.error('Failed to load sync history:', error);
+            }
+        }
+
+        // Control functions
+        async function testApi() {
+            if (isLoading) return;
+            setLoading(true);
+            
+            try {
+                const data = await apiCall('/api/offers-sync/test-api');
+                showAlert(`API Test Successful! Found ${data.sample_data.total_count} total offers.`, 'success');
+            } catch (error) {
+                showAlert(`API Test Failed: ${error.message}`, 'danger');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function syncNow(clearData = true) {
+            if (isLoading) return;
+            
+            const confirmed = confirm(`This will ${clearData ? 'clear all existing data and ' : ''}sync offers from Cuelinks API. Continue?`);
+            if (!confirmed) return;
+            
+            setLoading(true);
+            
+            try {
+                const data = await apiCall('/api/offers-sync/sync-now', {
+                    method: 'POST',
+                    body: JSON.stringify({ clear_data: clearData })
+                });
+                
+                if (data.success) {
+                    showAlert(`Sync completed! Retrieved ${data.total_offers_retrieved} offers in ${formatDuration(data.execution_time_seconds)}`, 'success');
+                    await refreshAll();
+                } else {
+                    showAlert(`Sync failed: ${data.error}`, 'danger');
+                }
+            } catch (error) {
+                showAlert(`Sync failed: ${error.message}`, 'danger');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function clearData() {
+            if (isLoading) return;
+            
+            const confirmed = confirm('This will permanently delete all campaigns, offers, and embeddings data. Are you sure?');
+            if (!confirmed) return;
+            
+            setLoading(true);
+            
+            try {
+                const data = await apiCall('/api/offers-sync/clear-data', { method: 'DELETE' });
+                showAlert('All data cleared successfully!', 'success');
+                await refreshAll();
+            } catch (error) {
+                showAlert(`Failed to clear data: ${error.message}`, 'danger');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function startScheduler() {
+            if (isLoading) return;
+            setLoading(true);
+            
+            try {
+                const data = await apiCall('/api/scheduler/start', { method: 'POST' });
+                showAlert(data.message, 'success');
+                await loadSchedulerStatus();
+            } catch (error) {
+                showAlert(`Failed to start scheduler: ${error.message}`, 'danger');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function stopScheduler() {
+            if (isLoading) return;
+            setLoading(true);
+            
+            try {
+                const data = await apiCall('/api/scheduler/stop', { method: 'POST' });
+                showAlert(data.message, 'warning');
+                await loadSchedulerStatus();
+            } catch (error) {
+                showAlert(`Failed to stop scheduler: ${error.message}`, 'danger');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function restartScheduler() {
+            if (isLoading) return;
+            setLoading(true);
+            
+            try {
+                const data = await apiCall('/api/scheduler/restart', { method: 'POST' });
+                showAlert(data.message, 'success');
+                await loadSchedulerStatus();
+            } catch (error) {
+                showAlert(`Failed to restart scheduler: ${error.message}`, 'danger');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function updateSyncTime() {
+            if (isLoading) return;
+            
+            const syncTime = document.getElementById('sync-time').value;
+            if (!syncTime) {
+                showAlert('Please select a valid time', 'warning');
+                return;
+            }
+            
+            setLoading(true);
+            
+            try {
+                const data = await apiCall('/api/scheduler/sync-time', {
+                    method: 'PUT',
+                    body: JSON.stringify({ sync_time: syncTime })
+                });
+                showAlert(data.message, 'success');
+                await loadSchedulerStatus();
+            } catch (error) {
+                showAlert(`Failed to update sync time: ${error.message}`, 'danger');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        async function refreshAll() {
+            await Promise.all([
+                loadDatabaseStatus(),
+                loadSchedulerStatus(), 
+                loadLastSyncStatus(),
+                loadSyncHistory()
+            ]);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshAll();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(refreshAll, 30000);
+        });
+    </script>
+</body>
+</html>
