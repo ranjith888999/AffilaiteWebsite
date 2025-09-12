@@ -38,16 +38,16 @@ python main.py
 ```
 
 ### 2. Access Admin Interface
-Visit: http://localhost:8003/admin/sync
+Visit: http://localhost:8000/admin/sync
 
 ### 3. Test API Connectivity
 ```bash
-curl http://localhost:8003/api/offers-sync/test-api
+curl http://localhost:8000/api/offers-sync/test-api
 ```
 
 ### 4. Run Manual Sync
 ```bash
-curl -X POST http://localhost:8003/api/offers-sync/sync-now
+curl -X POST http://localhost:8000/api/offers-sync/sync-now
 ```
 
 ## API Endpoints
