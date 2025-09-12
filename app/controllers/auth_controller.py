@@ -30,7 +30,7 @@ google = oauth.register(
 @router.get("/login")
 async def login(request: Request):
     """Initiate Google OAuth login with account selection - Fast redirect"""
-    redirect_uri = os.getenv('GOOGLE_REDIRECT_URI', 'http://localhost:8003/auth/callback')
+    redirect_uri = os.getenv('GOOGLE_REDIRECT_URI', 'http://localhost:8000/auth/callback')
     
     # Optimized for fastest possible redirect
     return await google.authorize_redirect(
