@@ -1,4 +1,4 @@
-# Use Python 3.11 slim image
+# Enhanced Dockerfile for Easypanel deployment
 FROM python:3.11-slim
 
 # Set environment variables
@@ -6,6 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV DEBIAN_FRONTEND=noninteractive
 ENV ENVIRONMENT=production
+ENV DEBUG=False
 
 # Set work directory
 WORKDIR /app
@@ -22,20 +23,23 @@ RUN apt-get update && apt-get install -y \
 COPY requirements-hostinger.txt .
 RUN pip install --no-cache-dir -r requirements-hostinger.txt
 
-# Copy project
+# Copy project files
 COPY . .
 
-# Create non-root user
+# Make startup script executable
+RUN chmod +x start.sh
+
+# Create non-root user and set permissions
 RUN adduser --disabled-password --gecos '' appuser && \
     chown -R appuser:appuser /app
 USER appuser
 
-# Expose port
+# Expose port 8000
 EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
-# Command to run the application
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Use the startup script
+CMD ["./start.sh"]

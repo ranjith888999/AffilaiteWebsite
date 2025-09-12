@@ -108,6 +108,25 @@ app.mount("/images", StaticFiles(directory="static/images"), name="images")
 # Templates
 templates = Jinja2Templates(directory="templates")
 
+# Health check endpoint for deployment platforms
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for deployment platforms like Easypanel, Render, etc."""
+    try:
+        # Test database connection
+        db_status = db_available()
+        return {
+            "status": "healthy",
+            "database": "connected" if db_status else "disconnected",
+            "timestamp": time.time()
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy", 
+            "error": str(e),
+            "timestamp": time.time()
+        }
+
 # Health check endpoint for Render
 @app.get("/", response_class=HTMLResponse)
 async def homepage(request: Request):
@@ -224,6 +243,7 @@ if __name__ == "__main__":
         os.getenv("RAILWAY_ENVIRONMENT") or
         os.getenv("RENDER") or
         os.getenv("DYNO") or  # Heroku
+        os.path.exists("/.dockerenv") or  # Running in Docker
         not os.getenv("DEBUG", "False").lower() == "true"
     )
     
