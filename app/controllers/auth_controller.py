@@ -6,6 +6,7 @@ from authlib.integrations.starlette_client import OAuth
 from authlib.common.security import generate_token
 from app.models.database import User
 from app.database import get_db
+from app.config import Config
 from datetime import datetime
 import json
 
@@ -27,10 +28,25 @@ google = oauth.register(
     }
 )
 
+@router.get("/config")
+async def auth_config():
+    """Get authentication configuration (for debugging/admin purposes)"""
+    config = Config.get_auth_config_summary()
+    return {
+        "status": "success",
+        "config": config,
+        "message": "Authentication configuration retrieved successfully"
+    }
+
 @router.get("/login")
 async def login(request: Request):
     """Initiate Google OAuth login with account selection - Fast redirect"""
-    redirect_uri = os.getenv('GOOGLE_REDIRECT_URI', 'http://localhost:8000/auth/callback')
+    # Use the configuration module to get the redirect URI
+    redirect_uri = Config.get_google_redirect_uri()
+    
+    # Log the configuration for debugging (in development)
+    if os.getenv("DEBUG", "False").lower() == "true":
+        print(f"🔐 Google OAuth Redirect URI: {redirect_uri}")
     
     # Optimized for fastest possible redirect
     return await google.authorize_redirect(
