@@ -14,7 +14,7 @@
                 </a>
                 <a href="/chat" class="btn btn-secondary">
                     <i class="fas fa-comments"></i>
-                    Ask Assistant
+                    Try our AI
                 </a>
             </div>
         </div>
@@ -197,6 +197,15 @@
         card.className = 'offer-card animate__animated animate__fadeInUp';
         card.style.animationDelay = `${index * 0.1}s`;
         
+        // Parse categories
+        let categories = '';
+        try {
+            const categoryObj = JSON.parse(offer.categories || '{}');
+            categories = Object.values(categoryObj).join(', ');
+        } catch (e) {
+            categories = offer.categories || '';
+        }
+        
         // Clean description - remove HTML tags and decode entities
         let cleanDescription = offer.description ? offer.description.replace(/<[^>]*>/g, '') : '';
         cleanDescription = cleanDescription.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
@@ -207,28 +216,42 @@
         const truncatedDescription = isLongDescription ? 
             cleanDescription.substring(0, maxLength).trim() : cleanDescription;
         
+        // Format dates
+        const startDate = offer.start_date ? new Date(offer.start_date).toLocaleDateString() : '';
+        const endDate = offer.end_date ? new Date(offer.end_date).toLocaleDateString() : '';
+        
         // Use clean image URL without cache-busting
         const imageUrl = offer.image_url || '/static/images/placeholder.jpg';
         
         // Create unique ID for this description
-        const descriptionId = `desc-${index}-${Date.now()}`;
+        const descriptionId = `offer-desc-${index}-${Date.now()}`;
+        
+        // Check if expansion is needed
+        const needsExpansion = isLongDescription;
         
         card.innerHTML = `
             <div class="offer-image">
                 <img src="${imageUrl}" 
                      alt="${offer.title}" 
                      loading="lazy"
-                     onerror="this.onerror=null; this.src='/static/images/placeholder.jpg';">
-                ${offer.type ? `<div class="offer-badge">${offer.type}</div>` : ''}
+                     onerror="this.onerror=null; this.src='/static/images/placeholder.jpg';" 
+                     class="loaded">
+                ${endDate ? `<div class="offer-expiry">Expires: ${endDate}</div>` : ''}
             </div>
             <div class="offer-content">
+                <div class="offer-meta">
+                    ${categories ? `<span class="category-tag">${categories}</span>` : ''}
+                </div>
                 <h3>${offer.title}</h3>
                 <div class="description-container">
-                    <p class="description-text collapsed" id="${descriptionId}">${truncatedDescription}${isLongDescription ? ` <span class="show-more-btn" onclick="expandDescription('${descriptionId}', '${cleanDescription.replace(/'/g, "\\'")}')" title="Click to expand">Show more</span>` : ''}</p>
+                    <p class="description-text collapsed" id="${descriptionId}">${truncatedDescription}${needsExpansion ? ` <span class="show-more-btn" onclick="expandDescription('${descriptionId}', '${cleanDescription.replace(/'/g, "\\'")}')" title="Click to expand">Show more</span>` : ''}</p>
                 </div>
                 <div class="coupon-code">
                     ${offer.coupon_code ? `
                         <span>Code: <strong>${offer.coupon_code}</strong></span>
+                        <button onclick="copyCoupon('${offer.coupon_code}')" class="copy-btn">
+                            <i class="fas fa-copy"></i>
+                        </button>
                     ` : `
                         <span class="no-coupon">No Coupon Code Required</span>
                     `}
@@ -238,6 +261,10 @@
                         <i class="fas fa-external-link-alt"></i>
                         Get Deal
                     </a>
+                    <button onclick="shareOffer('${offer.title}', '${offer.affiliate_url}')" class="btn btn-outline">
+                        <i class="fas fa-share"></i>
+                        Share
+                    </button>
                 </div>
             </div>
         `;
@@ -268,6 +295,78 @@
             element.classList.remove('expanded');
             element.classList.add('collapsed');
         }
+    }
+
+    function copyCoupon(code) {
+        navigator.clipboard.writeText(code).then(() => {
+            showSuccess(`Coupon code "${code}" copied to clipboard!`);
+        }).catch(() => {
+            showError('Failed to copy coupon code.');
+        });
+    }
+
+    function shareOffer(title, url) {
+        if (navigator.share) {
+            navigator.share({
+                title: title,
+                url: url
+            });
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(url).then(() => {
+                showSuccess('Offer link copied to clipboard!');
+            });
+        }
+    }
+
+    function showSuccess(message) {
+        // Create and show success notification
+        const notification = document.createElement('div');
+        notification.className = 'notification success';
+        notification.innerHTML = `<i class="fas fa-check"></i> ${message}`;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success-color, #28a745);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            animation: slideInRight 0.3s ease;
+        `;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+
+    function showError(message) {
+        // Create and show error notification
+        const notification = document.createElement('div');
+        notification.className = 'notification error';
+        notification.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--error-color, #dc3545);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            animation: slideInRight 0.3s ease;
+        `;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
     }
 
     function animateStats() {

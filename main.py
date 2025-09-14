@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db, create_tables, db_available
 from app.controllers import campaigns_controller, offers_controller, chat_controller, links_controller, auth_controller, images_controller
 from app.models.database import Offer
+from app.config import Config, validate_environment, print_env_status
 import os
 import time
 from dotenv import load_dotenv
@@ -45,7 +46,16 @@ if os.getenv("DEBUG", "False").lower() != "true":
 async def lifespan(app: FastAPI):
     # Startup
     try:
-        print("🔄 Initializing database connection...")
+        print("� Starting Affiliate Website Application...")
+        
+        # Validate environment variables
+        print_env_status()
+        validate_environment()
+        
+        # Show authentication configuration
+        Config.print_auth_config()
+        
+        print("�🔄 Initializing database connection...")
         start_time = time.time()
         
         # Force database initialization
