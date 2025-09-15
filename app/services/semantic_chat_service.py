@@ -173,6 +173,7 @@ class SemanticChatService:
             
             # 2. Perform vector similarity search in the public.offer_embeddings table
             # The query uses the <=> operator for cosine distance (1 - cosine_similarity)
+            # We calculate similarity as (1 - distance) and order by similarity desc for highest scores first
             sql_query = text("""
                 SELECT
                     o.id AS offer_id,
@@ -184,7 +185,8 @@ class SemanticChatService:
                     o.offer_type AS type,
                     o.categories,
                     c.name AS campaign,
-                    oe.embedding <=> CAST(:query_embedding AS vector) AS distance
+                    oe.embedding <=> CAST(:query_embedding AS vector) AS distance,
+                    (1 - (oe.embedding <=> CAST(:query_embedding AS vector))) AS similarity_score
                 FROM
                     public.offer_embeddings oe
                 JOIN
@@ -192,7 +194,7 @@ class SemanticChatService:
                 JOIN
                     public.campaigns c ON o.campaign_id = c.id
                 ORDER BY
-                    distance ASC
+                    similarity_score DESC
                 LIMIT :top_k
             """)
             
@@ -220,7 +222,8 @@ class SemanticChatService:
                     "categories": category_names,
                     "type": row.type,
                     "affiliate_url": row.affiliate_url,
-                    "distance": row.distance
+                    "distance": row.distance,
+                    "similarity_score": row.similarity_score  # Add the calculated similarity score
                 })
             
             # 4. Generate a conversational response using the LLM

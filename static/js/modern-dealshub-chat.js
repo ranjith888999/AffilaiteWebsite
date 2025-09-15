@@ -384,12 +384,17 @@ window.EnhancedDealsHubChat = (function() {
     function createOfferCardHTML(offer) {
         const categories = offer.categories.map(cat => `<span class="offer-category">${cat}</span>`).join('');
         
+        // Display similarity score if available
+        const scoreDisplay = offer.similarity_score ? 
+            `<div class="similarity-score" title="Relevance Score">${(offer.similarity_score * 100).toFixed(1)}% match</div>` : '';
+        
         return `
             <div class="offer-card" data-offer-id="${offer.offer_id}">
                 <a href="${offer.affiliate_url}" target="_blank" class="offer-image-container">
                     <img src="${offer.image_url}" alt="${offer.title}" class="offer-image" 
-                         onerror="this.src='/images/placeholder.jpg'">
+                         onerror="this.src='/static/images/placeholder.jpg'">
                     <span class="offer-campaign">${offer.campaign}</span>
+                    ${scoreDisplay}
                 </a>
                 <div class="offer-details">
                     <h3 class="offer-title">${offer.title}</h3>
