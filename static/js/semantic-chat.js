@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const categories = offer.categories.map(cat => `<span class="offer-category">${cat}</span>`).join('');
 
         card.innerHTML = `
-            <a href="${offer.affiliate_url}" target="_blank" class="offer-image-container">
+            <a href="${offer.affiliate_url}" target="_blank" class="offer-image-container" style="display: contents;">
                 <img src="${offer.image_url}" alt="${offer.title}" class="offer-image" onerror="this.src='/images/placeholder.jpg'">
                 <span class="offer-campaign">${offer.campaign}</span>
             </a>

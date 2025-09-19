@@ -5,7 +5,6 @@
     position: relative !important;
     background-color: var(--card-bg) !important;
     padding: 80px 0 !important;
-    margin-bottom: 50px !important;
     z-index: 5 !important;
     overflow: visible !important;
     
@@ -37,7 +36,6 @@
 .featured-offers-section {
     position: relative !important;
     z-index: 1 !important;
-    margin-top: 200px !important; /* Create substantial gap */
     padding-top: 80px !important;
     background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 25%, #f1f5f9 75%, #f8fafc 100%) !important;
 }
