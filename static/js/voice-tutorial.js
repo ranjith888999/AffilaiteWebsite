@@ -3,7 +3,8 @@
  * Shows a step-by-step guide for the first-time users
  */
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() 
+    {
     // Only show tutorial if user hasn't seen it before
     if (!localStorage.getItem('voice_tutorial_seen')) {
         // Wait a bit to let the page load fully
@@ -18,7 +19,7 @@ function showVoiceTutorial() {
     
     // Create tutorial overlay
     const tutorialOverlay = document.createElement('div');
-    tutorialOverlay.className = 'voice-tutorial-overlay';
+    // tutorialOverlay.className = 'voice-tutorial-overlay';
     
     // Tutorial content
     tutorialOverlay.innerHTML = `
@@ -94,11 +95,11 @@ function showVoiceTutorial() {
 }
 
 function closeTutorial() {
-    const tutorialOverlay = document.querySelector('.voice-tutorial-overlay');
-    if (tutorialOverlay) {
-        tutorialOverlay.classList.add('closing');
-        setTimeout(() => {
-            tutorialOverlay.remove();
-        }, 300);
-    }
+    // const tutorialOverlay = document.querySelector('.voice-tutorial-overlay');
+    // if (tutorialOverlay) {
+    //     tutorialOverlay.classList.add('closing');
+    //     setTimeout(() => {
+    //         tutorialOverlay.remove();
+    //     }, 300);
+    // }
 }

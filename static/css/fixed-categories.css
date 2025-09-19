@@ -9,15 +9,12 @@
 .categories-section {
     background-color: var(--card-bg) !important;
     position: relative !important;
-    padding-bottom: 80px !important;
-    margin-bottom: 150px !important;
 }
 
 /* Force the featured section to be well below the categories */
 .featured-offers-section {
     clear: both !important;
     position: relative !important;
-    margin-top: 150px !important;
 }
 
 /* Spacer to physically separate the sections */

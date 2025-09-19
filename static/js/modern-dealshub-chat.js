@@ -44,7 +44,6 @@ window.EnhancedDealsHubChat = (function() {
             
             // Headers
             mainHeader: document.getElementById('mainHeader'),
-            conversationHeader: document.getElementById('conversationHeader'),
             
             // States
             welcomeState: document.getElementById('welcomeState'),
@@ -54,6 +53,7 @@ window.EnhancedDealsHubChat = (function() {
             chatMessages: document.getElementById('chatMessages'),
             
             // Controls
+            floatingControls: document.getElementById('floatingControls'),
             backToSearch: document.getElementById('backToSearch'),
             loadingIndicator: document.getElementById('loadingIndicator'),
             feedbackAlert: document.getElementById('feedbackAlert'),
@@ -249,9 +249,11 @@ window.EnhancedDealsHubChat = (function() {
         elements.mainHeader.style.display = 'none';
         elements.welcomeState.style.display = 'none';
         
-        // Show conversation header and state
-        elements.conversationHeader.style.display = 'flex';
+        // Show conversation state and floating controls
         elements.conversationState.style.display = 'flex';
+        if (elements.floatingControls) {
+            elements.floatingControls.style.display = 'flex';
+        }
         
         state.isInConversation = true;
         
@@ -269,9 +271,11 @@ window.EnhancedDealsHubChat = (function() {
         elements.mainHeader.style.display = 'flex';
         elements.welcomeState.style.display = 'flex';
         
-        // Hide conversation header and state
-        elements.conversationHeader.style.display = 'none';
+        // Hide conversation state and floating controls
         elements.conversationState.style.display = 'none';
+        if (elements.floatingControls) {
+            elements.floatingControls.style.display = 'none';
+        }
         
         state.isInConversation = false;
         
@@ -385,16 +389,13 @@ window.EnhancedDealsHubChat = (function() {
         const categories = offer.categories.map(cat => `<span class="offer-category">${cat}</span>`).join('');
         
         // Display similarity score if available
-        const scoreDisplay = offer.similarity_score ? 
-            `<div class="similarity-score" title="Relevance Score">${(offer.similarity_score * 100).toFixed(1)}% match</div>` : '';
         
         return `
             <div class="offer-card" data-offer-id="${offer.offer_id}">
-                <a href="${offer.affiliate_url}" target="_blank" class="offer-image-container">
+                <a href="${offer.affiliate_url}" target="_blank" class="offer-image-container" style="display: contents;">
                     <img src="${offer.image_url}" alt="${offer.title}" class="offer-image" 
                          onerror="this.src='/static/images/placeholder.jpg'">
                     <span class="offer-campaign">${offer.campaign}</span>
-                    ${scoreDisplay}
                 </a>
                 <div class="offer-details">
                     <h3 class="offer-title">${offer.title}</h3>

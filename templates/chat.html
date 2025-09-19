@@ -19,24 +19,16 @@
             </div>
         </header>
 
-        <!-- Compact Header for Conversation Mode -->
-        <header id="conversationHeader" class="conversation-header" style="display: none;">
-            <div class="compact-brand">
-                <div class="compact-logo">
-                    <i class="fas fa-sparkles"></i>
-                </div>
-                <span class="compact-title">DealsHub AI</span>
-            </div>
-            <div class="header-actions">
-                <button id="fullscreenToggle" class="header-action-btn" title="Toggle Fullscreen">
-                    <i class="fas fa-expand"></i>
-                </button>
-                <button id="backToSearch" class="back-button">
-                    <i class="fas fa-arrow-left"></i>
-                    <span>New Search</span>
-                </button>
-            </div>
-        </header>
+        <!-- Floating Action Controls -->
+        <div class="floating-controls" id="floatingControls">
+            <button id="fullscreenToggle" class="floating-btn floating-btn-fullscreen" title="Toggle Fullscreen">
+                <i class="fas fa-expand"></i>
+            </button>
+            <button id="backToSearch" class="floating-btn floating-btn-new-search" title="New Search">
+                <i class="fas fa-arrow-left"></i>
+                <span class="floating-btn-text">New Search</span>
+            </button>
+        </div>
 
         <!-- Welcome State with Beautiful Design -->
         <main id="welcomeState" class="welcome-section">
