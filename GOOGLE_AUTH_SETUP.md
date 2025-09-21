@@ -1,6 +1,6 @@
 # Google Authentication Configuration Guide
 
-This guide explains how to configure Google OAuth authentication for your affiliate website with the new domain: `https://couponsapp-semantic2.p9ghy4.easypanel.host`
+This guide explains how to configure Google OAuth authentication for your affiliate website with the new domain: `https://couponsapp-affiliate.p9ghy4.easypanel.host`
 
 ## Quick Setup
 
@@ -20,18 +20,18 @@ Create a `.env` file in the project root with the following content:
 
 ```env
 # Base URL for the application
-BASE_URL=https://couponsapp-semantic2.p9ghy4.easypanel.host
+BASE_URL=https://couponsapp-affiliate.p9ghy4.easypanel.host
 
 # Google OAuth Configuration
 GOOGLE_CLIENT_ID=your_google_client_id_here
 GOOGLE_CLIENT_SECRET=your_google_client_secret_here
-GOOGLE_REDIRECT_URI=https://couponsapp-semantic2.p9ghy4.easypanel.host/auth/callback
+GOOGLE_REDIRECT_URI=https://couponsapp-affiliate.p9ghy4.easypanel.host/auth/callback
 
 # Security
 SECRET_KEY=your_super_secret_key_here
 
 # Domain (without http/https)
-DOMAIN_NAME=couponsapp-semantic2.p9ghy4.easypanel.host
+DOMAIN_NAME=couponsapp-affiliate.p9ghy4.easypanel.host
 
 # Optional: Cuelinks API
 CUELINKS_API_KEY=your_cuelinks_api_key_here
@@ -52,12 +52,12 @@ DB_PASSWORD=your_database_password
 
 **Authorized JavaScript origins:**
 ```
-https://couponsapp-semantic2.p9ghy4.easypanel.host
+https://couponsapp-affiliate.p9ghy4.easypanel.host
 ```
 
 **Authorized redirect URIs:**
 ```
-https://couponsapp-semantic2.p9ghy4.easypanel.host/auth/callback
+https://couponsapp-affiliate.p9ghy4.easypanel.host/auth/callback
 ```
 
 ### 2. Environment Variable Priority
@@ -81,7 +81,7 @@ python setup_env.py --check
 ### 2. Test Authentication
 
 1. Start your application
-2. Visit: `http://localhost:8000/auth/config` (development) or `https://couponsapp-semantic2.p9ghy4.easypanel.host/auth/config` (production)
+2. Visit: `http://localhost:8000/auth/config` (development) or `https://couponsapp-affiliate.p9ghy4.easypanel.host/auth/config` (production)
 3. Check that all configuration values are correct
 
 ### 3. Test Login Flow
@@ -124,8 +124,8 @@ Visit `/auth/config` to see the current authentication configuration:
 {
   "status": "success",
   "config": {
-    "base_url": "https://couponsapp-semantic2.p9ghy4.easypanel.host",
-    "google_redirect_uri": "https://couponsapp-semantic2.p9ghy4.easypanel.host/auth/callback",
+    "base_url": "https://couponsapp-affiliate.p9ghy4.easypanel.host",
+    "google_redirect_uri": "https://couponsapp-affiliate.p9ghy4.easypanel.host/auth/callback",
     "google_client_id_configured": true,
     "google_client_secret_configured": true,
     "google_auth_ready": true
