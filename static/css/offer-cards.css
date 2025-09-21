@@ -1,0 +1,133 @@
+/* Offer Card Styles */
+.offer-card {
+    padding: var(--space-md);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-light);
+    margin-bottom: var(--space-md);
+}
+
+.offer-coupon {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    background: var(--bg-tertiary);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    margin: var(--space-xs) 0;
+}
+
+.coupon-code {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--text-primary);
+    flex-grow: 1;
+}
+
+.copy-coupon {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+}
+
+.copy-coupon:hover {
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.copy-coupon.copied {
+    color: #43e97b;
+}
+
+.no-coupon {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    padding: var(--space-xs) 0;
+}
+
+/* Expandable Description */
+.offer-description {
+    margin: var(--space-xs) 0;
+    position: relative;
+}
+
+.offer-description p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+.offer-description.expandable p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.offer-description.expandable.collapsed p {
+    -webkit-line-clamp: 2;
+}
+
+.expand-description {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+}
+
+.expand-description:hover {
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.expand-description i {
+    font-size: 0.8em;
+    transition: transform 0.2s ease;
+}
+
+.offer-description.expandable:not(.collapsed) .expand-description i {
+    transform: rotate(180deg);
+}
+
+.expand-description .more-text {
+    display: inline;
+}
+
+.expand-description .less-text {
+    display: none;
+}
+
+.offer-description.expandable:not(.collapsed) .expand-description .more-text {
+    display: none;
+}
+
+.offer-description.expandable:not(.collapsed) .expand-description .less-text {
+    display: inline;
+}
+
+@media (prefers-color-scheme: dark) {
+    .offer-coupon {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .copy-coupon:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .expand-description:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+}

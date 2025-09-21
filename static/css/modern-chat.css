@@ -835,9 +835,9 @@ body {
 }
 
 .offer-image {
-    width: 100%;
+    width: 80%;
     height: 30%; /* Use full height of container */
-    object-fit: cover;
+    object-fit: fill;
     transition: transform 0.3s ease;
 }
 
@@ -924,7 +924,7 @@ body {
 
 .offer-actions {
     border-top: 1px solid var(--border-light);
-    margin-bottom:20px;
+    margin-bottom:50px;
     display: flex;
     justify-content: space-between;
     align-items: center;
