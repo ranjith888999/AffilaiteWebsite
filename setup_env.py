@@ -21,7 +21,7 @@ def create_env_file():
             return False
     
     print("🔧 Setting up environment variables for your affiliate website...")
-    print("🌐 Using the domain: https://couponsapp-semantic2.p9ghy4.easypanel.host")
+    print("🌐 Using the domain: https://couponsapp-affiliate.p9ghy4.easypanel.host")
     
     # Get required values
     google_client_id = input("🔑 Enter your Google Client ID: ").strip()
@@ -41,18 +41,18 @@ def create_env_file():
 # Generated on {os.popen('date').read().strip()}
 
 # Base URL for the application
-BASE_URL=https://couponsapp-semantic2.p9ghy4.easypanel.host
+BASE_URL=https://couponsapp-affiliate.p9ghy4.easypanel.host
 
 # Google OAuth Configuration
 GOOGLE_CLIENT_ID={google_client_id}
 GOOGLE_CLIENT_SECRET={google_client_secret}
-GOOGLE_REDIRECT_URI=https://couponsapp-semantic2.p9ghy4.easypanel.host/auth/callback
+GOOGLE_REDIRECT_URI=https://couponsapp-affiliate.p9ghy4.easypanel.host/auth/callback
 
 # Security
 SECRET_KEY={secret_key}
 
 # Domain (without http/https)
-DOMAIN_NAME=couponsapp-semantic2.p9ghy4.easypanel.host
+DOMAIN_NAME=couponsapp-affiliate.p9ghy4.easypanel.host
 
 # Cuelinks API (optional)
 {"CUELINKS_API_KEY=" + cuelinks_api_key if cuelinks_api_key else "# CUELINKS_API_KEY=your_api_key_here"}
@@ -72,7 +72,7 @@ DEBUG=False
         print("✅ .env file created successfully!")
         print("📍 Location:", env_path.absolute())
         print("\n🔍 Configuration Summary:")
-        print(f"   Base URL: https://couponsapp-semantic2.p9ghy4.easypanel.host")
+        print(f"   Base URL: https://couponsapp-affiliate.p9ghy4.easypanel.host")
         print(f"   Google Client ID: {google_client_id[:20]}...")
         print(f"   Secret Key: {secret_key[:10]}...")
         print(f"   Cuelinks API: {'✅ Configured' if cuelinks_api_key else '⚪ Not set'}")
@@ -81,8 +81,8 @@ DEBUG=False
         print("\n📝 Next Steps:")
         print("1. Restart your application to load the new environment variables")
         print("2. Make sure these URLs are configured in your Google Console:")
-        print("   - Authorized JavaScript origins: https://couponsapp-semantic2.p9ghy4.easypanel.host")
-        print("   - Authorized redirect URIs: https://couponsapp-semantic2.p9ghy4.easypanel.host/auth/callback")
+        print("   - Authorized JavaScript origins: https://couponsapp-affiliate.p9ghy4.easypanel.host")
+        print("   - Authorized redirect URIs: https://couponsapp-affiliate.p9ghy4.easypanel.host/auth/callback")
         print("3. Test the authentication by visiting your website")
         
         return True
