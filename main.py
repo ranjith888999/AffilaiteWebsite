@@ -59,11 +59,11 @@ async def lifespan(app: FastAPI):
         start_time = time.time()
         
         # Force database initialization
-        # from app.database import initialize_database
-        # initialize_database()
+        from app.database import initialize_database
+        initialize_database()
         
         # Create tables
-        # create_tables()
+        create_tables()
         
         startup_time = time.time() - start_time
         print(f"✅ Database initialized and tables created/verified in {startup_time:.2f}s")
@@ -119,23 +119,23 @@ app.mount("/images", StaticFiles(directory="static/images"), name="images")
 templates = Jinja2Templates(directory="templates")
 
 # Health check endpoint for deployment platforms
-# @app.get("/health")
-# async def health_check():
-#     """Health check endpoint for deployment platforms like Easypanel, Render, etc."""
-#     try:
-#         # Test database connection
-#         db_status = db_available()
-#         return {
-#             "status": "healthy",
-#             "database": "connected" if db_status else "disconnected",
-#             "timestamp": time.time()
-#         }
-#     except Exception as e:
-#         return {
-#             "status": "unhealthy", 
-#             "error": str(e),
-#             "timestamp": time.time()
-#         }
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for deployment platforms like Easypanel, Render, etc."""
+    try:
+        # Test database connection
+        db_status = db_available()
+        return {
+            "status": "healthy",
+            "database": "connected" if db_status else "disconnected",
+            "timestamp": time.time()
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy", 
+            "error": str(e),
+            "timestamp": time.time()
+        }
 
 # Health check endpoint for Render
 @app.get("/", response_class=HTMLResponse)
@@ -165,20 +165,7 @@ async def sync_admin_page(request: Request):
 
 @app.get("/health")
 async def health_check_detailed():
-    """Health check endpoint for deployment platforms like Easypanel, Render, etc."""
-    try:
-        return {
-            "status": "healthy", 
-            "timestamp": time.time(),
-            "service": "affiliate-website"
-        }
-    except Exception as e:
-        return {
-            "status": "unhealthy", 
-            "error": str(e),
-            "timestamp": time.time(),
-            "service": "affiliate-website"
-        }
+    return {"status": "ok", "timestamp": time.time()}
 
 # Include routers
 app.include_router(campaigns_controller.router)
@@ -270,18 +257,13 @@ if __name__ == "__main__":
         not os.getenv("DEBUG", "False").lower() == "true"
     )
     
-    # Set port from environment variable (EasyPanel uses different ports)
-    port = int(os.getenv("PORT", 8000))
-    
     if is_production:
         print("🚀 Starting server in production mode...")
-        print(f"🌐 Server will be available on http://0.0.0.0:{port}")
         uvicorn.run(
             "main:app", 
             host="0.0.0.0", 
-            port=port, 
-            reload=False,
-            workers=1
+            port=int(os.getenv("PORT", 8000)), 
+            reload=False
         )
     else:
         print("🚀 Starting server in debug mode with auto-reload...")
