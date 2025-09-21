@@ -379,6 +379,32 @@ window.EnhancedDealsHubChat = (function() {
         // Bind feedback buttons
         bindOfferFeedbacks(messageDiv);
         
+        // Bind copy coupon buttons
+        messageDiv.querySelectorAll('.copy-coupon').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const couponCode = btn.dataset.coupon;
+                try {
+                    await navigator.clipboard.writeText(couponCode);
+                    btn.classList.add('copied');
+                    btn.querySelector('i').className = 'fas fa-check';
+                    setTimeout(() => {
+                        btn.classList.remove('copied');
+                        btn.querySelector('i').className = 'far fa-copy';
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy:', err);
+                }
+            });
+        });
+
+        // Bind description expand/collapse buttons
+        messageDiv.querySelectorAll('.expand-description').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const description = btn.closest('.offer-description');
+                description.classList.toggle('collapsed');
+            });
+        });
+        
         scrollToBottom();
     }
 
@@ -388,7 +414,8 @@ window.EnhancedDealsHubChat = (function() {
     function createOfferCardHTML(offer) {
         const categories = offer.categories.map(cat => `<span class="offer-category">${cat}</span>`).join('');
         
-        // Display similarity score if available
+        const description = offer.description || '';
+        const isLongDescription = description.split(' ').length > 10; // Roughly 2 lines
         
         return `
             <div class="offer-card" data-offer-id="${offer.offer_id}">
@@ -399,7 +426,25 @@ window.EnhancedDealsHubChat = (function() {
                 </a>
                 <div class="offer-details">
                     <h3 class="offer-title">${offer.title}</h3>
-                    ${offer.coupon_code ? `<div class="offer-coupon">Code: ${offer.coupon_code}</div>` : ''}
+                    ${offer.coupon_code ? 
+                        `<div class="offer-coupon">
+                            <span class="coupon-code">${offer.coupon_code}</span>
+                            <button class="copy-coupon" data-coupon="${offer.coupon_code}" title="Copy coupon code">
+                                <i class="far fa-copy"></i>
+                            </button>
+                        </div>` : 
+                        '<div class="no-coupon">No Coupon Code Required</div>'
+                    }
+                    <div class="offer-description ${isLongDescription ? 'expandable collapsed' : ''}">
+                        <p>${description}</p>
+                        ${isLongDescription ? 
+                            `<button class="expand-description">
+                                <span class="more-text">More</span>
+                                <span class="less-text">Less</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>` : ''
+                        }
+                    </div>
                     <div class="offer-categories">${categories}</div>
                 </div>
                 <div class="offer-actions">
