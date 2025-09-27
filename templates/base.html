@@ -22,6 +22,8 @@
     <link href="/static/css/voice-tutorial.css" rel="stylesheet">
     <link href="/static/css/offers-display.css" rel="stylesheet">
     <link href="/static/css/modern-chat.css" rel="stylesheet">
+    <link href="/static/css/mobile-nav.css" rel="stylesheet">
+    <link href="/static/css/auth.css" rel="stylesheet">
     <style>
         :root {
             --highlight-color-rgb: 59, 130, 246; /* Default blue color in RGB format */
@@ -44,36 +46,31 @@
                     <span>DealsHub</span>
                 </a>
             </div>
+            <button class="nav-toggle" aria-label="toggle navigation">
+                <span class="hamburger"></span>
+            </button>
             <div class="nav-menu">
                 <a href="/" class="nav-link">Home</a>
                 <a href="/offers" class="nav-link">Offers</a>
-                <!-- <a href="/categories" class="nav-link">Categories</a> -->
-                <!-- <a href="/link-generator" class="nav-link">Link Generator</a> -->
                 <a href="/chat" class="nav-link">Try our AI</a>
-            </div>
-            <div class="theme-switcher">
-                <div class="theme-selector">
-                    <button id="theme-light" class="theme-btn" title="Light Mode">
-                        <i class="fas fa-sun"></i>
-                    </button>
-                    <button id="theme-dark" class="theme-btn" title="Dark Mode">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                    <!-- <button id="theme-night" class="theme-btn" title="Night Mode">
-                        <i class="fas fa-star"></i>
-                    </button>
-                    <button id="theme-off-white" class="theme-btn" title="Off-White Mode">
-                        <i class="fas fa-adjust"></i>
-                    </button> -->
+                <div class="nav-auth-mobile">
+                    <!-- Mobile auth links will be injected here by auth.js -->
                 </div>
             </div>
-            <div class="nav-auth" id="navAuth">
-                <!-- Auth buttons will be loaded here via JavaScript -->
-            </div>
-            <div class="nav-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
+            <div class="nav-right-items">
+                <div class="theme-switcher">
+                    <div class="theme-selector">
+                        <button id="theme-light" class="theme-btn" title="Light Mode">
+                            <i class="fas fa-sun"></i>
+                        </button>
+                        <button id="theme-dark" class="theme-btn" title="Dark Mode">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="nav-auth" id="navAuth">
+                    <!-- Desktop auth buttons will be loaded here via JavaScript -->
+                </div>
             </div>
         </div>
     </nav>

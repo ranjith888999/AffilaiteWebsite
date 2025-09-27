@@ -103,13 +103,16 @@ async def auth_callback(request: Request, db: Session = Depends(get_db)):
         # Create response and redirect to home
         response = RedirectResponse(url="/")
         
-        # Store user session in cookie (you might want to use a more secure session store)
+        # Store user session in cookie (secure for production)
+        is_production = os.getenv("ENVIRONMENT") == "production"
         response.set_cookie(
             key="user_session",
             value=json.dumps(session_data),
             max_age=86400 * 7,  # 7 days
             httponly=True,
-            secure=False  # Set to True in production with HTTPS
+            secure=is_production,  # True for HTTPS in production
+            samesite="lax",
+            domain=".couponscover.com" if is_production else None
         )
         
         return response
@@ -122,7 +125,11 @@ async def auth_callback(request: Request, db: Session = Depends(get_db)):
 async def logout():
     """Logout user"""
     response = RedirectResponse(url="/")
-    response.delete_cookie("user_session")
+    is_production = os.getenv("ENVIRONMENT") == "production"
+    response.delete_cookie(
+        "user_session",
+        domain=".couponscover.com" if is_production else None
+    )
     return response
 
 @router.get("/user")
