@@ -4502,15 +4502,15 @@ section > .container {
 }
 
 .btn-outline {
-    background: rgba(255, 255, 255, 0.1);
+    background: mediumseagreen;
     color: white;
     border: 2px solid rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(10px);
 }
 
 .btn-outline:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5);
+    background: seagreen;
+    border-color: white;
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
@@ -4707,5 +4707,5 @@ section > .container {
     background: 
         radial-gradient(circle at 20% 80%, rgba(255, 107, 107, 0.3) 0%, transparent 50%),
         radial-gradient(circle at 80% 20%, rgba(240, 147, 251, 0.25) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(102, 126, 234, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(102, 126, 234, 0.2) 0%, transparent 50%);
 }

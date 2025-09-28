@@ -801,7 +801,7 @@ body {
 
 .offers-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* Reduced min-width further */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Reduced min-width further */
     gap: var(--space-sm); /* Reduced gap from var(--space-md) */
     margin-top: var(--space-sm); /* Reduced margin */
     width: 100%;

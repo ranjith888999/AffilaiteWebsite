@@ -1,0 +1,114 @@
+/* Enhanced Coupon Code Styles for Home Page Featured Offers */
+/* This file contains specific styling for the coupon codes in the Featured Offers section */
+
+.featured-offers-coupon-enhanced .coupon-code-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.featured-offers-coupon-enhanced .coupon-code {
+    background: var(--coupon-code-bg, rgba(59, 130, 246, 0.1));
+    color: var(--coupon-code-text, #2563eb);
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px dashed rgba(59, 130, 246, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.featured-offers-coupon-enhanced .coupon-code::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.featured-offers-coupon-enhanced .coupon-code:hover {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.featured-offers-coupon-enhanced .coupon-code:hover::before {
+    left: 100%;
+}
+
+.featured-offers-coupon-enhanced .coupon-code span {
+    flex-grow: 1;
+}
+
+.featured-offers-coupon-enhanced .copy-btn {
+    background: rgba(59, 130, 246, 0.1);
+    border: none;
+    color: var(--coupon-code-text, #2563eb);
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-left: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 32px;
+}
+
+.featured-offers-coupon-enhanced .copy-btn:hover {
+    background: rgba(59, 130, 246, 0.2);
+    transform: scale(1.1);
+}
+
+.featured-offers-coupon-enhanced .copy-btn:active {
+    transform: scale(0.95);
+}
+
+.featured-offers-coupon-enhanced .no-coupon {
+    background: rgba(156, 163, 175, 0.1);
+    color: #6b7280;
+    padding: 10px 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-style: italic;
+    border: 1px dashed rgba(156, 163, 175, 0.3);
+}
+
+/* Dark theme support for coupon codes */
+[data-theme="dark"] .featured-offers-coupon-enhanced .coupon-code {
+    background: var(--coupon-code-bg, rgba(59, 130, 246, 0.2));
+    color: var(--coupon-code-text, #93c5fd);
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+[data-theme="dark"] .featured-offers-coupon-enhanced .coupon-code:hover {
+    background: rgba(59, 130, 246, 0.25);
+    border-color: rgba(59, 130, 246, 0.6);
+}
+
+[data-theme="dark"] .featured-offers-coupon-enhanced .copy-btn {
+    background: rgba(59, 130, 246, 0.15);
+    color: var(--coupon-code-text, #93c5fd);
+}
+
+[data-theme="dark"] .featured-offers-coupon-enhanced .copy-btn:hover {
+    background: rgba(59, 130, 246, 0.25);
+}
+
+[data-theme="dark"] .featured-offers-coupon-enhanced .no-coupon {
+    background: rgba(75, 85, 99, 0.2);
+    color: #9ca3af;
+    border-color: rgba(75, 85, 99, 0.4);
+}

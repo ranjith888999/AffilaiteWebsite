@@ -194,7 +194,7 @@
 
     function createOfferCard(offer, index) {
         const card = document.createElement('div');
-        card.className = 'offer-card animate__animated animate__fadeInUp';
+        card.className = 'offer-card featured-offers-coupon-enhanced animate__animated animate__fadeInUp';
         card.style.animationDelay = `${index * 0.1}s`;
         
         // Parse categories
@@ -210,11 +210,12 @@
         let cleanDescription = offer.description ? offer.description.replace(/<[^>]*>/g, '') : '';
         cleanDescription = cleanDescription.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
         
-        // Create truncated and full versions for 2 lines (approximately 160 characters)
-        const maxLength = 160; // Longer for 2 lines
-        const isLongDescription = cleanDescription.length > maxLength;
+        // Create truncated description - limit to 25 words (same as offers page)
+        const descriptionWords = cleanDescription.split(' ');
+        const maxDescWords = 25;
+        const isLongDescription = descriptionWords.length > maxDescWords;
         const truncatedDescription = isLongDescription ? 
-            cleanDescription.substring(0, maxLength).trim() : cleanDescription;
+            descriptionWords.slice(0, maxDescWords).join(' ') + '...' : cleanDescription;
         
         // Format dates
         const startDate = offer.start_date ? new Date(offer.start_date).toLocaleDateString() : '';
@@ -230,7 +231,7 @@
         const needsExpansion = isLongDescription;
         
         card.innerHTML = `
-            <div class="offer-image">
+            <div class="offer-image" style="position: relative;height: 110px;">
                 <img src="${imageUrl}" 
                      alt="${offer.title}" 
                      loading="lazy"
@@ -246,22 +247,26 @@
                 <div class="description-container">
                     <p class="description-text collapsed" id="${descriptionId}">${truncatedDescription}${needsExpansion ? ` <span class="show-more-btn" onclick="expandDescription('${descriptionId}', '${cleanDescription.replace(/'/g, "\\'")}')" title="Click to expand">Show more</span>` : ''}</p>
                 </div>
-                <div class="coupon-code">
+                <div class="">
                     ${offer.coupon_code ? `
-                        <span>Code: <strong>${offer.coupon_code}</strong></span>
-                        <button onclick="copyCoupon('${offer.coupon_code}')" class="copy-btn">
-                            <i class="fas fa-copy"></i>
-                        </button>
+                        <div class="coupon-code">
+                            <span>Code: <strong>${offer.coupon_code}</strong></span>
+                            <button onclick="copyCoupon('${offer.coupon_code}')" class="copy-btn">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
                     ` : `
-                        <span class="no-coupon">No Coupon Code Required</span>
+                        <div class="no-coupon">
+                            <span>No Coupon Code Required</span>
+                        </div>
                     `}
                 </div>
                 <div class="offer-actions">
-                    <a href="${offer.affiliate_url}" target="_blank" class="btn btn-primary" style="min-width: 20px;">
+                    <a href="${offer.affiliate_url}" target="_blank" class="btn btn-primary" style="min-width: 20px;padding: 6px 20px; font-weight: 500;">
                         <i class="fas fa-external-link-alt"></i>
                         Get Deal
                     </a>
-                    <button onclick="shareOffer('${offer.title}', '${offer.affiliate_url}')" class="btn btn-outline"  style="min-width: 20px;">
+                    <button onclick="shareOffer('${offer.title}', '${offer.affiliate_url}')" class="btn btn-outline"  style="min-width: 20px;padding: 6px 20px; font-weight: 500;">
                         <i class="fas fa-share"></i>
                         Share
                     </button>
@@ -286,10 +291,12 @@
         const element = document.getElementById(elementId);
         
         if (element) {
-            // Restore truncated text (160 chars for 2 lines)
-            const maxLength = 160;
-            const truncatedText = fullText.length > maxLength ? fullText.substring(0, maxLength).trim() : fullText;
-            const needsExpansion = fullText.length > maxLength;
+            // Restore truncated text (25 words max - same as offers page)
+            const descriptionWords = fullText.split(' ');
+            const maxDescWords = 25;
+            const needsExpansion = descriptionWords.length > maxDescWords;
+            const truncatedText = needsExpansion ? 
+                descriptionWords.slice(0, maxDescWords).join(' ') + '...' : fullText;
             
             element.innerHTML = truncatedText + (needsExpansion ? ' <span class="show-more-btn" onclick="expandDescription(\'' + elementId + '\', \'' + fullText.replace(/'/g, "\\'") + '\')">Show more</span>' : '');
             element.classList.remove('expanded');

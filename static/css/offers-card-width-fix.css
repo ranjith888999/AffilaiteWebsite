@@ -1,0 +1,95 @@
+/* Offers Card Width Fix - Maintain proper card widths for 1-2 results */
+
+/* Override the default grid behavior for consistent card widths */
+.offers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 400px));
+    gap: 25px;
+    margin-bottom: 25px;
+    align-items: stretch;
+    will-change: transform;
+    contain: layout style;
+    justify-content: start; /* Align cards to the left instead of stretching */
+    max-width: 100%;
+    width: 100%;
+}
+
+/* For mobile devices - single column */
+@media (max-width: 767px) {
+    .offers-grid {
+        grid-template-columns: 1fr;
+        justify-content: center;
+    }
+}
+
+/* For tablet devices - up to 2 columns with fixed width */
+@media (min-width: 768px) and (max-width: 1199px) {
+    .offers-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 400px));
+        justify-content: start;
+        max-width: 850px; /* Limit width to prevent single card stretching */
+    }
+}
+
+/* For desktop devices - up to 3 columns with fixed width */
+@media (min-width: 1200px) {
+    .offers-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 365px));
+        justify-content: start;
+        max-width: 1300px; /* Limit width for better layout */
+    }
+}
+
+/* Specific handling for 1-2 cards scenarios using :has() selector */
+.offers-grid:has(.offer-card:nth-child(1):nth-last-child(1)) {
+    /* When there's only 1 card */
+    grid-template-columns: minmax(320px, 400px);
+    justify-content: center;
+    max-width: 400px;
+    margin: 0 auto 25px auto;
+}
+
+.offers-grid:has(.offer-card:nth-child(2):nth-last-child(1)) {
+    /* When there are exactly 2 cards */
+    grid-template-columns: repeat(2, minmax(320px, 400px));
+    justify-content: center;
+    max-width: 850px;
+    margin: 0 auto 25px auto;
+}
+
+/* Fallback for browsers that don't support :has() selector */
+@supports not selector(:has(*)) {
+    .offers-grid.single-result {
+        grid-template-columns: minmax(320px, 400px);
+        justify-content: center;
+        max-width: 400px;
+        margin: 0 auto 25px auto;
+    }
+    
+    .offers-grid.two-results {
+        grid-template-columns: repeat(2, minmax(320px, 400px));
+        justify-content: center;
+        max-width: 850px;
+        margin: 0 auto 25px auto;
+    }
+}
+
+/* Ensure cards maintain their styling */
+.offer-card {
+    width: 100%;
+    max-width: 400px;
+    min-width: 320px;
+}
+
+/* Additional responsive adjustments */
+@media (max-width: 480px) {
+    .offers-grid {
+        grid-template-columns: 1fr;
+        padding: 0 10px;
+    }
+    
+    .offer-card {
+        min-width: 280px;
+        max-width: 100%;
+    }
+}

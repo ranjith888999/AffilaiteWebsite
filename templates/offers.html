@@ -306,6 +306,12 @@
     async function loadOffers(page = 1) {
         showLoading(true);
         
+        // Add loading state to pagination
+        const paginationWrapper = document.getElementById('paginationWrapper');
+        if (paginationWrapper) {
+            paginationWrapper.classList.add('pagination-loading');
+        }
+        
         try {
             let url = `/api/offers/database?page=${page}&per_page=12`;
             
@@ -354,6 +360,12 @@
             showError('Failed to load offers. Please try again.');
         } finally {
             showLoading(false);
+            
+            // Remove loading state from pagination
+            const paginationWrapper = document.getElementById('paginationWrapper');
+            if (paginationWrapper) {
+                paginationWrapper.classList.remove('pagination-loading');
+            }
         }
     }
 
@@ -377,6 +389,9 @@
             container.appendChild(offerCard);
         });
         
+        // Apply proper grid classes based on number of offers
+        applyCardWidthClasses(container, offers.length);
+        
         // Trigger image handler for newly added offers
         if (window.imageHandler) {
             setTimeout(() => window.imageHandler.refreshImages(), 100);
@@ -397,15 +412,24 @@
             categories = offer.categories || '';
         }
         
+        // Clean and truncate title - limit to 10 words
+        let cleanTitle = offer.title || '';
+        const titleWords = cleanTitle.split(' ');
+        const maxTitleWords = 10;
+        const isLongTitle = titleWords.length > maxTitleWords;
+        const truncatedTitle = isLongTitle ? 
+            titleWords.slice(0, maxTitleWords).join(' ') + '...' : cleanTitle;
+        
         // Clean description - remove HTML tags and decode entities
         let cleanDescription = offer.description ? offer.description.replace(/<[^>]*>/g, '') : '';
         cleanDescription = cleanDescription.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
         
-        // Create truncated and full versions for 2 lines (approximately 160 characters)
-        const maxLength = 160; // Longer for 2 lines
-        const isLongDescription = cleanDescription.length > maxLength;
+        // Create truncated description - limit to 25 words
+        const descriptionWords = cleanDescription.split(' ');
+        const maxDescWords = 15;
+        const isLongDescription = descriptionWords.length > maxDescWords;
         const truncatedDescription = isLongDescription ? 
-            cleanDescription.substring(0, maxLength).trim() : cleanDescription;
+            descriptionWords.slice(0, maxDescWords).join(' ') + '...' : cleanDescription;
         
         // Format dates
         const startDate = offer.start_date ? new Date(offer.start_date).toLocaleDateString() : '';
@@ -414,11 +438,13 @@
         // Use clean image URL without cache-busting
         const imageUrl = offer.image_url || '/static/images/placeholder.jpg';
         
-        // Create unique ID for this description
+        // Create unique IDs for title and description
+        const titleId = `offer-title-${index}-${Date.now()}`;
         const descriptionId = `offer-desc-${index}-${Date.now()}`;
         
         // Check if expansion is needed
-        const needsExpansion = isLongDescription;
+        const needsTitleExpansion = isLongTitle;
+        const needsDescExpansion = isLongDescription;
         
         card.innerHTML = `
             <div class="offer-image">
@@ -430,9 +456,11 @@
                 <div class="offer-meta">
                     ${categories ? `<span class="category-tag">${categories}</span>` : ''}
                 </div>
-                <h3>${offer.title}</h3>
+                <div class="title-container">
+                    <h3 class="title-text collapsed" id="${titleId}">${truncatedTitle}${needsTitleExpansion ? ` <span class="show-more-btn" onclick="expandTitle('${titleId}', '${cleanTitle.replace(/'/g, "\\'")}')" title="Click to expand">more</span>` : ''}</h3>
+                </div>
                 <div class="description-container">
-                    <p class="description-text collapsed" id="${descriptionId}">${truncatedDescription}${needsExpansion ? ` <span class="show-more-btn" onclick="expandDescription('${descriptionId}', '${cleanDescription.replace(/'/g, "\\'")}')" title="Click to expand">Show more</span>` : ''}</p>
+                    <p class="description-text collapsed" id="${descriptionId}">${truncatedDescription}${needsDescExpansion ? ` <span class="show-more-btn" onclick="expandDescription('${descriptionId}', '${cleanDescription.replace(/'/g, "\\'")}')" title="Click to expand">Show more</span>` : ''}</p>
                 </div>
                 <div class="coupon-code">
                     ${offer.coupon_code ? `
@@ -471,30 +499,85 @@
         
         document.getElementById('paginationWrapper').style.display = 'block';
         
+        // First page button (if not near the beginning)
+        if (currentPage > 3) {
+            const firstBtn = document.createElement('button');
+            firstBtn.textContent = '1';
+            firstBtn.className = 'pagination-btn';
+            firstBtn.onclick = () => changePage(1);
+            container.appendChild(firstBtn);
+            
+            if (currentPage > 4) {
+                const ellipsis = document.createElement('span');
+                ellipsis.className = 'pagination-ellipsis';
+                ellipsis.textContent = '...';
+                container.appendChild(ellipsis);
+            }
+        }
+        
         // Previous button
         if (currentPage > 1) {
             const prevBtn = document.createElement('button');
-            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
-            prevBtn.onclick = () => loadOffers(currentPage - 1);
+            prevBtn.className = 'pagination-btn pagination-nav';
+            prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i> <span class="nav-text">Previous</span>';
+            prevBtn.onclick = () => changePage(currentPage - 1);
             container.appendChild(prevBtn);
         }
         
-        // Page numbers
-        for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+        // Page numbers around current page
+        const startPage = Math.max(1, currentPage - 2);
+        const endPage = Math.min(totalPages, currentPage + 2);
+        
+        for (let i = startPage; i <= endPage; i++) {
             const pageBtn = document.createElement('button');
             pageBtn.textContent = i;
-            pageBtn.className = i === currentPage ? 'active' : '';
-            pageBtn.onclick = () => loadOffers(i);
+            pageBtn.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+            pageBtn.onclick = () => changePage(i);
             container.appendChild(pageBtn);
         }
         
         // Next button
         if (currentPage < totalPages) {
             const nextBtn = document.createElement('button');
-            nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
-            nextBtn.onclick = () => loadOffers(currentPage + 1);
+            nextBtn.className = 'pagination-btn pagination-nav';
+            nextBtn.innerHTML = '<span class="nav-text">Next</span> <i class="fas fa-chevron-right"></i>';
+            nextBtn.onclick = () => changePage(currentPage + 1);
             container.appendChild(nextBtn);
         }
+        
+        // Last page button (if not near the end)
+        if (currentPage < totalPages - 2) {
+            if (currentPage < totalPages - 3) {
+                const ellipsis = document.createElement('span');
+                ellipsis.className = 'pagination-ellipsis';
+                ellipsis.textContent = '...';
+                container.appendChild(ellipsis);
+            }
+            
+            const lastBtn = document.createElement('button');
+            lastBtn.textContent = totalPages;
+            lastBtn.className = 'pagination-btn';
+            lastBtn.onclick = () => changePage(totalPages);
+            container.appendChild(lastBtn);
+        }
+        
+        // Page info
+        const pageInfo = document.createElement('div');
+        pageInfo.className = 'pagination-info';
+        pageInfo.innerHTML = `
+            <span class="page-text">Page ${currentPage} of ${totalPages}</span>
+        `;
+        container.appendChild(pageInfo);
+    }
+
+    function changePage(page) {
+        if (page === currentPage) return;
+        
+        // Scroll to top of offers section smoothly
+        scrollToOffersTop();
+        
+        // Load new page
+        loadOffers(page);
     }
 
     function filterOffers() {
@@ -517,6 +600,9 @@
         
         updatePageHeader();
         updateURL();
+        
+        // Scroll to top when filters change
+        scrollToOffersTop();
         loadOffers(1);
     }
 
@@ -524,7 +610,21 @@
         const searchInput = document.getElementById('searchInput');
         currentSearch = searchInput.value.trim();
         updateURL();
+        
+        // Scroll to top when search changes
+        scrollToOffersTop();
         loadOffers(1);
+    }
+
+    function scrollToOffersTop() {
+        const offersSection = document.querySelector('.offers-section');
+        if (offersSection) {
+            offersSection.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start',
+                inline: 'nearest'
+            });
+        }
     }
 
     function updatePageHeader() {
@@ -592,14 +692,43 @@
         const descElement = document.getElementById(descriptionId);
         
         if (descElement) {
-            // Restore truncated text (160 chars for 2 lines)
-            const maxLength = 160;
-            const truncatedText = fullText.length > maxLength ? fullText.substring(0, maxLength).trim() : fullText;
-            const needsExpansion = fullText.length > maxLength;
+            // Restore truncated text (25 words max)
+            const descriptionWords = fullText.split(' ');
+            const maxDescWords = 25;
+            const needsExpansion = descriptionWords.length > maxDescWords;
+            const truncatedText = needsExpansion ? 
+                descriptionWords.slice(0, maxDescWords).join(' ') + '...' : fullText;
             
             descElement.innerHTML = truncatedText + (needsExpansion ? ' <span class="show-more-btn" onclick="expandDescription(\'' + descriptionId + '\', \'' + fullText.replace(/'/g, "\\'") + '\')">Show more</span>' : '');
             descElement.classList.remove('expanded');
             descElement.classList.add('collapsed');
+        }
+    }
+
+    function expandTitle(titleId, fullTitle) {
+        const titleElement = document.getElementById(titleId);
+        
+        if (titleElement) {
+            titleElement.innerHTML = fullTitle + ' <span class="show-less-btn" onclick="collapseTitle(\'' + titleId + '\', \'' + fullTitle.replace(/'/g, "\\'") + '\')">less</span>';
+            titleElement.classList.remove('collapsed');
+            titleElement.classList.add('expanded');
+        }
+    }
+
+    function collapseTitle(titleId, fullTitle) {
+        const titleElement = document.getElementById(titleId);
+        
+        if (titleElement) {
+            // Restore truncated title (10 words max)
+            const titleWords = fullTitle.split(' ');
+            const maxTitleWords = 10;
+            const needsExpansion = titleWords.length > maxTitleWords;
+            const truncatedTitle = needsExpansion ? 
+                titleWords.slice(0, maxTitleWords).join(' ') + '...' : fullTitle;
+            
+            titleElement.innerHTML = truncatedTitle + (needsExpansion ? ' <span class="show-more-btn" onclick="expandTitle(\'' + titleId + '\', \'' + fullTitle.replace(/'/g, "\\'") + '\')">more</span>' : '');
+            titleElement.classList.remove('expanded');
+            titleElement.classList.add('collapsed');
         }
     }
 
@@ -680,6 +809,23 @@
         
         // Also show a brief notification
         showError(errorInfo.message);
+    }
+
+    // Apply proper grid classes based on number of offers for card width management
+    function applyCardWidthClasses(container, offerCount) {
+        // Remove any existing width classes
+        container.classList.remove('single-result', 'two-results');
+        
+        // Apply appropriate class based on number of offers
+        if (offerCount === 1) {
+            container.classList.add('single-result');
+            console.log('Applied single-result class for 1 offer');
+        } else if (offerCount === 2) {
+            container.classList.add('two-results');
+            console.log('Applied two-results class for 2 offers');
+        } else {
+            console.log(`Using default grid layout for ${offerCount} offers`);
+        }
     }
 
     // Search on Enter key

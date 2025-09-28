@@ -1,0 +1,271 @@
+/* Enhanced Pagination Styles for Offers Page */
+
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 60px 0 40px;
+    padding: 30px 20px;
+    background: var(--card-bg, rgba(255, 255, 255, 0.95));
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Pagination Buttons */
+.pagination-btn {
+    min-width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--text-secondary, #64748b);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    padding: 0 12px;
+    white-space: nowrap;
+}
+
+.pagination-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.pagination-btn:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--highlight-color, #3b82f6);
+    border-color: rgba(59, 130, 246, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.pagination-btn:hover::before {
+    left: 100%;
+}
+
+.pagination-btn:active {
+    transform: translateY(0);
+}
+
+/* Active Page Button */
+.pagination-btn.active {
+    background: linear-gradient(135deg, var(--highlight-color, #3b82f6), var(--highlight-color, #2563eb));
+    color: white;
+    border-color: var(--highlight-color, #3b82f6);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+    transform: translateY(-1px);
+}
+
+.pagination-btn.active:hover {
+    background: linear-gradient(135deg, var(--highlight-color, #2563eb), var(--highlight-color, #1d4ed8));
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+/* Navigation Buttons (Previous/Next) */
+.pagination-btn.pagination-nav {
+    background: rgba(59, 130, 246, 0.08);
+    border-color: rgba(59, 130, 246, 0.2);
+    font-weight: 500;
+    gap: 6px;
+    padding: 0 16px;
+}
+
+.pagination-btn.pagination-nav:hover {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+.pagination-btn.pagination-nav i {
+    font-size: 0.85rem;
+    transition: transform 0.3s ease;
+}
+
+.pagination-btn.pagination-nav:hover i {
+    transform: scale(1.1);
+}
+
+/* Ellipsis */
+.pagination-ellipsis {
+    color: var(--text-muted, #9ca3af);
+    font-weight: 600;
+    padding: 0 8px;
+    font-size: 1.1rem;
+}
+
+/* Page Info */
+.pagination-info {
+    margin-left: 20px;
+    padding: 8px 16px;
+    background: rgba(59, 130, 246, 0.05);
+    border-radius: 20px;
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.page-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary, #64748b);
+}
+
+/* Dark Theme Support */
+[data-theme="dark"] .pagination-wrapper {
+    background: var(--card-bg, rgba(30, 41, 59, 0.95));
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .pagination-btn {
+    color: var(--text-secondary, #cbd5e1);
+}
+
+[data-theme="dark"] .pagination-btn:hover {
+    background: rgba(96, 165, 250, 0.15);
+    color: var(--highlight-color, #60a5fa);
+    border-color: rgba(96, 165, 250, 0.4);
+}
+
+[data-theme="dark"] .pagination-btn.active {
+    background: linear-gradient(135deg, var(--highlight-color, #3b82f6), var(--highlight-color, #60a5fa));
+}
+
+[data-theme="dark"] .pagination-btn.pagination-nav {
+    background: rgba(96, 165, 250, 0.1);
+    border-color: rgba(96, 165, 250, 0.2);
+}
+
+[data-theme="dark"] .pagination-info {
+    background: rgba(96, 165, 250, 0.08);
+    border-color: rgba(96, 165, 250, 0.15);
+}
+
+/* Night Theme Support */
+[data-theme="night"] .pagination-btn:hover {
+    background: rgba(167, 139, 250, 0.15);
+    color: var(--highlight-color, #a78bfa);
+    border-color: rgba(167, 139, 250, 0.4);
+}
+
+[data-theme="night"] .pagination-btn.active {
+    background: linear-gradient(135deg, var(--highlight-color, #8b5cf6), var(--highlight-color, #a78bfa));
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .pagination-wrapper {
+        margin: 40px 0 30px;
+        padding: 20px 15px;
+        border-radius: 16px;
+    }
+    
+    .pagination {
+        gap: 6px;
+    }
+    
+    .pagination-btn {
+        min-width: 40px;
+        height: 40px;
+        font-size: 0.9rem;
+        border-radius: 10px;
+        padding: 0 10px;
+    }
+    
+    .pagination-btn.pagination-nav {
+        padding: 0 12px;
+    }
+    
+    .pagination-btn.pagination-nav .nav-text {
+        display: none;
+    }
+    
+    .pagination-info {
+        margin-left: 15px;
+        padding: 6px 12px;
+        border-radius: 16px;
+    }
+    
+    .page-text {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .pagination-wrapper {
+        margin: 30px 0 20px;
+        padding: 15px 10px;
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .pagination {
+        gap: 4px;
+    }
+    
+    .pagination-btn {
+        min-width: 36px;
+        height: 36px;
+        font-size: 0.85rem;
+        padding: 0 8px;
+    }
+    
+    .pagination-btn.pagination-nav {
+        padding: 0 10px;
+    }
+    
+    .pagination-info {
+        margin-left: 0;
+        order: -1;
+    }
+}
+
+/* Loading Animation for Smooth Transitions */
+.pagination-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Smooth Scroll Enhancement */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Focus States for Accessibility */
+.pagination-btn:focus {
+    outline: 2px solid var(--highlight-color, #3b82f6);
+    outline-offset: 2px;
+}
+
+.pagination-btn:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Animation for Page Changes */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.offers-grid {
+    animation: fadeIn 0.4s ease-out;
+}
