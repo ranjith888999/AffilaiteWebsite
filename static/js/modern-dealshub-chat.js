@@ -304,8 +304,8 @@ window.EnhancedDealsHubChat = (function() {
         messageDiv.appendChild(messageBubble);
         elements.chatMessages.appendChild(messageDiv);
         
-        // Scroll to bottom
-        scrollToBottom();
+        // Scroll to bottom - DISABLED to allow viewing from top
+        // scrollToBottom();
     }
 
     /**
@@ -345,7 +345,8 @@ window.EnhancedDealsHubChat = (function() {
             });
         });
         
-        scrollToBottom();
+        // Scroll to bottom - DISABLED to allow viewing from top
+        // scrollToBottom();
     }
 
     /**
@@ -405,7 +406,8 @@ window.EnhancedDealsHubChat = (function() {
             });
         });
         
-        scrollToBottom();
+        // Scroll to bottom - DISABLED to allow viewing from top
+        // scrollToBottom();
     }
 
     /**
@@ -539,7 +541,8 @@ window.EnhancedDealsHubChat = (function() {
             //     </div>
             // `;
             elements.chatMessages.appendChild(loadingDiv);
-            scrollToBottom();
+            // Scroll to bottom - DISABLED to allow viewing from top
+            // scrollToBottom();
             
             // Remove loading message when done
             setTimeout(() => {
