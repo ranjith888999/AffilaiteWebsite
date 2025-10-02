@@ -178,6 +178,34 @@ class OfferSyncLog(Base):
         Index('idx_sync_logs_type', 'sync_type'),
     )
 
+class UserFeedback(Base):
+    __tablename__ = "user_feedback"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(255), nullable=True)
+    email = Column(String(255), nullable=True)
+    feedback_type = Column(String(50))  # 'bug', 'feature', 'general', 'complaint', 'appreciation'
+    page_url = Column(String(500))
+    rating = Column(Integer, nullable=True)  # 1-5 rating
+    message = Column(Text)
+    browser_info = Column(Text, nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    status = Column(String(50), default='new')  # 'new', 'reviewed', 'resolved', 'closed'
+    admin_notes = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationship with User
+    user = relationship("User", foreign_keys=[user_id])
+    
+    # Add indexes for efficient querying
+    __table_args__ = (
+        Index('idx_user_feedback_type', 'feedback_type'),
+        Index('idx_user_feedback_status', 'status'),
+        Index('idx_user_feedback_created', 'created_at'),
+        Index('idx_user_feedback_user_id', 'user_id'),
+    )
+
 class Link(Base):
     __tablename__ = "links"
     

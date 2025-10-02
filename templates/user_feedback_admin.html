@@ -1,0 +1,657 @@
+{% extends "base.html" %}
+
+{% block title %}User Feedback - Admin Dashboard{% endblock %}
+
+{% block content %}
+<section class="admin-feedback-section">
+    <div class="container">
+        <div class="admin-header">
+            <h1>💬 User Feedback Dashboard</h1>
+            <p>Manage and respond to user feedback</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon gradient-purple">📊</div>
+                <div class="stat-content">
+                    <h3 id="totalFeedbackCount">0</h3>
+                    <p>Total Feedback</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon gradient-blue">⭐</div>
+                <div class="stat-content">
+                    <h3 id="avgRating">0.0</h3>
+                    <p>Average Rating</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon gradient-green">✅</div>
+                <div class="stat-content">
+                    <h3 id="resolvedCount">0</h3>
+                    <p>Resolved</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon gradient-orange">⏳</div>
+                <div class="stat-content">
+                    <h3 id="pendingCount">0</h3>
+                    <p>Pending</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-section">
+            <div class="filter-group">
+                <label for="statusFilter">Status:</label>
+                <select id="statusFilter" class="filter-select">
+                    <option value="">All Statuses</option>
+                    <option value="new">New</option>
+                    <option value="reviewed">Reviewed</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="closed">Closed</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="typeFilter">Type:</label>
+                <select id="typeFilter" class="filter-select">
+                    <option value="">All Types</option>
+                    <option value="bug">🐛 Bug</option>
+                    <option value="feature">💡 Feature Request</option>
+                    <option value="general">💬 General</option>
+                    <option value="complaint">⚠️ Complaint</option>
+                    <option value="appreciation">❤️ Appreciation</option>
+                </select>
+            </div>
+
+            <button id="refreshBtn" class="refresh-btn">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+
+        <!-- Type Breakdown -->
+        <div class="type-breakdown-section">
+            <h3>Feedback by Type</h3>
+            <div class="type-breakdown" id="typeBreakdown">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Feedback List -->
+        <div class="feedback-list-section">
+            <h2>Recent Feedback</h2>
+            <div id="feedbackList" class="feedback-list">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i> Loading feedback...
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.admin-feedback-section {
+    padding: 80px 20px 40px;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+[data-theme="dark"] .admin-feedback-section {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.admin-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.admin-header h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+[data-theme="dark"] .stat-card {
+    background: #2d2d44;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+}
+
+.gradient-purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.gradient-blue { background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%); }
+.gradient-green { background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%); }
+.gradient-orange { background: linear-gradient(135deg, #f12711 0%, #f5af19 100%); }
+
+.stat-content h3 {
+    font-size: 32px;
+    margin: 0;
+    font-weight: 700;
+}
+
+.stat-content p {
+    margin: 5px 0 0;
+    color: #666;
+    font-size: 14px;
+}
+
+[data-theme="dark"] .stat-content p {
+    color: #999;
+}
+
+.filters-section {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    display: flex;
+    gap: 20px;
+    align-items: end;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .filters-section {
+    background: #2d2d44;
+}
+
+.filter-group {
+    flex: 1;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+[data-theme="dark"] .filter-group label {
+    color: #e0e0e0;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 10px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+}
+
+[data-theme="dark"] .filter-select {
+    background: #1a1a2e;
+    border-color: #3d3d5c;
+    color: #e0e0e0;
+}
+
+.refresh-btn {
+    padding: 10px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.2s;
+}
+
+.refresh-btn:hover {
+    transform: translateY(-2px);
+}
+
+.type-breakdown-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .type-breakdown-section {
+    background: #2d2d44;
+}
+
+.type-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.type-badge {
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.feedback-list-section {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .feedback-list-section {
+    background: #2d2d44;
+}
+
+.feedback-list {
+    margin-top: 20px;
+}
+
+.feedback-item {
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border-left: 4px solid #667eea;
+    transition: all 0.2s;
+}
+
+.feedback-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .feedback-item {
+    background: #1a1a2e;
+}
+
+.feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.feedback-meta {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    color: #666;
+}
+
+[data-theme="dark"] .meta-item {
+    color: #999;
+}
+
+.feedback-badges {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-bug { background: #fee; color: #c00; }
+.badge-feature { background: #efe; color: #0a0; }
+.badge-general { background: #eef; color: #00a; }
+.badge-complaint { background: #ffe; color: #a50; }
+.badge-appreciation { background: #fef; color: #a0a; }
+
+.badge-new { background: #e3f2fd; color: #1976d2; }
+.badge-reviewed { background: #fff3e0; color: #f57c00; }
+.badge-resolved { background: #e8f5e9; color: #388e3c; }
+.badge-closed { background: #f3e5f5; color: #7b1fa2; }
+
+.feedback-rating {
+    color: #ffc107;
+    font-size: 18px;
+}
+
+.feedback-message {
+    margin: 15px 0;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    line-height: 1.6;
+}
+
+[data-theme="dark"] .feedback-message {
+    background: #2d2d44;
+}
+
+.feedback-page {
+    font-size: 13px;
+    color: #999;
+    margin-top: 10px;
+}
+
+.feedback-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.action-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.action-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.action-btn-danger {
+    background: #f44336;
+    color: white;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 40px;
+    color: #667eea;
+    font-size: 18px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.empty-state i {
+    font-size: 64px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filters-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .feedback-header {
+        flex-direction: column;
+    }
+
+    .feedback-actions {
+        flex-direction: column;
+    }
+}
+</style>
+
+<script>
+let allFeedback = [];
+let currentFilters = { status: '', type: '' };
+
+// Load feedback data
+async function loadFeedback() {
+    try {
+        const params = new URLSearchParams();
+        if (currentFilters.status) params.append('status', currentFilters.status);
+        if (currentFilters.type) params.append('feedback_type', currentFilters.type);
+
+        const response = await fetch(`/api/feedback/list?${params}`);
+        const data = await response.json();
+
+        if (data.success) {
+            allFeedback = data.feedbacks;
+            renderFeedbackList();
+        }
+    } catch (error) {
+        console.error('Error loading feedback:', error);
+        document.getElementById('feedbackList').innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>Error loading feedback. Please try again.</p>
+            </div>
+        `;
+    }
+}
+
+// Load statistics
+async function loadStats() {
+    try {
+        const response = await fetch('/api/feedback/stats');
+        const data = await response.json();
+
+        if (data.success) {
+            document.getElementById('totalFeedbackCount').textContent = data.total_feedback;
+            document.getElementById('avgRating').textContent = data.average_rating || 'N/A';
+            
+            const statusBreakdown = data.status_breakdown || {};
+            document.getElementById('resolvedCount').textContent = statusBreakdown.resolved || 0;
+            document.getElementById('pendingCount').textContent = (statusBreakdown.new || 0) + (statusBreakdown.reviewed || 0);
+
+            // Render type breakdown
+            const typeBreakdown = data.type_breakdown || {};
+            const typeColors = {
+                bug: '#fee',
+                feature: '#efe',
+                general: '#eef',
+                complaint: '#ffe',
+                appreciation: '#fef'
+            };
+            
+            const typeIcons = {
+                bug: '🐛',
+                feature: '💡',
+                general: '💬',
+                complaint: '⚠️',
+                appreciation: '❤️'
+            };
+
+            let typeHTML = '';
+            for (const [type, count] of Object.entries(typeBreakdown)) {
+                typeHTML += `
+                    <div class="type-badge" style="background: ${typeColors[type]}">
+                        <div style="font-size: 24px; margin-bottom: 5px;">${typeIcons[type]}</div>
+                        <div style="font-size: 20px; font-weight: bold;">${count}</div>
+                        <div style="font-size: 12px; text-transform: capitalize;">${type}</div>
+                    </div>
+                `;
+            }
+            document.getElementById('typeBreakdown').innerHTML = typeHTML || '<p>No feedback yet</p>';
+        }
+    } catch (error) {
+        console.error('Error loading stats:', error);
+    }
+}
+
+// Render feedback list
+function renderFeedbackList() {
+    const container = document.getElementById('feedbackList');
+
+    if (allFeedback.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <p>No feedback found</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = '';
+    allFeedback.forEach(feedback => {
+        const typeIcons = {
+            bug: '🐛',
+            feature: '💡',
+            general: '💬',
+            complaint: '⚠️',
+            appreciation: '❤️'
+        };
+
+        const ratingStars = feedback.rating ? '⭐'.repeat(feedback.rating) + '☆'.repeat(5 - feedback.rating) : 'N/A';
+
+        html += `
+            <div class="feedback-item">
+                <div class="feedback-header">
+                    <div class="feedback-meta">
+                        ${feedback.name ? `<div class="meta-item"><i class="fas fa-user"></i> ${feedback.name}</div>` : ''}
+                        ${feedback.email ? `<div class="meta-item"><i class="fas fa-envelope"></i> ${feedback.email}</div>` : ''}
+                        <div class="meta-item"><i class="fas fa-calendar"></i> ${new Date(feedback.created_at).toLocaleString()}</div>
+                    </div>
+                    <div class="feedback-badges">
+                        <span class="badge badge-${feedback.feedback_type}">${typeIcons[feedback.feedback_type]} ${feedback.feedback_type}</span>
+                        <span class="badge badge-${feedback.status}">${feedback.status}</span>
+                    </div>
+                </div>
+                
+                ${feedback.rating ? `<div class="feedback-rating">${ratingStars} (${feedback.rating}/5)</div>` : ''}
+                
+                <div class="feedback-message">
+                    ${feedback.message.replace(/\n/g, '<br>')}
+                </div>
+                
+                <div class="feedback-page">
+                    <i class="fas fa-link"></i> Page: ${feedback.page_url}
+                </div>
+                
+                ${feedback.browser_info ? `<div class="feedback-page"><i class="fas fa-browser"></i> ${feedback.browser_info}</div>` : ''}
+                
+                ${feedback.admin_notes ? `
+                    <div style="margin-top: 10px; padding: 10px; background: #e8f4ff; border-radius: 6px;">
+                        <strong>Admin Notes:</strong> ${feedback.admin_notes}
+                    </div>
+                ` : ''}
+                
+                <div class="feedback-actions">
+                    <button class="action-btn action-btn-primary" onclick="updateStatus(${feedback.id}, 'resolved')">
+                        <i class="fas fa-check"></i> Mark Resolved
+                    </button>
+                    <button class="action-btn action-btn-danger" onclick="deleteFeedback(${feedback.id})">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+// Update feedback status
+async function updateStatus(feedbackId, status) {
+    try {
+        const response = await fetch(`/api/feedback/${feedbackId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status })
+        });
+
+        if (response.ok) {
+            loadFeedback();
+            loadStats();
+        }
+    } catch (error) {
+        console.error('Error updating feedback:', error);
+        alert('Failed to update feedback');
+    }
+}
+
+// Delete feedback
+async function deleteFeedback(feedbackId) {
+    if (!confirm('Are you sure you want to delete this feedback?')) return;
+
+    try {
+        const response = await fetch(`/api/feedback/${feedbackId}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            loadFeedback();
+            loadStats();
+        }
+    } catch (error) {
+        console.error('Error deleting feedback:', error);
+        alert('Failed to delete feedback');
+    }
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    loadFeedback();
+    loadStats();
+
+    document.getElementById('statusFilter').addEventListener('change', (e) => {
+        currentFilters.status = e.target.value;
+        loadFeedback();
+    });
+
+    document.getElementById('typeFilter').addEventListener('change', (e) => {
+        currentFilters.type = e.target.value;
+        loadFeedback();
+    });
+
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+        loadFeedback();
+        loadStats();
+    });
+});
+</script>
+{% endblock %}

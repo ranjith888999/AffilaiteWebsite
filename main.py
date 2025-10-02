@@ -175,6 +175,14 @@ app.include_router(links_controller.router)
 app.include_router(auth_controller.router, prefix="/auth")
 app.include_router(images_controller.router, prefix="/api")
 
+# Include feedback router
+try:
+    from app.controllers.feedback_controller import router as feedback_router
+    app.include_router(feedback_router)
+    print("✅ Feedback routes loaded successfully")
+except ImportError as e:
+    print(f"⚠️ Could not load feedback routes: {e}")
+
 # Include new sync and scheduler routers
 try:
     from app.controllers.offers_sync_controller import router as offers_sync_router
@@ -241,6 +249,11 @@ async def test_chat_page(request: Request):
 @app.get("/admin/feedback", response_class=HTMLResponse)
 async def admin_feedback_page(request: Request):
     return templates.TemplateResponse("admin_feedback.html", {"request": request})
+
+# Admin user feedback page
+@app.get("/admin/user-feedback", response_class=HTMLResponse)
+async def admin_user_feedback_page(request: Request):
+    return templates.TemplateResponse("user_feedback_admin.html", {"request": request})
 
 if __name__ == "__main__":
     import uvicorn
