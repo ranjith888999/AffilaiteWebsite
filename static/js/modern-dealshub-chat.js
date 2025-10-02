@@ -304,8 +304,11 @@ window.EnhancedDealsHubChat = (function() {
         messageDiv.appendChild(messageBubble);
         elements.chatMessages.appendChild(messageDiv);
         
-        // Scroll to bottom - DISABLED to allow viewing from top
-        // scrollToBottom();
+        // Scroll to show the new message from the top
+        // Only scroll for user messages to keep the conversation visible
+        if (type === 'user') {
+            scrollToLatestMessage(messageDiv);
+        }
     }
 
     /**
@@ -345,8 +348,8 @@ window.EnhancedDealsHubChat = (function() {
             });
         });
         
-        // Scroll to bottom - DISABLED to allow viewing from top
-        // scrollToBottom();
+        // Don't scroll for greeting responses to keep the page at top
+        // scrollToLatestMessage(messageDiv);
     }
 
     /**
@@ -406,8 +409,8 @@ window.EnhancedDealsHubChat = (function() {
             });
         });
         
-        // Scroll to bottom - DISABLED to allow viewing from top
-        // scrollToBottom();
+        // Don't scroll for offer responses to keep the page at top
+        // scrollToLatestMessage(messageDiv);
     }
 
     /**
@@ -541,8 +544,8 @@ window.EnhancedDealsHubChat = (function() {
             //     </div>
             // `;
             elements.chatMessages.appendChild(loadingDiv);
-            // Scroll to bottom - DISABLED to allow viewing from top
-            // scrollToBottom();
+            // Don't scroll for loading indicator
+            // scrollToLatestMessage(loadingDiv);
             
             // Remove loading message when done
             setTimeout(() => {
@@ -578,11 +581,20 @@ window.EnhancedDealsHubChat = (function() {
     }
 
     /**
-     * Scroll to bottom of conversation
+     * Scroll to show the latest message from the top
+     * This allows users to see new messages without jumping to the very bottom
      */
-    function scrollToBottom() {
+    function scrollToLatestMessage(messageElement) {
+        if (!messageElement) return;
+        
         setTimeout(() => {
-            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+            // Scroll to show the message from its top position
+            // This ensures users can see the question and answer from the beginning
+            messageElement.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start',
+                inline: 'nearest'
+            });
         }, 100);
     }
 

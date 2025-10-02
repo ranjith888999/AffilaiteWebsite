@@ -60,7 +60,7 @@
             <div class="nav-logo">
                 <a href="/">
                     <i class="fas fa-percentage"></i>
-                    <span>DealsHub</span>
+                    <span>Coupons Cover</span>
                 </a>
             </div>
             <button class="nav-toggle" aria-label="toggle navigation">
@@ -121,6 +121,7 @@
     </div> -->
 
     <!-- Footer -->
+    {% if not hide_footer %}
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-section">
@@ -159,6 +160,7 @@
             <p>&copy; 2025 DealsHub. All rights reserved.</p>
         </div>
     </footer>
+    {% endif %}
 
     <script src="/static/js/main.js"></script>
     <script src="/static/js/theme.js"></script>
