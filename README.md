@@ -12,6 +12,29 @@ A comprehensive affiliate marketing website built with FastAPI, PostgreSQL, and 
 - **Category Filtering**: Browse offers by categories
 - **Live Data**: Real-time sync with Cuelinks API
 - **PostgreSQL Database**: Robust data storage and retrieval
+- **🔒 API Security**: Protected API documentation with multi-layer security
+
+## 🔒 Security Features
+
+### API Documentation Protection
+
+The application includes comprehensive security for API documentation endpoints (`/docs`, `/redoc`):
+
+- **Environment-Based**: Automatically disabled in production
+- **Key-Based Authentication**: Optional secret key requirement
+- **IP Whitelist**: Restrict access to specific IPs
+- **Flexible Configuration**: Easy environment variable setup
+
+**Quick Setup:**
+```env
+# Disable docs in production (automatic)
+ENVIRONMENT=production
+
+# Or require authentication
+API_DOCS_KEY=your-secret-key
+```
+
+📖 **[Read Full Security Guide →](./API_DOCS_SECURITY.md)**
 
 ## 🛠️ Tech Stack
 

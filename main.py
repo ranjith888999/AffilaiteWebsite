@@ -1,7 +1,7 @@
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request, Depends, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy.orm import Session
@@ -9,6 +9,15 @@ from app.database import get_db, create_tables, db_available
 from app.controllers import campaigns_controller, offers_controller, chat_controller, links_controller, auth_controller, images_controller
 from app.models.database import Offer
 from app.config import Config, validate_environment, print_env_status
+from app.middleware import (
+    api_docs_security_middleware, 
+    APIDocsSecurityConfig,
+    admin_authentication_middleware,
+    AdminSecurityConfig,
+    verify_admin_credentials,
+    generate_admin_token,
+    LOGIN_PAGE_HTML
+)
 import os
 import time
 from dotenv import load_dotenv
@@ -46,7 +55,7 @@ if os.getenv("DEBUG", "False").lower() != "true":
 async def lifespan(app: FastAPI):
     # Startup
     try:
-        print("� Starting Affiliate Website Application...")
+        print("🚀 Starting Affiliate Website Application...")
         
         # Validate environment variables
         print_env_status()
@@ -55,7 +64,35 @@ async def lifespan(app: FastAPI):
         # Show authentication configuration
         Config.print_auth_config()
         
-        print("�🔄 Initializing database connection...")
+        # Show API docs security configuration
+        print("\n🔒 API Documentation Security:")
+        print(f"   Environment: {'Production' if APIDocsSecurityConfig.is_production() else 'Development'}")
+        print(f"   Docs Enabled: {'✅ Yes' if APIDocsSecurityConfig.docs_enabled() else '❌ No (disabled in production)'}")
+        if APIDocsSecurityConfig.get_api_docs_key():
+            print(f"   Access Key: ✅ Required (X-API-Docs-Key header or ?api_docs_key parameter)")
+        allowed_ips = APIDocsSecurityConfig.get_allowed_ips()
+        if allowed_ips:
+            print(f"   IP Whitelist: ✅ Enabled ({len(allowed_ips)} IPs allowed)")
+        if APIDocsSecurityConfig.allow_localhost():
+            print(f"   Localhost: ✅ Allowed")
+        print()
+        
+        # Show admin security configuration
+        print("🔐 Admin Panel Security:")
+        if AdminSecurityConfig.is_admin_auth_enabled():
+            print(f"   Authentication: ✅ Enabled")
+            print(f"   Username: {AdminSecurityConfig.get_admin_username()}")
+            print(f"   Password: ✅ Configured")
+            print(f"   Login URL: /admin/login")
+        else:
+            print(f"   Authentication: ⚠️  Disabled (set ADMIN_PASSWORD to enable)")
+            print(f"   Warning: Admin pages are accessible without authentication!")
+        print()
+        if APIDocsSecurityConfig.allow_localhost():
+            print(f"   Localhost: ✅ Allowed")
+        print()
+        
+        print("🔄 Initializing database connection...")
         start_time = time.time()
         
         # Force database initialization
@@ -76,12 +113,19 @@ async def lifespan(app: FastAPI):
     # Shutdown
     print("Application shutdown complete.")
 
+# Determine if docs should be enabled based on environment
+docs_enabled = APIDocsSecurityConfig.docs_enabled()
+
 app = FastAPI(
     title="Affiliate Website",
     description="A comprehensive affiliate marketing website with Cuelinks API integration",
     version="1.0.0",
     debug=os.getenv("DEBUG", "False").lower() == "true",
-    lifespan=lifespan
+    lifespan=lifespan,
+    # Conditionally enable/disable docs
+    docs_url="/docs" if docs_enabled else None,
+    redoc_url="/redoc" if docs_enabled else None,
+    openapi_url="/openapi.json" if docs_enabled else None,
 )
 
 # Add Session middleware for OAuth (MUST be added before other middleware)
@@ -89,6 +133,13 @@ app.add_middleware(
     SessionMiddleware, 
     secret_key=os.getenv('SECRET_KEY', 'your-secret-key-here')
 )
+
+# Add admin authentication middleware (protects /admin/* endpoints)
+app.middleware("http")(admin_authentication_middleware)
+
+# Add API docs security middleware (if docs are enabled)
+if docs_enabled:
+    app.middleware("http")(api_docs_security_middleware)
 
 # Add CORS middleware to handle caching and cross-origin requests
 app.add_middleware(
@@ -244,6 +295,57 @@ async def chat_page(request: Request):
 @app.get("/test-chat", response_class=HTMLResponse)
 async def test_chat_page(request: Request):
     return templates.TemplateResponse("test_chat_api.html", {"request": request})
+
+# Admin login page
+@app.get("/admin/login", response_class=HTMLResponse)
+async def admin_login_page(request: Request):
+    """Display admin login page."""
+    return HTMLResponse(content=LOGIN_PAGE_HTML)
+
+# Admin login handler
+@app.post("/admin/login")
+async def admin_login(request: Request, username: str = Form(...), password: str = Form(...)):
+    """Handle admin login form submission."""
+    # Verify credentials
+    if verify_admin_credentials(username, password):
+        # Generate session token
+        token = generate_admin_token(username)
+        
+        # Get the redirect URL (where user was trying to go)
+        next_url = request.query_params.get("next", "/admin/sync")
+        
+        # Create response with redirect
+        response = RedirectResponse(url=next_url, status_code=303)
+        
+        # Set secure cookies
+        response.set_cookie(
+            key="admin_session",
+            value=token,
+            httponly=True,
+            max_age=86400,  # 24 hours
+            samesite="lax"
+        )
+        response.set_cookie(
+            key="admin_username",
+            value=username,
+            httponly=True,
+            max_age=86400,
+            samesite="lax"
+        )
+        
+        return response
+    else:
+        # Invalid credentials, redirect back to login with error
+        return RedirectResponse(url="/admin/login?error=invalid", status_code=303)
+
+# Admin logout
+@app.get("/admin/logout")
+async def admin_logout(request: Request):
+    """Handle admin logout."""
+    response = RedirectResponse(url="/admin/login", status_code=303)
+    response.delete_cookie("admin_session")
+    response.delete_cookie("admin_username")
+    return response
 
 # Admin feedback page
 @app.get("/admin/feedback", response_class=HTMLResponse)
