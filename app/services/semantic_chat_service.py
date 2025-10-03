@@ -76,11 +76,26 @@ class SemanticChatService:
         query_lower = query.lower().strip()
         return any(pattern in query_lower for pattern in self.greeting_patterns)
     
-    def get_greeting_response(self) -> dict:
-        """Return a friendly greeting response"""
+    def get_greeting_response(self, user_first_name: str = None) -> dict:
+        """Return a friendly greeting response with personalization"""
+        if user_first_name:
+            # Personalized greeting for logged-in users
+            greeting_messages = [
+                f"Hi {user_first_name}! 👋 How's your day going? I'm here to help you find amazing deals!",
+                f"Hey {user_first_name}! 😊 Great to see you again! What kind of deals are you looking for today?",
+                f"Hello {user_first_name}! 🎉 Ready to save big? Let me help you discover the best offers!",
+                f"Hi there, {user_first_name}! � I'm excited to help you find incredible deals today!"
+            ]
+            # Rotate through messages based on name length for variety
+            message_index = len(user_first_name) % len(greeting_messages)
+            greeting_message = greeting_messages[message_index]
+        else:
+            # Generic but friendly greeting for non-logged-in users
+            greeting_message = "Hey there 👋, how can I help you today? I'm your AI shopping assistant ready to find you the best deals!"
+        
         return {
             "type": "greeting",
-            "message": "Hello! 👋 I'm your AI shopping assistant. I can help you find the best deals, coupons, and offers. Try asking me something like:\n\n• 'Show me electronics deals'\n• 'Find Nike coupons'\n• 'Best laptop offers'\n• 'Cheap shoes under $50'\n\nWhat are you looking for today?",
+            "message": greeting_message + "\n\nTry asking me something like:\n\n• 'Show me electronics deals'\n• 'Find Nike coupons'\n• 'Best laptop offers'\n• 'Cheap shoes under $50'\n\nWhat are you looking for today?",
             "suggestions": [
                 "Electronics deals",
                 "Fashion discounts", 
@@ -97,12 +112,21 @@ class SemanticChatService:
         text = re.sub(clean, '', text)
         return ' '.join(text.split())
 
-    async def _generate_llm_response(self, query: str, context_offers: list) -> str:
+    async def _generate_llm_response(self, query: str, context_offers: list, user_first_name: str = None) -> str:
         """
-        Generate a response using an LLM with the retrieved offers as context.
+        Generate a personalized response using an LLM with the retrieved offers as context.
         """
+        # Personalized opening based on user login status
+        if user_first_name:
+            personalized_intro = f"Hi {user_first_name}! "
+        else:
+            personalized_intro = ""
+        
         if not OPENAI_AVAILABLE:
-            return f"I found {len(context_offers)} great deals for '{query}':" if context_offers else f"I couldn't find any deals for '{query}'. Try a different search term!"
+            if context_offers:
+                return f"{personalized_intro}I found {len(context_offers)} great deals for '{query}'! Let me show you what I've got:"
+            else:
+                return f"{personalized_intro}I couldn't find any deals for '{query}'. Try a different search term!"
 
         # Create a detailed context string from the offers
         context_str = "\n".join([
@@ -110,15 +134,17 @@ class SemanticChatService:
             for offer in context_offers
         ])
 
-        # System prompt to guide the LLM
-        system_prompt = """
+        # System prompt to guide the LLM with personalization instructions
+        system_prompt = f"""
         You are DealsHub AI, a friendly and helpful shopping assistant. Your goal is to help users find the best deals based on the context provided.
+        {"The user's name is " + user_first_name + ". Use their name naturally in your responses to create a warm, personal conversation." if user_first_name else "The user is not logged in. Be friendly but use generic greetings."}
         - Analyze the user's query and the provided list of deals.
         - Synthesize a friendly, conversational, and informative response.
         - Mention the most relevant deals and highlight key details like coupon codes or discounts.
         - If no deals are found, say so politely and suggest trying other search terms.
         - Do not invent deals or information not present in the context.
-        - Keep the response concise and easy to read.
+        - Keep the response concise, warm, and engaging.
+        - Use emojis sparingly to add personality (1-2 per response).
         """
 
         # User prompt with the context
@@ -138,28 +164,31 @@ class SemanticChatService:
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
                 ],
-                temperature=0.5,
+                temperature=0.7,  # Slightly higher for more personality
                 max_tokens=250
             )
             return response.choices[0].message['content'].strip()
         except Exception as e:
             logger.error(f"Error generating LLM response: {e}")
-            # Fallback to the simple message if the LLM call fails
-            return f"I found {len(context_offers)} great deals for '{query}':" if context_offers else f"I couldn't find any deals for '{query}'. Try a different search term!"
+            # Fallback to the personalized simple message if the LLM call fails
+            if context_offers:
+                return f"{personalized_intro}I found {len(context_offers)} great deals for '{query}'! Let me show you what I've got:"
+            else:
+                return f"{personalized_intro}I couldn't find any deals for '{query}'. Try a different search term!"
 
-    async def semantic_search(self, query: str, db: Session, top_k: int = 10) -> dict:
+    async def semantic_search(self, query: str, db: Session, top_k: int = 10, user_first_name: str = None) -> dict:
         """
-        Perform semantic search for offers and generate a response using an LLM.
+        Perform semantic search for offers and generate a personalized response using an LLM.
         """
         if self.is_greeting(query):
-            return self.get_greeting_response()
+            return self.get_greeting_response(user_first_name)
         
         # Try to load the embedding model
         embedding_model = self._load_embedding_model()
         if not embedding_model:
             logger.warning("No embedding model available. Falling back to text search.")
             offers = await self.fallback_search(query, db, top_k)
-            message = await self._generate_llm_response(query, offers)
+            message = await self._generate_llm_response(query, offers, user_first_name)
             return {
                 "type": "offers",
                 "message": message,
@@ -226,8 +255,8 @@ class SemanticChatService:
                     "similarity_score": row.similarity_score  # Add the calculated similarity score
                 })
             
-            # 4. Generate a conversational response using the LLM
-            llm_message = await self._generate_llm_response(query, formatted_results)
+            # 4. Generate a conversational response using the LLM with personalization
+            llm_message = await self._generate_llm_response(query, formatted_results, user_first_name)
 
             return {
                 "type": "offers",
@@ -240,7 +269,7 @@ class SemanticChatService:
             logger.error(f"Error during semantic search: {e}")
             # Fallback to a simple text search if vector search fails
             offers = await self.fallback_search(query, db, top_k)
-            message = await self._generate_llm_response(query, offers)
+            message = await self._generate_llm_response(query, offers, user_first_name)
             return {
                 "type": "offers",
                 "message": message,

@@ -13,7 +13,8 @@ window.EnhancedDealsHubChat = (function() {
         isInConversation: false,
         messages: [],
         currentQuery: '',
-        currentResponse: null
+        currentResponse: null,
+        userData: null  // Store user information for personalization
     };
 
     // DOM elements
@@ -26,7 +27,30 @@ window.EnhancedDealsHubChat = (function() {
         cacheElements();
         bindEvents();
         generateSessionId();
+        fetchUserData();  // Fetch logged-in user information
         console.log('🤖 Enhanced DealsHub AI Chat (Modern UI) initialized');
+    }
+
+    /**
+     * Fetch current user data for personalization
+     */
+    async function fetchUserData() {
+        try {
+            const response = await fetch('/auth/user');
+            if (response.ok) {
+                const data = await response.json();
+                if (data.authenticated && data.user) {
+                    state.userData = {
+                        name: data.user.name,
+                        email: data.user.email,
+                        first_name: data.user.name ? data.user.name.split(' ')[0] : null
+                    };
+                    console.log('👤 User authenticated:', state.userData.first_name);
+                }
+            }
+        } catch (error) {
+            console.log('User not authenticated or error fetching user data');
+        }
     }
 
     /**
@@ -210,13 +234,25 @@ window.EnhancedDealsHubChat = (function() {
         setLoading(true);
         
         try {
+            // Prepare request body with user information for personalization
+            const requestBody = { 
+                message: query, 
+                session_id: state.sessionId 
+            };
+            
+            // Add user info if available for personalized responses
+            if (state.userData && state.userData.first_name) {
+                requestBody.user_info = {
+                    name: state.userData.name,
+                    first_name: state.userData.first_name,
+                    email: state.userData.email
+                };
+            }
+            
             const response = await fetch('/api/v2/chat/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    message: query, 
-                    session_id: state.sessionId 
-                }),
+                body: JSON.stringify(requestBody),
             });
 
             if (!response.ok) {
