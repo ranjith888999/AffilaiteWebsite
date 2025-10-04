@@ -28,7 +28,159 @@ window.EnhancedDealsHubChat = (function() {
         bindEvents();
         generateSessionId();
         fetchUserData();  // Fetch logged-in user information
+        checkReturningUser();  // Check for persistent context
         console.log('🤖 Enhanced DealsHub AI Chat (Modern UI) initialized');
+    }
+
+    /**
+     * Fetch current user data for personalization
+     */
+    async function fetchUserData() {
+        try {
+            const response = await fetch('/auth/user');
+            if (response.ok) {
+                const data = await response.json();
+                if (data.authenticated && data.user) {
+                    state.userData = {
+                        name: data.user.name,
+                        email: data.user.email,
+                        first_name: data.user.name ? data.user.name.split(' ')[0] : null
+                    };
+                    console.log('👤 User authenticated:', state.userData.first_name);
+                }
+            }
+        } catch (error) {
+            console.log('User not authenticated or error fetching user data');
+        }
+    }
+
+    /**
+     * Check if user is returning with previous search context
+     */
+    async function checkReturningUser() {
+        try {
+            const response = await fetch('/api/v2/chat/check-returning-user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'  // Include cookies
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                if (data.is_returning && data.message) {
+                    // User has previous search - show welcome back message
+                    console.log('🔄 Returning user detected with previous search');
+                    showWelcomeBackMessage(data.message, data.last_search);
+                }
+            }
+        } catch (error) {
+            console.error('Error checking returning user:', error);
+        }
+    }
+
+    /**
+     * Show welcome back message with option to resume previous search
+     */
+    function showWelcomeBackMessage(welcomeMessage, lastSearch) {
+        // Add welcome back message to chat
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'chat-message bot-message welcome-back-message';
+        messageDiv.innerHTML = `
+            <div class="message-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-content">
+                <div class="message-text">
+                    ${welcomeMessage}
+                </div>
+                <div class="welcome-back-actions">
+                    <button class="btn-resume-search" data-query="${escapeHtml(lastSearch.query)}">
+                        <i class="fas fa-history"></i> Yes, show me updated offers
+                    </button>
+                    <button class="btn-new-search">
+                        <i class="fas fa-search"></i> No, start a new search
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Show conversation state
+        state.isInConversation = true;
+        elements.welcomeState.style.display = 'none';
+        elements.conversationState.style.display = 'flex';
+        elements.mainHeader.style.display = 'none';
+
+        // Add message to chat
+        elements.chatMessages.appendChild(messageDiv);
+
+        // Bind button events
+        const resumeBtn = messageDiv.querySelector('.btn-resume-search');
+        const newSearchBtn = messageDiv.querySelector('.btn-new-search');
+
+        resumeBtn.addEventListener('click', async () => {
+            // User wants to resume previous search
+            resumeBtn.disabled = true;
+            newSearchBtn.disabled = true;
+            
+            await resumePreviousSearch();
+        });
+
+        newSearchBtn.addEventListener('click', () => {
+            // User wants new search - just hide the welcome message
+            messageDiv.querySelector('.welcome-back-actions').style.display = 'none';
+            
+            // Add confirmation message
+            addBotMessage("Got it! What would you like to search for today? 🔍");
+        });
+    }
+
+    /**
+     * Resume user's previous search
+     */
+    async function resumePreviousSearch() {
+        try {
+            showLoading(true);
+
+            const response = await fetch('/api/v2/chat/resume-search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to resume search');
+            }
+
+            const data = await response.json();
+
+            if (data.success && data.response) {
+                // Update session ID
+                state.sessionId = data.session_id;
+                
+                // Display the results
+                displaySearchResults(data.response, data.user_message);
+            }
+
+        } catch (error) {
+            console.error('Error resuming search:', error);
+            addBotMessage("Sorry, I couldn't retrieve your previous search. Let's start fresh! What are you looking for? 🔍");
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    /**
+     * Escape HTML to prevent XSS
+     */
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     /**
@@ -262,6 +414,11 @@ window.EnhancedDealsHubChat = (function() {
             const data = await response.json();
             state.currentResponse = data;
             
+            // Show context indicator if this is a follow-up query
+            if (data.response && data.response.context) {
+                addContextIndicator(data.response.context);
+            }
+            
             // Handle different response types
             if (data.response.type === 'greeting') {
                 addGreetingResponse(data.response);
@@ -386,6 +543,22 @@ window.EnhancedDealsHubChat = (function() {
         
         // Don't scroll for greeting responses to keep the page at top
         // scrollToLatestMessage(messageDiv);
+    }
+
+    /**
+     * Add context indicator to show conversation awareness
+     */
+    function addContextIndicator(context) {
+        if (!context || !context.is_followup) return;
+        
+        const indicator = document.createElement('div');
+        indicator.className = 'context-indicator';
+        indicator.innerHTML = `
+            <i class="fas fa-brain"></i>
+            <span>Remembering: ${context.categories.join(', ') || 'your preferences'}</span>
+            ${context.enhanced_query ? `<small>Enhanced search with context</small>` : ''}
+        `;
+        elements.chatMessages.appendChild(indicator);
     }
 
     /**

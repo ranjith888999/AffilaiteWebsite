@@ -46,6 +46,7 @@ except ImportError:
 
 
 from app.models.database import Offer, OfferEmbedding
+from app.services.conversation_context_service import get_conversation_context_service
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +59,8 @@ class SemanticChatService:
         ]
         # Defer loading of sentence transformers until actually needed
         self.embedding_model = None
+        # Get conversation context service
+        self.context_service = get_conversation_context_service()
     
     def _load_embedding_model(self):
         """Lazy load the embedding model"""
@@ -112,9 +115,16 @@ class SemanticChatService:
         text = re.sub(clean, '', text)
         return ' '.join(text.split())
 
-    async def _generate_llm_response(self, query: str, context_offers: list, user_first_name: str = None) -> str:
+    async def _generate_llm_response(
+        self, 
+        query: str, 
+        context_offers: list, 
+        user_first_name: str = None,
+        conversation_context: dict = None,
+        is_followup: bool = False
+    ) -> str:
         """
-        Generate a personalized response using an LLM with the retrieved offers as context.
+        Generate a context-aware personalized response using an LLM with the retrieved offers as context.
         """
         # Personalized opening based on user login status
         if user_first_name:
@@ -122,11 +132,25 @@ class SemanticChatService:
         else:
             personalized_intro = ""
         
+        # Context-aware response adjustments
+        context_intro = ""
+        if is_followup and conversation_context:
+            if conversation_context.get('categories_mentioned'):
+                cats = conversation_context['categories_mentioned']
+                if len(cats) == 1:
+                    context_intro = f"Looking for more {cats[0]} deals? "
+                elif len(cats) > 1:
+                    context_intro = f"I see you're interested in {' and '.join(cats[:2])}. "
+        
         if not OPENAI_AVAILABLE:
             if context_offers:
-                return f"{personalized_intro}I found {len(context_offers)} great deals for '{query}'! Let me show you what I've got:"
+                return f"{personalized_intro}{context_intro}I found {len(context_offers)} great deals for you! Let me show you what I've got:"
             else:
-                return f"{personalized_intro}I couldn't find any deals for '{query}'. Try a different search term!"
+                suggestions = ""
+                if conversation_context and conversation_context.get('categories_mentioned'):
+                    cats = conversation_context['categories_mentioned']
+                    suggestions = f" Try searching for '{cats[0]}' or similar terms."
+                return f"{personalized_intro}I couldn't find any deals for that.{suggestions} Try a different search term!"
 
         # Create a detailed context string from the offers
         context_str = "\n".join([
@@ -134,22 +158,43 @@ class SemanticChatService:
             for offer in context_offers
         ])
 
-        # System prompt to guide the LLM with personalization instructions
+        # Build conversation context for LLM
+        conv_context_str = ""
+        if conversation_context and conversation_context.get('message_count', 0) > 0:
+            conv_context_str = f"\nConversation context: "
+            if conversation_context.get('categories_mentioned'):
+                conv_context_str += f"User previously searched for {', '.join(conversation_context['categories_mentioned'])}. "
+            if conversation_context.get('brands_mentioned'):
+                conv_context_str += f"Interested in brands: {', '.join(conversation_context['brands_mentioned'])}. "
+            if is_followup:
+                conv_context_str += "This is a follow-up query to refine the previous search. "
+
+        # System prompt to guide the LLM with personalization and context awareness
         system_prompt = f"""
         You are DealsHub AI, a friendly and helpful shopping assistant. Your goal is to help users find the best deals based on the context provided.
         {"The user's name is " + user_first_name + ". Use their name naturally in your responses to create a warm, personal conversation." if user_first_name else "The user is not logged in. Be friendly but use generic greetings."}
-        - Analyze the user's query and the provided list of deals.
-        - Synthesize a friendly, conversational, and informative response.
-        - Mention the most relevant deals and highlight key details like coupon codes or discounts.
-        - If no deals are found, say so politely and suggest trying other search terms.
-        - Do not invent deals or information not present in the context.
-        - Keep the response concise, warm, and engaging.
-        - Use emojis sparingly to add personality (1-2 per response).
+        
+        CONTEXT AWARENESS:
+        {conv_context_str if conv_context_str else "This is the start of a new conversation."}
+        {"The user is refining their previous search. Acknowledge this and help them narrow down options." if is_followup else "This is a new search query."}
+        
+        RESPONSE GUIDELINES:
+        - Analyze the user's query and the provided list of deals
+        - If this is a follow-up, reference the conversation history naturally
+        - Synthesize a friendly, conversational, and informative response
+        - Mention the most relevant deals and highlight key details like coupon codes or discounts
+        - If no deals are found, suggest alternatives based on conversation history
+        - Do not invent deals or information not present in the context
+        - Keep the response concise, warm, and engaging
+        - Use emojis sparingly to add personality (1-2 per response)
+        - Help users refine their search if they seem to be exploring options
         """
 
         # User prompt with the context
         user_prompt = f"""
         User Query: "{query}"
+        
+        {conv_context_str}
 
         Here are the deals I found in the database:
         {context_str if context_offers else "No deals found."}
@@ -165,40 +210,105 @@ class SemanticChatService:
                     {"role": "user", "content": user_prompt}
                 ],
                 temperature=0.7,  # Slightly higher for more personality
-                max_tokens=250
+                max_tokens=300  # Slightly more for context-aware responses
             )
             return response.choices[0].message['content'].strip()
         except Exception as e:
             logger.error(f"Error generating LLM response: {e}")
-            # Fallback to the personalized simple message if the LLM call fails
+            # Fallback to the personalized context-aware simple message
             if context_offers:
-                return f"{personalized_intro}I found {len(context_offers)} great deals for '{query}'! Let me show you what I've got:"
+                return f"{personalized_intro}{context_intro}I found {len(context_offers)} great deals for you! Let me show you what I've got:"
             else:
-                return f"{personalized_intro}I couldn't find any deals for '{query}'. Try a different search term!"
+                suggestions = ""
+                if conversation_context and conversation_context.get('categories_mentioned'):
+                    cats = conversation_context['categories_mentioned']
+                    suggestions = f" Maybe try '{cats[0]}' or something similar?"
+                return f"{personalized_intro}I couldn't find any deals for that.{suggestions}"
 
-    async def semantic_search(self, query: str, db: Session, top_k: int = 10, user_first_name: str = None) -> dict:
+    async def semantic_search(
+        self, 
+        query: str, 
+        db: Session, 
+        session_id: str = None,
+        user_id: int = None,
+        top_k: int = 10, 
+        user_first_name: str = None
+    ) -> dict:
         """
-        Perform semantic search for offers and generate a personalized response using an LLM.
+        Perform semantic search for offers with conversation context awareness
         """
+        import time
+        start_time = time.time()
+        
+        # Handle greetings
         if self.is_greeting(query):
             return self.get_greeting_response(user_first_name)
+        
+        # Get conversation history and build context
+        conversation_history = []
+        context = {'message_count': 0, 'categories_mentioned': [], 'brands_mentioned': []}
+        previous_message_id = None
+        
+        if session_id:
+            conversation_history = self.context_service.get_conversation_history(
+                session_id=session_id,
+                db=db,
+                limit=5,
+                time_window_minutes=30
+            )
+            context = self.context_service.build_context_summary(conversation_history, query)
+            
+            # Get the last message ID for linking
+            if conversation_history:
+                previous_message_id = conversation_history[-1].id
+        
+        # Enhance query with context for better results
+        enhanced_query = self.context_service.enhance_query_with_context(query, context)
+        is_followup = self.context_service.is_followup_query(query, context)
+        
+        logger.info(f"Query: '{query}' | Enhanced: '{enhanced_query}' | Follow-up: {is_followup} | Context: {len(conversation_history)} msgs")
         
         # Try to load the embedding model
         embedding_model = self._load_embedding_model()
         if not embedding_model:
             logger.warning("No embedding model available. Falling back to text search.")
-            offers = await self.fallback_search(query, db, top_k)
-            message = await self._generate_llm_response(query, offers, user_first_name)
+            offers = await self.fallback_search(enhanced_query, db, top_k)
+            message = await self._generate_llm_response(
+                query, offers, user_first_name, context, is_followup
+            )
+            
+            # Save message with context
+            if session_id:
+                try:
+                    self.context_service.save_message_with_context(
+                        db=db,
+                        session_id=session_id,
+                        user_id=user_id,
+                        message=query,
+                        response=message,
+                        offers_count=len(offers),
+                        processing_time=time.time() - start_time,
+                        context=context,
+                        previous_message_id=previous_message_id
+                    )
+                except Exception as e:
+                    logger.error(f"Error saving context: {e}")
+            
             return {
                 "type": "offers",
                 "message": message,
                 "offers": offers,
-                "total": len(offers)
+                "total": len(offers),
+                "context": {
+                    "is_followup": is_followup,
+                    "categories": context.get('categories_mentioned', []),
+                    "conversation_length": len(conversation_history)
+                }
             }
             
         try:
-            # 1. Generate embedding for the user query
-            query_embedding = embedding_model.encode(query).tolist()
+            # 1. Generate embedding for the enhanced query (with context)
+            query_embedding = embedding_model.encode(enhanced_query).tolist()
             
             # 2. Perform vector similarity search in the public.offer_embeddings table
             # The query uses the <=> operator for cosine distance (1 - cosine_similarity)
@@ -255,26 +365,76 @@ class SemanticChatService:
                     "similarity_score": row.similarity_score  # Add the calculated similarity score
                 })
             
-            # 4. Generate a conversational response using the LLM with personalization
-            llm_message = await self._generate_llm_response(query, formatted_results, user_first_name)
+            # 4. Generate a context-aware conversational response using the LLM
+            llm_message = await self._generate_llm_response(
+                query, formatted_results, user_first_name, context, is_followup
+            )
+            
+            # 5. Save message with context
+            if session_id:
+                try:
+                    self.context_service.save_message_with_context(
+                        db=db,
+                        session_id=session_id,
+                        user_id=user_id,
+                        message=query,
+                        response=llm_message,
+                        offers_count=len(formatted_results),
+                        processing_time=time.time() - start_time,
+                        context=context,
+                        previous_message_id=previous_message_id
+                    )
+                except Exception as e:
+                    logger.error(f"Error saving context: {e}")
 
             return {
                 "type": "offers",
                 "message": llm_message,
                 "offers": formatted_results,
-                "total": len(formatted_results)
+                "total": len(formatted_results),
+                "context": {
+                    "is_followup": is_followup,
+                    "categories": context.get('categories_mentioned', []),
+                    "conversation_length": len(conversation_history),
+                    "enhanced_query": enhanced_query if enhanced_query != query else None
+                }
             }
             
         except Exception as e:
             logger.error(f"Error during semantic search: {e}")
             # Fallback to a simple text search if vector search fails
-            offers = await self.fallback_search(query, db, top_k)
-            message = await self._generate_llm_response(query, offers, user_first_name)
+            offers = await self.fallback_search(enhanced_query, db, top_k)
+            message = await self._generate_llm_response(
+                query, offers, user_first_name, context, is_followup
+            )
+            
+            # Save message with context even in fallback
+            if session_id:
+                try:
+                    self.context_service.save_message_with_context(
+                        db=db,
+                        session_id=session_id,
+                        user_id=user_id,
+                        message=query,
+                        response=message,
+                        offers_count=len(offers),
+                        processing_time=time.time() - start_time,
+                        context=context,
+                        previous_message_id=previous_message_id
+                    )
+                except Exception as save_err:
+                    logger.error(f"Error saving context in fallback: {save_err}")
+            
             return {
                 "type": "offers",
                 "message": message,
                 "offers": offers,
-                "total": len(offers)
+                "total": len(offers),
+                "context": {
+                    "is_followup": is_followup,
+                    "categories": context.get('categories_mentioned', []),
+                    "conversation_length": len(conversation_history)
+                }
             }
 
     async def fallback_search(self, query: str, db: Session, top_k: int = 10) -> list:

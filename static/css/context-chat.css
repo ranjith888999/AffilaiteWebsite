@@ -1,0 +1,229 @@
+/* Context-Aware Chat Styles */
+
+/* Welcome Back Message for Persistent Context */
+.welcome-back-message {
+    animation: welcomeSlideIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.welcome-back-message .message-content {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+}
+
+.welcome-back-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.btn-resume-search,
+.btn-new-search {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-resume-search {
+    background: white;
+    color: #667eea;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-resume-search:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-resume-search:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-new-search {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-new-search:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes welcomeSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Context Indicator - Shows when chatbot is using conversation history */
+.context-indicator {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 25px;
+    margin: 16px auto;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+    animation: contextSlideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.context-indicator i {
+    font-size: 1.1rem;
+    margin-right: 6px;
+    animation: brainPulse 2.5s ease-in-out infinite;
+}
+
+.context-indicator span {
+    font-weight: 500;
+}
+
+.context-indicator small {
+    font-size: 0.75rem;
+    opacity: 0.9;
+    margin-top: 2px;
+    text-align: center;
+}
+
+/* Animations */
+@keyframes contextSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-15px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes brainPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.75;
+        transform: scale(1.1);
+    }
+}
+
+/* Follow-up query highlight */
+.chat-message.followup-query .message-bubble {
+    border-left: 3px solid #667eea;
+    padding-left: 16px;
+}
+
+/* Conversation summary badge */
+.conversation-summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    margin: 8px 0;
+}
+
+.conversation-summary i {
+    font-size: 0.9rem;
+}
+
+/* Context hints in responses */
+.context-hint {
+    background: rgba(67, 233, 123, 0.1);
+    border-left: 3px solid #43e97b;
+    padding: 10px 14px;
+    margin: 12px 0;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #2d3748;
+}
+
+.context-hint i {
+    color: #43e97b;
+    margin-right: 8px;
+}
+
+/* Refined search indicator */
+.refined-search {
+    display: inline-block;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+/* Category tags from context */
+.context-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.context-category-tag {
+    background: rgba(102, 126, 234, 0.15);
+    color: #667eea;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.context-category-tag i {
+    font-size: 0.75rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .context-indicator {
+        padding: 8px 14px;
+        font-size: 0.8rem;
+        max-width: 90%;
+    }
+    
+    .context-indicator small {
+        font-size: 0.7rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .context-hint {
+        background: rgba(67, 233, 123, 0.15);
+        color: #e2e8f0;
+    }
+    
+    .conversation-summary {
+        background: rgba(102, 126, 234, 0.2);
+        color: #a0aec0;
+    }
+}

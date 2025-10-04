@@ -134,10 +134,31 @@ class ChatMessage(Base):
     __tablename__ = "chat_messages"
     
     id = Column(Integer, primary_key=True, index=True)
-    user_message = Column(Text)
-    bot_response = Column(Text)
-    timestamp = Column(DateTime, default=datetime.utcnow)
-    session_id = Column(String(100))
+    session_id = Column(String(100), index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+    message = Column(Text)  # User's message
+    response = Column(Text)  # Bot's response
+    offers_retrieved = Column(Integer, default=0)
+    processing_time = Column(Float, nullable=True)
+    source = Column(String(50), default='semantic_search')  # semantic_search, fallback, etc.
+    timestamp = Column(DateTime, default=datetime.utcnow, index=True)
+    
+    # Context tracking
+    previous_message_id = Column(Integer, ForeignKey("chat_messages.id"), nullable=True)
+    context_summary = Column(Text, nullable=True)  # JSON summary of conversation context
+    extracted_entities = Column(Text, nullable=True)  # JSON: categories, brands, price range, etc.
+    
+    # Relationships
+    user = relationship("User", foreign_keys=[user_id])
+    previous_message = relationship("ChatMessage", remote_side=[id], backref="follow_ups")
+    
+    # Add indexes for efficient querying
+    __table_args__ = (
+        Index('idx_chat_messages_session', 'session_id'),
+        Index('idx_chat_messages_user', 'user_id'),
+        Index('idx_chat_messages_timestamp', 'timestamp'),
+        Index('idx_chat_messages_session_time', 'session_id', 'timestamp'),
+    )
 
 class ChatFeedback(Base):
     __tablename__ = "chat_feedback"
