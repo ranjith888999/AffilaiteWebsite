@@ -4,7 +4,6 @@
 .offer-card {
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Pushes content and actions apart */
     height: 100%; /* Ensure cards in a row are the same height */
 }
 

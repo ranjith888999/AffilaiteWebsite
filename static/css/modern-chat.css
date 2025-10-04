@@ -835,8 +835,8 @@ body {
 }
 
 .offer-image {
-    width: 80%;
-    height: 30%; /* Use full height of container */
+    width: 55%;
+    height: 18%; /* Use full height of container */
     object-fit: fill;
     transition: transform 0.3s ease;
 }
@@ -875,7 +875,7 @@ body {
 }
 
 .offer-details {
-    padding: var(--space-sm); /* Reduced padding from var(--space-md) */
+    padding: 4px; /* Reduced padding from var(--space-md) */
 }
 
 .offer-title {
@@ -924,7 +924,6 @@ body {
 
 .offer-actions {
     border-top: 1px solid var(--border-light);
-    margin-bottom:50px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1005,7 +1004,6 @@ body {
 .conversation-input-section {
     background: var(--surface);
     border-top: 1px solid var(--border-light);
-    padding: var(--space-lg) 0;
     position: sticky;
     bottom: 0;
     backdrop-filter: blur(20px) saturate(180%);
@@ -1424,7 +1422,7 @@ body {
     }
     
     .conversation-input-section {
-        padding: var(--space-md) 0;
+        /* padding: var(--space-md) 0; */
     }
     
     .suggestion-pills {

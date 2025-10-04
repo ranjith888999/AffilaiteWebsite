@@ -474,10 +474,6 @@
     background: var(--perplexity-text-secondary);
 }
 
-.offer-actions {
-    margin-top: 12px;
-}
-
 .offer-link {
     display: inline-flex;
     align-items: center;
