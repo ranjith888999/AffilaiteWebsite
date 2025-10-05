@@ -4,21 +4,25 @@
 .offer-card {
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Pushes content and actions apart */
     height: 100%; /* Ensure cards in a row are the same height */
 }
 
 .offer-image {
     position: relative;
-    height: 180px; /* Increased height for better image display */
+    height: 120px; /* Reduced from 180px for smaller, more compact images */
     overflow: hidden;
     background-color: #f0f2f5; /* Placeholder color */
+    flex-shrink: 0; /* Prevent image from shrinking */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .offer-image img {
     width: 100%;
     height: 100%;
-    object-fit: fill; /* Use 'contain' to prevent distortion */
+    object-fit: contain; /* Changed to contain to center and fit images properly */
+    padding: 10px; /* Add padding for better image display */
 }
 
 .offer-expiry {

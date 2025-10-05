@@ -827,17 +827,25 @@ body {
 
 .offer-image-container {
     position: relative;
-    display: fill;
-    aspect-ratio: 90/9; /* Make it wider */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
-    background: var(--bg-tertiary);
-    height: 120px; /* Fixed height for consistency */
+    background: #f8f9fa;
+    height: 120px;
+    width: 100%;
+}
+
+[data-theme="dark"] .offer-image-container,
+[data-theme="night"] .offer-image-container {
+    background: #2d3748;
 }
 
 .offer-image {
-    width: 80%;
-    height: 30%; /* Use full height of container */
-    object-fit: fill;
+    width: auto;
+    height: 90px;
+    max-width: 85%;
+    object-fit: contain;
     transition: transform 0.3s ease;
 }
 
@@ -876,6 +884,7 @@ body {
 
 .offer-details {
     padding: var(--space-sm); /* Reduced padding from var(--space-md) */
+    padding-bottom: var(--space-xs); /* Minimize gap before actions */
 }
 
 .offer-title {
@@ -924,7 +933,8 @@ body {
 
 .offer-actions {
     border-top: 1px solid var(--border-light);
-    margin-bottom:50px;
+    margin-top: var(--space-xs); /* Reduced from 50px to minimal spacing */
+    padding: var(--space-sm);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1005,7 +1015,7 @@ body {
 .conversation-input-section {
     background: var(--surface);
     border-top: 1px solid var(--border-light);
-    padding: var(--space-lg) 0;
+    /* padding: var(--space-lg) 0; */
     position: sticky;
     bottom: 0;
     backdrop-filter: blur(20px) saturate(180%);
@@ -1423,9 +1433,9 @@ body {
         font-size: 32px;
     }
     
-    .conversation-input-section {
+    /* .conversation-input-section {
         padding: var(--space-md) 0;
-    }
+    } */
     
     .suggestion-pills {
         gap: var(--space-xs);
