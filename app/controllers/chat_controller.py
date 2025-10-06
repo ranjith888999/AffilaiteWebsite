@@ -37,14 +37,14 @@ def get_semantic_search_service_instance():
     """Lazy load the semantic search service only when needed"""
     global _semantic_search_service
     if _semantic_search_service is None:
-        logger.info("🔄 Initializing Semantic Search service...")
+        logger.info("[INIT] Initializing Semantic Search service...")
         try:
             # Lazy import and use the getter function from the service module
             from app.services.semantic_search_service import get_semantic_search_service
             _semantic_search_service = get_semantic_search_service()
-            logger.info("✅ Semantic Search service ready")
+            logger.info("[OK] Semantic Search service ready")
         except Exception as e:
-            logger.error(f"❌ Error initializing Semantic Search service: {str(e)}")
+            logger.error(f"[ERROR] Error initializing Semantic Search service: {str(e)}")
             return None
     return _semantic_search_service
 
@@ -76,7 +76,7 @@ async def chat_with_offers(request: ChatRequest, db: Session = Depends(get_db)):
         offers, bot_response = search_service.search(user_message, top_k=10)
         
         processing_time = time.time() - start_time
-        logger.info(f"✅ Semantic search completed in {processing_time:.3f} seconds.")
+        logger.info(f"[OK] Semantic search completed in {processing_time:.3f} seconds.")
 
         # Save chat message to the database
         try:
@@ -223,7 +223,7 @@ async def chat_with_offers_api(request: ChatOffersRequest, db: Session = Depends
         }
         
     except Exception as e:
-        logger.error(f"❌ Offers API error: {str(e)}")
+        logger.error(f"[ERROR] Offers API error: {str(e)}")
         return {
             "response": "I'm sorry, I couldn't find offers matching your query. Please try with different keywords.",
             "offers": [],

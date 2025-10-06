@@ -3,7 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Affiliate Deals Hub{% endblock %}</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>{% block seo_title %}Find the Best Deals, Coupons, and Offers | Coupons Cover{% endblock %}</title>
+    <meta name="description" content="{% block seo_description %}Your one-stop destination for the latest coupons, promo codes, and discounts. Save money with our AI-powered deal finder.{% endblock %}">
+    <meta name="keywords" content="coupons, deals, discounts, promo codes, offers, savings, affiliate marketing">
+    <meta name="author" content="Coupons Cover">
+    <link rel="canonical" href="{{ request.url }}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:title" content="{% block og_title %}Find the Best Deals, Coupons, and Offers | Coupons Cover{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Save big with the latest deals and promo codes. Let our AI assistant help you find the perfect offer.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ request.url.scheme }}://{{ request.url.netloc }}/static/images/og-image.jpg{% endblock %}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ request.url }}">
+    <meta property="twitter:title" content="{% block twitter_title %}Find the Best Deals, Coupons, and Offers | Coupons Cover{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}Your ultimate guide to savings. Discover exclusive coupons and discounts with our smart search.{% endblock %}">
+    <meta property="twitter:image" content="{% block twitter_image %}{{ request.url.scheme }}://{{ request.url.netloc }}/static/images/og-image.jpg{% endblock %}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/static/images/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/static/images/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/static/images/apple-touch-icon.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
@@ -52,6 +84,42 @@
 
   gtag('config', 'G-42SKREH2RZ');
 </script>
+
+    <!-- Structured Data (Schema.org JSON-LD) -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "WebSite",
+                "name": "Coupons Cover",
+                "url": "{{ request.url.scheme }}://{{ request.url.netloc }}",
+                "description": "Find the best coupons, promo codes, and exclusive deals. Save money with verified discounts from top brands.",
+                "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": {
+                        "@type": "EntryPoint",
+                        "urlTemplate": "{{ request.url.scheme }}://{{ request.url.netloc }}/offers?search={search_term_string}"
+                    },
+                    "query-input": "required name=search_term_string"
+                }
+            },
+            {
+                "@type": "Organization",
+                "name": "Coupons Cover",
+                "url": "{{ request.url.scheme }}://{{ request.url.netloc }}",
+                "logo": "{{ request.url.scheme }}://{{ request.url.netloc }}/static/images/logo.png",
+                "description": "Your ultimate destination for coupon codes, promo deals, and money-saving offers",
+                "sameAs": [
+                    "https://www.facebook.com/couponscover",
+                    "https://twitter.com/couponscover",
+                    "https://www.instagram.com/couponscover"
+                ]
+            }
+        ]
+    }
+    </script>
+    {% block structured_data %}{% endblock %}
 </head>
 <body>
     <!-- Navigation -->
@@ -59,7 +127,7 @@
         <div class="nav-container">
             <div class="nav-logo">
                 <a href="/">
-                    <i class="fas fa-percentage"></i>
+                    <img src="/static/images/logo.png" alt="Coupons Cover Logo" class="logo-image">
                     <span>Coupons Cover</span>
                 </a>
             </div>
@@ -125,7 +193,9 @@
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-section">
-                <h3><i class="fas fa-percentage"></i> CouponsCover</h3>
+                <h3>
+                    <img src="/static/images/logo.png" alt="Coupons Cover Logo" class="footer-logo-image">
+                </h3>
                 <p>Your ultimate destination for the best affiliate deals and offers.</p>
             </div>
             <div class="footer-section">

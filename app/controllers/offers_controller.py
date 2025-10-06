@@ -417,7 +417,7 @@ async def initialize_data(db: Session = Depends(get_db)):
             }
         
         # Fetch from Cuelinks API
-        logger.info("🔄 Fetching offers from Cuelinks API...")
+        logger.info("[SYNC] Fetching offers from Cuelinks API...")
         offers_data = await cuelinks_service.get_offers(page=1, per_page=100)
         
         if not offers_data or 'offers' not in offers_data:
@@ -455,14 +455,14 @@ async def initialize_data(db: Session = Depends(get_db)):
                     new_offers.append(offer)
                     
             except Exception as e:
-                logger.warning(f"⚠️ Error processing offer {offer_data.get('id', 'unknown')}: {str(e)}")
+                logger.warning(f"[WARN] Error processing offer {offer_data.get('id', 'unknown')}: {str(e)}")
                 continue
         
         # Bulk insert new offers
         if new_offers:
             db.add_all(new_offers)
             db.commit()
-            logger.info(f"✅ Added {len(new_offers)} new offers to database")
+            logger.info(f"[OK] Added {len(new_offers)} new offers to database")
         
         final_count = db.query(Offer).count()
         
@@ -475,5 +475,5 @@ async def initialize_data(db: Session = Depends(get_db)):
         
     except Exception as e:
         db.rollback()
-        logger.error(f"❌ Error initializing data: {str(e)}")
+        logger.error(f"[ERROR] Error initializing data: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to initialize data: {str(e)}")

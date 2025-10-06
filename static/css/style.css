@@ -160,6 +160,19 @@ body::before {
     transform: scale(1.05);
 }
 
+.nav-logo .logo-image {
+    height: 50px;
+    width: 50px;
+    object-fit: contain;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.nav-logo a:hover .logo-image {
+    filter: brightness(1.1);
+    transform: rotate(5deg);
+}
+
 .nav-logo i {
     font-size: 2.2rem;
     background: linear-gradient(135deg, #ffd700, #ff6b6b);

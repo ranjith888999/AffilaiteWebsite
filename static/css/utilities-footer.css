@@ -171,6 +171,13 @@
     font-size: 1.5rem;
 }
 
+.footer-logo-image {
+    height: 40px;
+    width: 40px;
+    object-fit: contain;
+    border-radius: 6px;
+}
+
 .footer-section h4 {
     color: var(--footer-text, #334155);
     font-size: 1.2rem;

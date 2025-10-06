@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
-{% block title %}All Offers - Affiliate Deals Hub{% endblock %}
+{% block seo_title %}All Offers & Deals - Save on Top Brands | Coupons Cover{% endblock %}
+{% block seo_description %}Browse a comprehensive list of the latest offers, discounts, and coupon codes. Find the best deals from your favorite brands and save money today.{% endblock %}
 
 {% block content %}
 <div class="offers-page">
@@ -19,19 +20,20 @@
     <!-- Filters Section -->
     <section class="filters-section">
         <div class="container">
+            <h2 style="font-size: 1.3rem; margin-bottom: 20px; color: var(--text-color); text-align: center;">Filter Deals by Category, Brand, or Type</h2>
             <div class="filters-wrapper">
                 <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Search offers..." onkeyup="searchOffers()">
+                    <input type="text" id="searchInput" placeholder="Search offers, brands, or keywords..." onkeyup="searchOffers()" aria-label="Search for coupon codes and deals">
                     <i class="fas fa-search"></i>
                 </div>
                 <div class="filter-group">
-                    <select id="categoryFilter" onchange="filterOffers()">
+                    <select id="categoryFilter" onchange="filterOffers()" aria-label="Filter offers by category">
                         <option value="all">All Categories</option>
                         <!-- Categories will be loaded dynamically -->
                     </select>
                 </div>
                 <div class="filter-group">
-                    <select id="campaignFilter" onchange="filterOffers()">
+                    <select id="campaignFilter" onchange="filterOffers()" aria-label="Filter offers by campaign">
                         <option value="all">All Campaigns</option>
                         <!-- Campaigns will be loaded dynamically -->
                     </select>
@@ -448,7 +450,7 @@
         
         card.innerHTML = `
             <div class="offer-image">
-                <img src="${imageUrl}" alt="${offer.title}" loading="lazy" onerror="this.onerror=null; this.src='/static/images/placeholder.jpg';">
+                <img src="${imageUrl}" alt="${offer.title} - Discount coupon code and special promotional offer" loading="lazy" onerror="this.onerror=null; this.src='/static/images/placeholder.jpg';">
                 ${offer.type ? `<div class="offer-badge">${offer.type}</div>` : ''}
                 ${endDate ? `<div class="offer-expiry">Expires: ${endDate}</div>` : ''}
             </div>

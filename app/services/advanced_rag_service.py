@@ -84,7 +84,7 @@ class AdvancedRAGChatService:
         if EMBEDDINGS_AVAILABLE:
             try:
                 self.embeddings_model = SentenceTransformer('all-MiniLM-L6-v2')
-                logger.info("✅ Sentence transformer model loaded successfully")
+                logger.info("[OK] Sentence transformer model loaded successfully")
             except Exception as e:
                 logger.warning(f"Failed to load sentence transformer: {e}")
                 EMBEDDINGS_AVAILABLE = False

@@ -124,8 +124,8 @@ def initialize_database():
             expire_on_commit=False
         )
         db_available = True
-        logger.info(f"✅ Database connection pool initialized successfully for {ENVIRONMENT}")
-        logger.info(f"📊 Max concurrent connections: {POOL_SIZE + MAX_OVERFLOW}")
+        logger.info(f"[OK] Database connection pool initialized successfully for {ENVIRONMENT}")
+        logger.info(f"[INFO] Max concurrent connections: {POOL_SIZE + MAX_OVERFLOW}")
     except Exception as e:
         logger.warning(f"Database connection failed: {e}. Running in offline mode.")
         db_available = False
