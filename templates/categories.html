@@ -250,7 +250,7 @@
         
         card.innerHTML = `
             <div class="offer-image">
-                <img src="${cacheBustedImageUrl}" alt="${offer.title}" onerror="this.src='/static/images/placeholder.jpg?t=${Date.now()}'">
+                <img src="${cacheBustedImageUrl}" alt="${offer.title} - Best discount coupon and promotional code" onerror="this.src='/static/images/placeholder.jpg?t=${Date.now()}'">
                 ${offer.type ? `<div class="offer-badge">${offer.type}</div>` : ''}
                 ${endDate ? `<div class="offer-expiry">Expires: ${endDate}</div>` : ''}
             </div>

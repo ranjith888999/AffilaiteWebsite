@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.pool import QueuePool, NullPool
-from app.models.database import Base
+from .models.database import Base
 import os
 from dotenv import load_dotenv
 import logging
