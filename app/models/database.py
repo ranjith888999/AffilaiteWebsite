@@ -215,3 +215,26 @@ class Link(Base):
     shortened_url = Column(String(500))
     sub_id = Column(String(100))
     created_at = Column(DateTime, default=datetime.utcnow)
+
+class UploadedImage(Base):
+    """
+    Table for tracking uploaded images
+    Stores metadata about images uploaded through the admin panel
+    """
+    __tablename__ = "uploaded_images"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    filename = Column(String(500), nullable=False)
+    original_filename = Column(String(500), nullable=False)
+    file_path = Column(String(1000), nullable=False)
+    url = Column(String(1000), nullable=False)
+    file_size = Column(Integer)  # in bytes
+    mime_type = Column(String(100))
+    uploaded_at = Column(DateTime, default=datetime.utcnow)
+    description = Column(Text, nullable=True)
+    
+    # Add indexes for efficient querying
+    __table_args__ = (
+        Index('idx_uploaded_images_filename', 'filename'),
+        Index('idx_uploaded_images_uploaded_at', 'uploaded_at'),
+    )

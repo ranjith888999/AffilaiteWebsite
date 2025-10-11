@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from sqlalchemy.orm import Session
 from app.database import get_db, create_tables, db_available
-from app.controllers import campaigns_controller, offers_controller, chat_controller, links_controller, auth_controller, images_controller, health_controller, seo_controller
+from app.controllers import campaigns_controller, offers_controller, chat_controller, links_controller, auth_controller, images_controller, health_controller, seo_controller, admin_images_controller
 from app.models.database import Offer
 from app.config import Config, validate_environment, print_env_status
 from app.middleware import (
@@ -225,6 +225,7 @@ app.include_router(chat_controller.router, prefix="/api")
 app.include_router(links_controller.router)
 app.include_router(auth_controller.router, prefix="/auth")
 app.include_router(images_controller.router, prefix="/api")
+app.include_router(admin_images_controller.router)  # Admin image upload routes
 app.include_router(health_controller.router)  # Health monitoring endpoints
 app.include_router(seo_controller.router)
 
