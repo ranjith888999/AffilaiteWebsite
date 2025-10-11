@@ -609,7 +609,7 @@ body {
 .action-card h3 {
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: black;
     margin-bottom: 2px;
     transition: color 0.3s ease;
 }
@@ -1408,6 +1408,7 @@ body {
         font-weight: 600;
         color: var(--text-primary);
         flex: 1;
+        color: black;
         text-align: left;
     }
     
@@ -1516,9 +1517,23 @@ body {
         margin-right: 12px;
         border-radius: 10px;
     }
-    
+    .welcome-section{
+        justify-content: flex-start;
+        padding:0px;
+        color:black;
+    }
+
+    .brand-hub{
+        color: black;
+    }
+
+    .brand-subtitle{
+        color:black;
+    }
+
     .action-card h3 {
         font-size: 0.95rem;
+        color: black;
     }
     
     /* .conversation-input-section {

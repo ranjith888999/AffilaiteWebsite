@@ -1,0 +1,72 @@
+[
+    {
+        "id": 1,
+        "name": "Amazon",
+        "link": "https://amzn.to/48qLXxs",
+        "image": "https://cdn0.cuelinks.com/campaigns/817/thumb/Amazon.in_store_logo.jpg?1716525241",
+        "description": "India's largest online marketplace"
+    },
+    {
+        "id": 2,
+        "name": "Flipkart",
+        "link": "https://www.flipkart.com",
+        "image": "https://cdn0.cuelinks.com/campaigns/1/thumb/Flipkart_store_logo.jpeg?1716525370",
+        "description": "India's leading e-commerce platform"
+    },
+    {
+        "id": 3,
+        "name": "Myntra",
+        "link": "https://www.myntra.com/",
+        "image": "https://cdn0.cuelinks.com/campaigns/101/thumb/myntra.jpg?1613124982",
+        "description": "Fashion & lifestyle destination"
+    },
+    {
+        "id": 4,
+        "name": "Nykaa",
+        "link": "https://clnk.in/xubJ",
+        "image": "https://cdn0.cuelinks.com/merchant/3517/medium/New_Project_-_2024-03-20T173036.420.png?1710936083",
+        "description": "Beauty & cosmetics expert"
+    },
+    {
+        "id": 5,
+        "name": "FirstCry",
+        "link": "https://clnk.in/xubK",
+        "image": "https://cdn0.cuelinks.com/campaigns/49/thumb/FC-Logo-big_store_tagline.png?1582718900",
+        "description": "Baby & kids products"
+    },
+    {
+        "id": 6,
+        "name": "Ajio",
+        "link": "https://www.ajio.com/",
+        "image": "https://cdn0.cuelinks.com/merchant/2127/medium/Ajio.png?1516080186",
+        "description": "Fashion & lifestyle shopping"
+    },
+    {
+        "id": 7,
+        "name": "Lenskart",
+        "link": "https://clnk.in/xubZ",
+        "image": "https://cdn0.cuelinks.com/merchant/88/medium/Lenskart.png?1488196598",
+        "description": "Eyewear & sunglasses"
+    },
+    {
+        "id": 8,
+        "name": "Tata Cliq",
+        "link": "https://clnk.in/xub0",
+        "image": "https://cdn0.cuelinks.com/campaigns/2588/thumb/tata.png?1495706199",
+        "description": "Trusted shopping experience"
+    },
+    {
+        "id": 9,
+        "name": "Plum Goodness",
+        "link": "https://clnk.in/xub7",
+        "image": "https://cdn0.cuelinks.com/campaigns/4098/thumb/Plam.png?1593693725",
+        "description": "Natural beauty products"
+    },
+    {
+        "id": 10,
+        "name": "AliExpress",
+        "link": "https://clnk.in/xub8",
+        "image": "https://cdn0.cuelinks.com/campaigns/763/thumb/New_Project_-_2024-07-18T125551.521.png?1721287568",
+        "description": "Global marketplace"
+    }
+]

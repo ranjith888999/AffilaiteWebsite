@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Websites Preview</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .preview-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .preview-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .preview-header h1 {
+            color: #2d3748;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .preview-header p {
+            color: #718096;
+            font-size: 1.1rem;
+        }
+
+        /* Actual implementation styles */
+        .top-websites-section {
+            padding: 80px 40px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .trending-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 10px 25px;
+            border-radius: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .trending-badge i {
+            color: #FFD700;
+            font-size: 1rem;
+        }
+
+        .trending-badge span {
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: #718096;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .websites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .website-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+
+        .website-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .website-logo {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 15px;
+            overflow: hidden;
+        }
+
+        .website-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .website-name {
+            font-size: 1.1rem;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .website-description {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .shop-now-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .shop-now-btn i {
+            font-size: 0.75rem;
+        }
+
+        .info-box {
+            margin-top: 40px;
+            padding: 20px;
+            background: #e6f3ff;
+            border-left: 4px solid #667eea;
+            border-radius: 8px;
+        }
+
+        .info-box h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            color: #4a5568;
+            margin-left: 20px;
+        }
+
+        .info-box li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="preview-container">
+        <div class="preview-header">
+            <h1>🎨 Top Websites Section - Preview</h1>
+            <p>This is how the "Top Shopping Websites in India" section will look on your home page</p>
+        </div>
+
+        <!-- Actual Implementation Preview -->
+        <section class="top-websites-section">
+            <div class="container">
+                <div class="section-header">
+                    <div class="trending-badge">
+                        <i class="fas fa-star"></i>
+                        <span>TRENDING NOW</span>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h2 class="section-title">
+                        Top Shopping Websites in India 🇮🇳
+                    </h2>
+                    <p class="section-subtitle">
+                        Shop from India's most trusted e-commerce platforms and save big with exclusive deals
+                    </p>
+                </div>
+                
+                <div class="websites-grid">
+                    <!-- Amazon -->
+                    <div class="website-card">
+                        <div class="website-logo">
+                            <img src="https://cdn0.cuelinks.com/campaigns/817/thumb/Amazon.in_store_logo.jpg?1716525241" alt="Amazon">
+                        </div>
+                        <h3 class="website-name">Amazon</h3>
+                        <p class="website-description">India's largest online marketplace</p>
+                        <div class="shop-now-btn">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span>Shop Now</span>
+                        </div>
+                    </div>
+
+                    <!-- Flipkart -->
+                    <div class="website-card">
+                        <div class="website-logo">
+                            <img src="https://cdn0.cuelinks.com/campaigns/1/thumb/Flipkart_store_logo.jpeg?1716525370" alt="Flipkart">
+                        </div>
+                        <h3 class="website-name">Flipkart</h3>
+                        <p class="website-description">India's leading e-commerce platform</p>
+                        <div class="shop-now-btn">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span>Shop Now</span>
+                        </div>
+                    </div>
+
+                    <!-- Myntra -->
+                    <div class="website-card">
+                        <div class="website-logo">
+                            <img src="https://cdn0.cuelinks.com/campaigns/101/thumb/myntra.jpg?1613124982" alt="Myntra">
+                        </div>
+                        <h3 class="website-name">Myntra</h3>
+                        <p class="website-description">Fashion & lifestyle destination</p>
+                        <div class="shop-now-btn">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span>Shop Now</span>
+                        </div>
+                    </div>
+
+                    <!-- Nykaa -->
+                    <div class="website-card">
+                        <div class="website-logo">
+                            <img src="https://cdn0.cuelinks.com/merchant/3517/medium/New_Project_-_2024-03-20T173036.420.png?1710936083" alt="Nykaa">
+                        </div>
+                        <h3 class="website-name">Nykaa</h3>
+                        <p class="website-description">Beauty & cosmetics expert</p>
+                        <div class="shop-now-btn">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span>Shop Now</span>
+                        </div>
+                    </div>
+
+                    <!-- FirstCry -->
+                    <div class="website-card">
+                        <div class="website-logo">
+                            <img src="https://cdn0.cuelinks.com/campaigns/49/thumb/FC-Logo-big_store_tagline.png?1582718900" alt="FirstCry">
+                        </div>
+                        <h3 class="website-name">FirstCry</h3>
+                        <p class="website-description">Baby & kids products</p>
+                        <div class="shop-now-btn">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span>Shop Now</span>
+                        </div>
+                    </div>
+
+                    <!-- Ajio -->
+                    <div class="website-card">
+                        <div class="website-logo">
+                            <img src="https://cdn0.cuelinks.com/merchant/2127/medium/Ajio.png?1516080186" alt="Ajio">
+                        </div>
+                        <h3 class="website-name">Ajio</h3>
+                        <p class="website-description">Fashion & lifestyle shopping</p>
+                        <div class="shop-now-btn">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span>Shop Now</span>
+                        </div>
+                    </div>
+
+                    <!-- Lenskart -->
+                    <div class="website-card">
+                        <div class="website-logo">
+                            <img src="https://cdn0.cuelinks.com/merchant/88/medium/Lenskart.png?1488196598" alt="Lenskart">
+                        </div>
+                        <h3 class="website-name">Lenskart</h3>
+                        <p class="website-description">Eyewear & sunglasses</p>
+                        <div class="shop-now-btn">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span>Shop Now</span>
+                        </div>
+                    </div>
+
+                    <!-- Tata Cliq -->
+                    <div class="website-card">
+                        <div class="website-logo">
+                            <img src="https://cdn0.cuelinks.com/campaigns/2588/thumb/tata.png?1495706199" alt="Tata Cliq">
+                        </div>
+                        <h3 class="website-name">Tata Cliq</h3>
+                        <p class="website-description">Trusted shopping experience</p>
+                        <div class="shop-now-btn">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span>Shop Now</span>
+                        </div>
+                    </div>
+
+                    <!-- Plum Goodness -->
+                    <div class="website-card">
+                        <div class="website-logo">
+                            <img src="https://cdn0.cuelinks.com/campaigns/4098/thumb/Plam.png?1593693725" alt="Plum Goodness">
+                        </div>
+                        <h3 class="website-name">Plum Goodness</h3>
+                        <p class="website-description">Natural beauty products</p>
+                        <div class="shop-now-btn">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span>Shop Now</span>
+                        </div>
+                    </div>
+
+                    <!-- AliExpress -->
+                    <div class="website-card">
+                        <div class="website-logo">
+                            <img src="https://cdn0.cuelinks.com/campaigns/763/thumb/New_Project_-_2024-07-18T125551.521.png?1721287568" alt="AliExpress">
+                        </div>
+                        <h3 class="website-name">AliExpress</h3>
+                        <p class="website-description">Global marketplace</p>
+                        <div class="shop-now-btn">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span>Shop Now</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <h3>✨ Features</h3>
+            <ul>
+                <li>✅ Responsive grid layout - adapts to all screen sizes</li>
+                <li>✅ Hover animations - cards lift and glow on hover</li>
+                <li>✅ Brand logos - official logos from CDN</li>
+                <li>✅ Affiliate links - all clicks tracked for revenue</li>
+                <li>✅ Opens in new tab - doesn't disrupt user journey</li>
+                <li>✅ Fast loading - lightweight JSON data</li>
+                <li>✅ Easy to update - just edit the JSON file</li>
+                <li>✅ SEO friendly - proper semantic HTML</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
