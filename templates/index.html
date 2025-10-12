@@ -641,6 +641,20 @@
         const discountPercentage = Math.round(offer.discount_percentage || 0);
         const hasDiscount = discountPercentage > 0;
         
+        // Clean description - remove HTML tags and decode entities
+        let cleanDescription = offer.description ? offer.description.replace(/<[^>]*>/g, '') : 'Get amazing discounts on this offer!';
+        cleanDescription = cleanDescription.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+        
+        // Create truncated description - limit to 15 words
+        const descriptionWords = cleanDescription.split(' ');
+        const maxDescWords = 15;
+        const isLongDescription = descriptionWords.length > maxDescWords;
+        const truncatedDescription = isLongDescription ? 
+            descriptionWords.slice(0, maxDescWords).join(' ') + '...' : cleanDescription;
+        
+        // Create unique ID for this description
+        const descriptionId = `discount-desc-${index}-${Date.now()}`;
+        
         card.innerHTML = `
             <div style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.08); 
                         transition: all 0.3s ease; border: 2px solid transparent; height: 100%; display: flex; flex-direction: column; position: relative;"
@@ -679,11 +693,9 @@
                         ${offer.title}
                     </h3>
                     
-                    <p style="font-size: 0.9rem; color: #6b7280; margin-bottom: 15px; line-height: 1.5; 
-                              display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; 
-                              overflow: hidden; flex: 1;">
-                        ${offer.description || 'Get amazing discounts on this offer!'}
-                    </p>
+                    <div class="description-container" style="margin-bottom: 15px; flex: 1;">
+                        <p class="description-text collapsed" id="${descriptionId}" style="font-size: 0.9rem; color: #6b7280; line-height: 1.5; margin: 0;">${truncatedDescription}${isLongDescription ? ` <span class="show-more-btn" onclick="expandDiscountDescription('${descriptionId}', '${cleanDescription.replace(/'/g, "\\'")}')">Show more</span>` : ''}</p>
+                    </div>
                     
                     ${offer.coupon_code ? `
                     <div style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 2px dashed #10b981; 
@@ -713,6 +725,34 @@
         `;
         
         return card;
+    }
+    
+    // Functions to expand/collapse discount offer descriptions
+    function expandDiscountDescription(descriptionId, fullText) {
+        const descElement = document.getElementById(descriptionId);
+        
+        if (descElement) {
+            descElement.innerHTML = fullText + ' <span class="show-less-btn" onclick="collapseDiscountDescription(\'' + descriptionId + '\', \'' + fullText.replace(/'/g, "\\'") + '\')">Show less</span>';
+            descElement.classList.remove('collapsed');
+            descElement.classList.add('expanded');
+        }
+    }
+
+    function collapseDiscountDescription(descriptionId, fullText) {
+        const descElement = document.getElementById(descriptionId);
+        
+        if (descElement) {
+            // Restore truncated text (15 words max)
+            const descriptionWords = fullText.split(' ');
+            const maxDescWords = 15;
+            const needsExpansion = descriptionWords.length > maxDescWords;
+            const truncatedText = needsExpansion ? 
+                descriptionWords.slice(0, maxDescWords).join(' ') + '...' : fullText;
+            
+            descElement.innerHTML = truncatedText + (needsExpansion ? ' <span class="show-more-btn" onclick="expandDiscountDescription(\'' + descriptionId + '\', \'' + fullText.replace(/'/g, "\\'") + '\')">Show more</span>' : '');
+            descElement.classList.remove('expanded');
+            descElement.classList.add('collapsed');
+        }
     }
 
     // Load Top Websites

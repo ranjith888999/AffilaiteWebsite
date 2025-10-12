@@ -609,9 +609,9 @@ section > .container {
 }
 
 .hero-content h1 {
-    font-size: 4rem;
-    font-weight: 900;
-    margin-bottom: 25px;
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
     line-height: 1.1;
     background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 50%, #ffffff 100%);
     -webkit-background-clip: text;
@@ -621,8 +621,8 @@ section > .container {
 }
 
 .hero-content p {
-    font-size: 1.3rem;
-    margin-bottom: 35px;
+    font-size: 1.2rem;
+    margin-bottom: 30px;
     opacity: 0.95;
     line-height: 1.6;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -1382,7 +1382,7 @@ section > .container {
 .hero-section {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 75%, #ff6b6b 100%);
     color: white;
-    padding: 120px 0;
+    padding: 40px 0;
     position: relative;
     overflow: hidden;
     min-height: 100vh;
@@ -1439,9 +1439,9 @@ section > .container {
 }
 
 .hero-content h1 {
-    font-size: 4rem;
-    font-weight: 900;
-    margin-bottom: 25px;
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
     line-height: 1.1;
     background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 50%, #ffffff 100%);
     -webkit-background-clip: text;
@@ -1451,8 +1451,8 @@ section > .container {
 }
 
 .hero-content p {
-    font-size: 1.3rem;
-    margin-bottom: 35px;
+    font-size: 1.2rem;
+    margin-bottom: 30px;
     opacity: 0.95;
     line-height: 1.6;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -2212,7 +2212,7 @@ section > .container {
 .hero-section {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 75%, #ff6b6b 100%);
     color: white;
-    padding: 120px 0;
+    padding: 40px 0;
     position: relative;
     overflow: hidden;
     min-height: 100vh;
@@ -2269,9 +2269,9 @@ section > .container {
 }
 
 .hero-content h1 {
-    font-size: 4rem;
-    font-weight: 900;
-    margin-bottom: 25px;
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
     line-height: 1.1;
     background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 50%, #ffffff 100%);
     -webkit-background-clip: text;
@@ -2281,8 +2281,8 @@ section > .container {
 }
 
 .hero-content p {
-    font-size: 1.3rem;
-    margin-bottom: 35px;
+    font-size: 1.2rem;
+    margin-bottom: 30px;
     opacity: 0.95;
     line-height: 1.6;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -3042,7 +3042,7 @@ section > .container {
 .hero-section {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 75%, #ff6b6b 100%);
     color: white;
-    padding: 120px 0;
+    padding: 40px 0;
     position: relative;
     overflow: hidden;
     min-height: 100vh;
@@ -3099,9 +3099,9 @@ section > .container {
 }
 
 .hero-content h1 {
-    font-size: 4rem;
-    font-weight: 900;
-    margin-bottom: 25px;
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
     line-height: 1.1;
     background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 50%, #ffffff 100%);
     -webkit-background-clip: text;
@@ -3111,8 +3111,8 @@ section > .container {
 }
 
 .hero-content p {
-    font-size: 1.3rem;
-    margin-bottom: 35px;
+    font-size: 1.2rem;
+    margin-bottom: 30px;
     opacity: 0.95;
     line-height: 1.6;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -3872,7 +3872,7 @@ section > .container {
 .hero-section {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 75%, #ff6b6b 100%);
     color: white;
-    padding: 120px 0;
+    padding: 40px 0;
     position: relative;
     overflow: hidden;
     min-height: 100vh;
@@ -3929,9 +3929,9 @@ section > .container {
 }
 
 .hero-content h1 {
-    font-size: 4rem;
-    font-weight: 900;
-    margin-bottom: 25px;
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
     line-height: 1.1;
     background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 50%, #ffffff 100%);
     -webkit-background-clip: text;
@@ -3941,8 +3941,8 @@ section > .container {
 }
 
 .hero-content p {
-    font-size: 1.3rem;
-    margin-bottom: 35px;
+    font-size: 1.2rem;
+    margin-bottom: 30px;
     opacity: 0.95;
     line-height: 1.6;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -4701,8 +4701,8 @@ section > .container {
 /* Hero Section - Stunning Modern Design */
 .hero-section {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 75%, #ff6b6b 100%);
-    color: white;
-    padding: 120px 0;
+    color: white;   
+    padding: 40px 0;
     position: relative;
     overflow: hidden;
     min-height: 100vh;

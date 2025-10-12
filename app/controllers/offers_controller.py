@@ -269,12 +269,12 @@ async def get_featured_offers(db: Session = Depends(get_db)):
     try:
         offers = db.query(Offer).filter(
             Offer.status == "live"
-        ).order_by(Offer.created_at.desc()).limit(6).all()
+        ).where(Offer.coupon_code != None).order_by(Offer.created_at.desc()).limit(10).all()
         
         # If no live offers, try all offers
         if len(offers) == 0:
-            offers = db.query(Offer).order_by(Offer.created_at.desc()).limit(6).all()
-        
+            offers = db.query(Offer).where(Offer.coupon_code != None).order_by(Offer.created_at.desc()).limit(10).all()
+
         featured_offers = []
         for offer in offers:
             # Apply same image URL handling as in database endpoint
