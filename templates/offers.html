@@ -603,8 +603,7 @@
         updatePageHeader();
         updateURL();
         
-        // Scroll to top when filters change
-        scrollToOffersTop();
+        // Load offers without scrolling - keep user's current scroll position
         loadOffers(1);
     }
 
@@ -613,8 +612,7 @@
         currentSearch = searchInput.value.trim();
         updateURL();
         
-        // Scroll to top when search changes
-        scrollToOffersTop();
+        // Load offers without scrolling - keep user's current scroll position
         loadOffers(1);
     }
 
