@@ -60,7 +60,8 @@ async def handle_chat(query: ChatQuery, request: Request, db: Session = Depends(
         results = await semantic_chat_service.semantic_search(
             query=query.message,
             db=db,
-            user_first_name=user_first_name
+            user_first_name=user_first_name,
+            fromloc="chat_endpoint"
         )
         
         return {

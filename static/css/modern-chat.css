@@ -1466,6 +1466,11 @@ body {
         font-size: 0.8rem;
     }
     
+    /* Hide fullscreen toggle on mobile devices */
+    .floating-btn-fullscreen {
+        display: none;
+    }
+    
     .floating-btn-new-search:hover {
         min-width: 120px;
     }

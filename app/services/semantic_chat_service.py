@@ -1,13 +1,17 @@
 import logging
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+import google.generativeai as genai
 import json
 import os
 import re
 
+
 # Delayed import approach - only import when actually needed
 EMBEDDINGS_AVAILABLE = False
 SentenceTransformer = None
+GEMINI_API_KEY = "AIzaSyC35Sdh0lxRv8WdGPJzb6nwNF7h1f3i5wI"
+genai.configure(api_key=GEMINI_API_KEY)
 
 def _import_sentence_transformers():
     """Import sentence transformers only when needed"""
@@ -103,6 +107,34 @@ class SemanticChatService:
                 "Travel offers"
             ]
         }
+
+    def get_general_response(self, user_first_name: str = None) -> dict:
+        """Return a friendly response redirecting general knowledge questions to deals/offers"""
+        if user_first_name:
+            # Personalized response for logged-in users
+            response_messages = [
+                f"Hi {user_first_name}! 👋 I appreciate your question, but I'm specifically designed to help you find amazing deals, coupons, and offers!",
+                f"Hey {user_first_name}! 😊 While that's an interesting question, my expertise is in finding you the best discounts and deals!",
+                f"Hello {user_first_name}! 🎉 I'm your shopping assistant, so I specialize in deals and offers rather than general knowledge!",
+                f"Hi there, {user_first_name}! 💫 That's outside my area, but I'm excellent at finding you incredible savings and deals!"
+            ]
+            # Rotate through messages based on name length for variety
+            message_index = len(user_first_name) % len(response_messages)
+            response_message = response_messages[message_index]
+        else:
+            # Generic but friendly response for non-logged-in users
+            response_message = "Hey there! 👋 I appreciate your curiosity, but I'm your AI shopping assistant specialized in finding deals, coupons, and offers!"
+        
+        return {
+            "type": "greeting",
+            "message": response_message + "\n\n💡 **I can help you with:**\n\n• Finding the best deals on electronics, fashion, travel & more\n• Discovering exclusive coupons and discount codes\n• Comparing offers across different brands\n• Getting cashback opportunities\n\n**Try asking me:**\n\n• 'Show me laptop deals'\n• 'Find Nike discount codes'\n• 'Best offers on smartphones'\n• 'Travel deals and coupons'\n\nWhat deals are you looking for today? 🛍️",
+            "suggestions": [
+                "Electronics deals",
+                "Fashion discounts", 
+                "Food & Restaurant coupons",
+                "Travel offers"
+            ]
+        }
     
     def _clean_html(self, text: str) -> str:
         """Clean HTML tags from text"""
@@ -176,13 +208,20 @@ class SemanticChatService:
             else:
                 return f"{personalized_intro}I couldn't find any deals for '{query}'. Try a different search term!"
 
-    async def semantic_search(self, query: str, db: Session, top_k: int = 10, user_first_name: str = None) -> dict:
+    async def semantic_search(self, query: str, db: Session, top_k: int = 10, user_first_name: str = None, fromloc: str = None) -> dict:
         """
         Perform semantic search for offers and generate a personalized response using an LLM.
         """
-        if self.is_greeting(query):
-            return self.get_greeting_response(user_first_name)
-        
+        if fromloc is not None:
+            queryType = await self.classify_query(query)
+            logger.info(f"Query classified as: {queryType}")
+            
+            if queryType == "General":
+                return self.get_general_response(user_first_name)
+            elif queryType == "Greetings":
+                return self.get_greeting_response(user_first_name)
+            # If queryType == "Offers", continue with semantic search below
+
         # Try to load the embedding model
         embedding_model = self._load_embedding_model()
         if not embedding_model:
@@ -276,6 +315,119 @@ class SemanticChatService:
                 "offers": offers,
                 "total": len(offers)
             }
+
+    async def classify_query(self, user_query):
+        """
+        Classify user query into one of three categories: Greetings, General, or Offers.
+        Includes fallback mechanism if Gemini API fails.
+        """
+        # Create the classification prompt
+        prompt = f"""You are a query classifier for an affiliate deals and coupons website. Your job is to classify the given user query into exactly one of these three categories:
+
+        1. "Greetings" - If the query is a greeting such as:
+        - Hi, Hello, Hey, Howdy
+        - Good morning, Good afternoon, Good evening
+        - How are you, How do you do, What's up
+        - Hi Good Morning, Hello Good Evening
+        - Any combination of greetings or casual conversation starters
+
+        2. "General" - If the query is a general knowledge question NOT related to shopping, deals, or offers:
+        - What is the capital of India?
+        - Where is Hyderabad?
+        - Who invented the telephone?
+        - Questions about facts, places, people, science, history, etc.
+        - Any informational question unrelated to shopping or deals
+
+        3. "Offers" - If the query is related to deals, coupons, offers, discounts, or shopping:
+        - Show me laptop deals
+        - Find Nike discount codes
+        - Best offers on smartphones
+        - Cheap shoes under $50
+        - Electronics deals
+        - Fashion coupons
+        - Travel offers
+        - Restaurant discounts
+        - Any query about products, brands, categories, prices, deals, coupons, or shopping
+
+        User Query: "{user_query}"
+
+        Respond with ONLY one word: either "Greetings", "General", or "Offers". No explanation needed."""
+
+        try:
+            # Initialize the model (using gemini-2.5-flash-lite for lower cost)
+            model = genai.GenerativeModel('gemini-2.5-flash-lite')
+            
+            # Generate response with timeout
+            response = model.generate_content(prompt)
+            
+            # Extract and clean the response
+            classification = response.text.strip()
+            
+            # Ensure the response is one of the expected values
+            if "Greetings" in classification:
+                return "Greetings"
+            elif "General" in classification:
+                return "General"
+            elif "Offers" in classification:
+                return "Offers"
+            else:
+                # If unexpected response, use fallback
+                logger.warning(f"Unexpected classification response: {classification}. Using fallback.")
+                return self._fallback_classification(user_query)
+                
+        except Exception as e:
+            logger.error(f"Error during Gemini API classification: {e}. Using fallback mechanism.")
+            return self._fallback_classification(user_query)
+    
+    def _fallback_classification(self, user_query: str) -> str:
+        """
+        Fallback classification using simple keyword matching when Gemini API fails.
+        """
+        query_lower = user_query.lower().strip()
+        
+        # Check for greetings first (most specific)
+        greeting_keywords = [
+            'hello', 'hi', 'hey', 'howdy', 'greetings',
+            'good morning', 'good afternoon', 'good evening', 'good night',
+            'how are you', "what's up", 'whats up', 'sup', 'yo'
+        ]
+        if any(keyword in query_lower for keyword in greeting_keywords):
+            return "Greetings"
+        
+        # Check for shopping/deals related keywords (highest priority for business logic)
+        offers_keywords = [
+            'deal', 'deals', 'offer', 'offers', 'coupon', 'coupons', 'discount', 'discounts',
+            'sale', 'sales', 'promo', 'promotion', 'code', 'cashback', 'voucher',
+            'buy', 'shop', 'shopping', 'purchase', 'price', 'cheap', 'affordable',
+            'show me', 'find', 'search', 'looking for', 'want', 'need',
+            'best', 'top', 'cheapest', 'lowest', 'under', 'below',
+            # Categories
+            'electronics', 'fashion', 'clothing', 'shoes', 'laptop', 'phone', 'mobile',
+            'smartphone', 'tablet', 'computer', 'tv', 'camera', 'headphone',
+            'travel', 'hotel', 'flight', 'food', 'restaurant', 'grocery',
+            'home', 'furniture', 'appliance', 'beauty', 'makeup', 'skincare',
+            'sports', 'fitness', 'book', 'toy', 'game', 'jewelry',
+            # Brands (common ones)
+            'amazon', 'flipkart', 'nike', 'adidas', 'samsung', 'apple', 'sony'
+        ]
+        if any(keyword in query_lower for keyword in offers_keywords):
+            return "Offers"
+        
+        # Check for general knowledge question patterns
+        general_patterns = [
+            'what is', 'what are', 'who is', 'who are', 'where is', 'where are',
+            'when is', 'when was', 'when were', 'how does', 'how do', 'why is', 'why does',
+            'capital of', 'president of', 'population of', 'meaning of',
+            'explain', 'define', 'tell me about', 'information about'
+        ]
+        if any(pattern in query_lower for pattern in general_patterns):
+            # Double check it's not about deals/offers
+            if not any(keyword in query_lower for keyword in offers_keywords):
+                return "General"
+        
+        # Default to Offers for this shopping-focused website
+        # This ensures most queries are handled as potential deal searches
+        return "Offers"
 
     async def fallback_search(self, query: str, db: Session, top_k: int = 10) -> list:
         """

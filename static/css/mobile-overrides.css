@@ -1,0 +1,10 @@
+/* Mobile-specific overrides for various elements */
+
+/* Hide hero section description paragraph on mobile devices */
+@media (max-width: 768px) {
+    .hero-content p {
+        display: none !important;
+    }
+}
+
+/* Additional mobile optimizations can be added here */
