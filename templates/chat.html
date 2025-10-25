@@ -32,6 +32,28 @@
             </button>
         </div>
 
+        <!-- Mode Selection Section -->
+        <div class="mode-selection-section" id="modeSelectionSection">
+            <div class="mode-options">
+                <label class="mode-option">
+                    <input type="radio" name="chatMode" value="coupons" class="mode-radio" checked>
+                    <span class="mode-label">
+                        <i class="fas fa-tag"></i>
+                        <span class="mode-name">Coupons</span>
+                        <span class="mode-desc">Find deals & discounts</span>
+                    </span>
+                </label>
+                <label class="mode-option">
+                    <input type="radio" name="chatMode" value="compare" class="mode-radio">
+                    <span class="mode-label">
+                        <i class="fas fa-balance-scale"></i>
+                        <span class="mode-name">Compare</span>
+                        <span class="mode-desc">Compare prices <span class="badge-coming">Coming Soon</span></span>
+                    </span>
+                </label>
+            </div>
+        </div>
+
         <!-- Welcome State with Beautiful Design -->
         <main id="welcomeState" class="welcome-section">
             <!-- Search Input -->
@@ -175,6 +197,7 @@
 <link rel="stylesheet" href="/static/css/modern-chat.css">
 <link rel="stylesheet" href="/static/css/offer-cards.css">
 <script src="/static/js/modern-dealshub-chat.js"></script>
+<script src="/static/js/chat-mode-selector.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize Enhanced DealsHub AI Chat
