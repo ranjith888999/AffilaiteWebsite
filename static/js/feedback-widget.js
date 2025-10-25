@@ -14,9 +14,13 @@ class FeedbackWidget {
     }
 
     createWidget() {
+        // Check if we're on the chat page
+        const isOnChatPage = window.location.pathname === '/chat';
+        const widgetStyle = isOnChatPage ? 'style = "margin-bottom:6%"' : '';
+        
         const widgetHTML = `
             <!-- Feedback Floating Button -->
-            <div class="feedback-widget">
+            <div class="feedback-widget" ${widgetStyle}>
                 <button class="feedback-fab" id="feedbackFab" aria-label="Give Feedback">
                     <i class="fas fa-comment-dots"></i>
                 </button>
