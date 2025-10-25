@@ -21,3 +21,4 @@ requests>=2.31.0
 supabase>=2.0.0
 loguru>=0.7.0
 authlib>=1.2.0
+google-generativeai==0.8.5
