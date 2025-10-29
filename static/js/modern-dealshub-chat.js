@@ -72,6 +72,7 @@ window.EnhancedDealsHubChat = (function() {
             // States
             welcomeState: document.getElementById('welcomeState'),
             conversationState: document.getElementById('conversationState'),
+            modeSelectionSection: document.getElementById('modeSelectionSection'),
             
             // Messages
             chatMessages: document.getElementById('chatMessages'),
@@ -285,6 +286,11 @@ window.EnhancedDealsHubChat = (function() {
         elements.mainHeader.style.display = 'none';
         elements.welcomeState.style.display = 'none';
         
+        // Hide mode selection section during conversation (especially important on mobile)
+        if (elements.modeSelectionSection) {
+            elements.modeSelectionSection.style.display = 'none';
+        }
+        
         // Show conversation state and floating controls
         elements.conversationState.style.display = 'flex';
         if (elements.floatingControls) {
@@ -306,6 +312,11 @@ window.EnhancedDealsHubChat = (function() {
         // Show main header and welcome state
         elements.mainHeader.style.display = 'flex';
         elements.welcomeState.style.display = 'flex';
+        
+        // Show mode selection section again
+        if (elements.modeSelectionSection) {
+            elements.modeSelectionSection.style.display = 'flex';
+        }
         
         // Hide conversation state and floating controls
         elements.conversationState.style.display = 'none';

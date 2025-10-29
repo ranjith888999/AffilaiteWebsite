@@ -335,6 +335,12 @@
     color: white;
 }
 
+
+@media (max-width: 480px) {
+    .feedback-widget {
+        bottom : 30px;
+    }
+}
 /* Mobile responsiveness */
 @media (max-width: 768px) {
     .feedback-widget {

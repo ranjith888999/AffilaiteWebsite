@@ -1489,6 +1489,17 @@ body {
         font-size: 0.95rem;
     }
     
+    /* Ensure mode selection is properly handled on mobile */
+    .mode-selection-section {
+        display: flex !important;
+    }
+    
+    /* Hide mode selection during conversation on mobile */
+    .conversation-section .mode-selection-section,
+    .conversation-section ~ .mode-selection-section {
+        display: none !important;
+    }
+    
     /* Mobile: Transform cards into clean buttons */
     .quick-actions {
         display: flex;
@@ -1628,6 +1639,16 @@ body {
         width: 80px;
         height: 80px;
         font-size: 32px;
+    }
+    
+    /* Ensure mode selection is properly hidden during conversation on small mobile */
+    .mode-selection-section {
+        display: flex !important;
+    }
+    
+    .conversation-section .mode-selection-section,
+    .conversation-section ~ .mode-selection-section {
+        display: none !important;
     }
     
     /* Extra small mobile - Keep button style, slightly more compact */
