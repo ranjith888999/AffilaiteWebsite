@@ -13,13 +13,13 @@ class FeedbackWidget {
         this.attachEventListeners();
     }
 
-    
+
     createWidget() {
         // Check if we're on the chat page
         const isOnChatPage = window.location.pathname === '/chat';
         
         // Detect if device is mobile based on viewport width (max-width: 480px)
-        const isMobileDevice = window.innerWidth <= 480;
+        const isMobileDevice = window.innerWidth <= 600;
         
         // Set margin based on chat page and device type
         let widgetStyle = '';
