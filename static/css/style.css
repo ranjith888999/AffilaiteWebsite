@@ -3940,6 +3940,12 @@ section > .container {
     text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+
+@media (max-width: 480px) {
+    .hero-content h1 {
+        font-size: 3.2rem;
+    }
+}
 .hero-content p {
     font-size: 1.2rem;
     margin-bottom: 30px;
