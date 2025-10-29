@@ -19,18 +19,18 @@ class FeedbackWidget {
         const isOnChatPage = window.location.pathname === '/chat';
         
         // Detect if device is mobile based on viewport width (max-width: 480px)
-        const isMobileDevice = window.innerWidth <= 600;
+        // const isMobileDevice = window.innerWidth <= 600;
         
-        // Set margin based on chat page and device type
-        let widgetStyle = '';
-        if (isOnChatPage) {
-            const margin = isMobileDevice ? '20%' : '6%';
-            widgetStyle = `style = "margin-bottom:${margin}"`;
-        }
+        // // Set margin based on chat page and device type
+        // let widgetStyle = '';
+        // if (isOnChatPage) {
+        //     const margin = isMobileDevice ? '20%' : '6%';
+        //     widgetStyle = `style = "margin-bottom:${margin}"`;
+        // }
         
         const widgetHTML = `
             <!-- Feedback Floating Button -->
-            <div class="feedback-widget" ${widgetStyle}>
+            <div class="feedback-widget">
                 <button class="feedback-fab" id="feedbackFab" aria-label="Give Feedback">
                     <i class="fas fa-comment-dots"></i>
                 </button>
