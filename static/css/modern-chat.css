@@ -103,7 +103,7 @@ body {
 }
 
 .chat-container {
-    max-width: 100vw !important;
+    max-width: 101vw !important;
     width: 100vw !important;
     margin: 0 auto !important;
     padding: 0 var(--space-md) !important;
@@ -311,13 +311,13 @@ body {
 
 .mode-name {
     font-weight: 600;
-    color: var(--text-primary);
+    color: black;
     font-size: 0.9rem;
 }
 
 .mode-desc {
     font-size: 0.75rem;
-    color: var(--text-secondary);
+    color: black;
     display: flex;
     align-items: center;
     gap: var(--space-xs);
