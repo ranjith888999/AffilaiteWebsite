@@ -236,6 +236,16 @@ body {
     flex-shrink: 0;
 }
 
+/* Hide mode selection during conversation - Critical for mobile */
+.mode-selection-section.hidden-during-conversation {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    pointer-events: none !important;
+}
+
 .mode-options {
     display: flex;
     gap: var(--space-md);

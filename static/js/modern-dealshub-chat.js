@@ -289,6 +289,8 @@ window.EnhancedDealsHubChat = (function() {
         // Hide mode selection section during conversation (especially important on mobile)
         if (elements.modeSelectionSection) {
             elements.modeSelectionSection.style.display = 'none';
+            elements.modeSelectionSection.style.visibility = 'hidden';
+            elements.modeSelectionSection.classList.add('hidden-during-conversation');
         }
         
         // Show conversation state and floating controls
@@ -316,6 +318,8 @@ window.EnhancedDealsHubChat = (function() {
         // Show mode selection section again
         if (elements.modeSelectionSection) {
             elements.modeSelectionSection.style.display = 'flex';
+            elements.modeSelectionSection.style.visibility = 'visible';
+            elements.modeSelectionSection.classList.remove('hidden-during-conversation');
         }
         
         // Hide conversation state and floating controls
