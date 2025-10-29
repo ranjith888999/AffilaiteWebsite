@@ -16,7 +16,16 @@ class FeedbackWidget {
     createWidget() {
         // Check if we're on the chat page
         const isOnChatPage = window.location.pathname === '/chat';
-        const widgetStyle = isOnChatPage ? 'style = "margin-bottom:6%"' : '';
+        
+        // Detect if device is mobile
+        const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        // Set margin based on chat page and device type
+        let widgetStyle = '';
+        if (isOnChatPage) {
+            const margin = isMobileDevice ? '20%' : '6%';
+            widgetStyle = `style = "margin-bottom:${margin}"`;
+        }
         
         const widgetHTML = `
             <!-- Feedback Floating Button -->
