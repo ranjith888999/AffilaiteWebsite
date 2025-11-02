@@ -24,10 +24,10 @@
     "campaign_id": 201,
     "campaign": "Myntra",
     "title": "Get upto 60% off on Fashion",
-    "description": "<ul><li>Discover fresh and stylish wardrobe picks at unbeatable prices.</li><li>Snag huge discounts on top brands and latest fashion trends.</li><li>Valid across categories—from apparel and footwear to accessories and more.</li><li>Shop now, mix & match your style, and save big.</li></ul>",
+    "description": "<ul><li>Discover fresh and stylish wardrobe picks at unbeatable prices.</li><li>Snag huge discounts on top collections and latest fashion trends.</li><li>Valid across categories—from apparel and footwear to accessories and more.</li><li>Shop now, mix & match your style, and save big.</li></ul>",
     "terms_and_condition": "",
     "coupon_code": "",
-    "image_url": "",
+    "image_url": "https://cdn0.cuelinks.com/merchant/98/medium/myntra.jpg?1613125082",
     "type": "discount",
     "shipping_charge": "",
     "status": "live",
@@ -39,25 +39,124 @@
       "11": "Fashion"
     }
   },
-  
   {
     "id": 202,
     "campaign_id": 202,
-    "campaign": "Test",
-    "title": "Get upto 60% off on Test",
-    "description": "<ul><li>Test</li></ul>",
+    "campaign": "Myntra",
+    "title": "Get Great offers on Fashion",
+    "description": "<ul><li>Shop for Tshirts, Jeans from best deals at Myntra. Buy from branded products and get upto 80% off on clothes, accessories at Myntra Best Deals & Discounts</li></ul>",
     "terms_and_condition": "",
     "coupon_code": "",
-    "image_url": "",
+    "image_url": "https://cdn0.cuelinks.com/merchant/98/medium/myntra.jpg?1613125082",
     "type": "discount",
     "shipping_charge": "",
     "status": "live",
-    "url": "https://www.test.com",
-    "affiliate_url": "https://www.test.com/shop/offers",
+    "url": "https://www.myntra.com",
+    "affiliate_url": "https://linksredirect.com/?cid=249579&source=linkkit&url=https%3A%2F%2Fwww.myntra.com%2Fbest-deals",
     "start_date": "",
     "end_date": "",
     "categories": {
       "11": "Fashion"
+    }
+  },
+  {
+    "id": 203,
+    "campaign_id": 203,
+    "campaign": "BookMyshow",
+    "title": "Get upto 60% off on the available credit cards in bookmyshow",
+    "description": "<ul><li>Enjoy up to 60% off on your favorite movie or event tickets with exclusive BookMyShow credit card offers. Pay using eligible bank cards and grab instant discounts before checkout. don’t miss the savings!</li></ul>",
+    "terms_and_condition": "",
+    "coupon_code": "",
+    "image_url": "https://cdn0.cuelinks.com/merchant/2710/medium/book-my-show.png?1493139477",
+    "type": "discount",
+    "shipping_charge": "",
+    "status": "live",
+    "url": "https://www.in.bookmyshow.com",
+    "affiliate_url": "https://linksredirect.com/?cid=249579&source=linkkit&url=https%3A%2F%2Fin.bookmyshow.com%2Foffers",
+    "start_date": "",
+    "end_date": "",
+    "categories": {
+      "11": "Fashion"
+    }
+  },
+  {
+    "id": 203,
+    "campaign_id": 203,
+    "campaign": "Zomato",
+    "title": "Get the latest offers and deals in zomato",
+    "description": "<ul><li>Enjoy up to 60% off on your favorite food items with exclusive Zomato offers. Order using eligible bank cards and grab instant discounts before checkout. don’t miss the savings!</li></ul>",
+    "terms_and_condition": "",
+    "coupon_code": "",
+    "image_url": "https://cdn0.cuelinks.com/merchant/2570/medium/zomato.png?1500890774",
+    "type": "discount",
+    "shipping_charge": "",
+    "status": "live",
+    "url": "https://www.zomato.com",
+    "affiliate_url": "https://linksredirect.com/?cid=249579&source=linkkit&url=https%3A%2F%2Fwww.zomato.com%2Foffer%2FDzolv",
+    "start_date": "",
+    "end_date": "",
+    "categories": {
+      "11": "Fashion"
+    }
+  },
+  {
+    "id": 204,
+    "campaign_id": 204,
+    "campaign": "Amazon",
+    "title": "Discover the best deals on Amazon India Today Offer page with up to 80% off ",
+    "description": "<ul><li>Get daily deals across categories with up to 80% off, including exclusive cashback and lightning sales</li></ul>",
+    "terms_and_condition": "",
+    "coupon_code": "",
+    "image_url": "https://cdn0.cuelinks.com/merchant/645/medium/Amazon.in_store_logo.jpg?1716525253",
+    "type": "discount",
+    "shipping_charge": "",
+    "status": "live",
+    "url": "https://www.amazon.in",
+    "affiliate_url": "https://amzn.to/3LhKQqg",
+    "start_date": "",
+    "end_date": "",
+    "categories": {
+      "11": "All Categories"
+    }
+  },
+  {
+    "id": 205,
+    "campaign_id": 205,
+    "campaign": "Amazon",
+    "title": "Explore Amazon Deals for daily discounts and limited-time offers across categories",
+    "description": "<ul><li>Amazon Deals page offers daily and lightning discounts on top products, delivering huge savings across electronics, fashion, and home essentials. Shop now!</li></ul>",
+    "terms_and_condition": "",
+    "coupon_code": "",
+    "image_url": "https://cdn0.cuelinks.com/merchant/645/medium/Amazon.in_store_logo.jpg?1716525253",
+    "type": "discount",
+    "shipping_charge": "",
+    "status": "live",
+    "url": "https://www.amazon.in",
+    "affiliate_url": "https://amzn.to/47CP17G",
+    "start_date": "",
+    "end_date": "",
+    "categories": {
+      "11": "All Categories"
+    }
+  },
+  {
+    "id": 206,
+    "campaign_id": 206,
+    "campaign": "Flipkart",
+    "title": "Discover amazing deals and discounts on mobiles, electronics, fashion, and more",
+    "description": "<ul><li>Flipkart Offers Store features daily and festive discounts across categories like electronics, fashion, appliances, and lifestyle. Grab exciting deals now!</li></ul>",
+    "terms_and_condition": "",
+    "coupon_code": "",
+    "image_url": "https://cdn0.cuelinks.com/merchant/1/medium/Flipkart_store_logo.jpeg?1716525377",
+    "type": "discount",
+    "shipping_charge": "",
+    "status": "live",
+    "url": "https://www.flipkart.com",
+    "affiliate_url": "https://linksredirect.com/?cid=249579&source=linkkit&url=https%3A%2F%2Fwww.flipkart.com%2Foffers-store",
+    "start_date": "",
+    "end_date": "",
+    "categories": {
+      "11": "All Categories"
     }
   }
 ]
