@@ -147,12 +147,20 @@ class CuelinksOffersService:
         logger.info("Clearing existing data from database...")
         
         try:
+            # First, rollback any pending transactions to ensure clean state
+            db.rollback()
+            
             # Delete in correct order to respect foreign key constraints
-            db.execute(text("DELETE FROM offer_embeddings"))
-            db.execute(text("DELETE FROM offers"))
-            db.execute(text("DELETE FROM campaigns"))
+            deleted_embeddings = db.execute(text("DELETE FROM offer_embeddings")).rowcount
+            deleted_offers = db.execute(text("DELETE FROM offers")).rowcount
+            deleted_campaigns = db.execute(text("DELETE FROM campaigns")).rowcount
+            
             db.commit()
-            logger.info("Successfully cleared existing data")
+            
+            logger.info(f"Successfully cleared existing data:")
+            logger.info(f"  - Deleted {deleted_embeddings} embeddings")
+            logger.info(f"  - Deleted {deleted_offers} offers")
+            logger.info(f"  - Deleted {deleted_campaigns} campaigns")
         except Exception as e:
             db.rollback()
             logger.error(f"Error clearing existing data: {e}")
@@ -164,10 +172,20 @@ class CuelinksOffersService:
         
         campaigns_dict = {}
         offers_processed = 0
+        seen_offer_ids = set()  # Track offer IDs to detect duplicates
         
         try:
             for offer_data in offers_data:
                 try:
+                    offer_id = offer_data.get('id')
+                    
+                    # Check for duplicate offer IDs in the batch
+                    if offer_id in seen_offer_ids:
+                        logger.warning(f"Duplicate offer_id {offer_id} detected in data, skipping...")
+                        continue
+                    
+                    seen_offer_ids.add(offer_id)
+                    
                     # Process campaign - handle both API typo (camapign_id) and correct spelling (campaign_id)
                     campaign_id = offer_data.get('camapign_id') or offer_data.get('campaign_id')
                     
@@ -226,6 +244,9 @@ class CuelinksOffersService:
                     logger.debug(f"Creating embedding for offer {offer.offer_id} (db id: {offer.id})")
                     self.create_offer_embedding(offer, campaign_name, offer_data, db)
                     
+                    # Commit each offer individually to avoid losing all work on error
+                    db.commit()
+                    
                     offers_processed += 1
                     
                     if offers_processed % 100 == 0:
@@ -235,15 +256,21 @@ class CuelinksOffersService:
                     logger.error(f"Error processing offer {offer_data.get('id', 'unknown')}: {e}")
                     import traceback
                     logger.error(traceback.format_exc())
+                    
+                    # Rollback the current transaction to recover from the error
+                    db.rollback()
+                    
+                    # Skip this offer and continue with the next one
                     continue
             
-            db.commit()
             logger.info(f"Successfully processed and stored {offers_processed} offers")
             return offers_processed
             
         except Exception as e:
             db.rollback()
             logger.error(f"Error processing offers: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             raise
     
     def create_offer_embedding(self, offer: Offer, campaign_name: str, offer_data: Dict[str, Any], db: Session):
