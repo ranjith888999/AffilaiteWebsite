@@ -168,8 +168,17 @@ class CuelinksOffersService:
         try:
             for offer_data in offers_data:
                 try:
-                    # Process campaign
-                    campaign_id = offer_data.get('camapign_id')  # Note: API has typo in field name
+                    # Process campaign - handle both API typo (camapign_id) and correct spelling (campaign_id)
+                    campaign_id = offer_data.get('camapign_id') or offer_data.get('campaign_id')
+                    
+                    # Convert to int if it's a string
+                    if campaign_id and isinstance(campaign_id, str):
+                        try:
+                            campaign_id = int(campaign_id)
+                        except (ValueError, TypeError):
+                            logger.warning(f"Invalid campaign_id: {campaign_id}")
+                            campaign_id = None
+                    
                     campaign_name = offer_data.get('campaign', '')
                     
                     if campaign_id and campaign_id not in campaigns_dict:
@@ -214,6 +223,7 @@ class CuelinksOffersService:
                     db.flush()  # Get the ID
                     
                     # Create embedding
+                    logger.debug(f"Creating embedding for offer {offer.offer_id} (db id: {offer.id})")
                     self.create_offer_embedding(offer, campaign_name, offer_data, db)
                     
                     offers_processed += 1
@@ -223,6 +233,8 @@ class CuelinksOffersService:
                         
                 except Exception as e:
                     logger.error(f"Error processing offer {offer_data.get('id', 'unknown')}: {e}")
+                    import traceback
+                    logger.error(traceback.format_exc())
                     continue
             
             db.commit()
@@ -259,12 +271,14 @@ class CuelinksOffersService:
                 try:
                     embedding_vector = model.encode(content)
                     embedding = embedding_vector.tolist()
+                    logger.debug(f"Generated ML embedding for offer {offer.offer_id}")
                 except Exception as e:
-                    logger.error(f"Error generating embedding for offer {offer.offer_id}: {e}")
+                    logger.warning(f"ML embedding failed for offer {offer.offer_id}: {e}, using fallback")
                     # Fallback to simple embedding
                     embedding = self.generate_simple_embedding(content)
             else:
                 # Use simple embedding as fallback
+                logger.debug(f"Using simple embedding for offer {offer.offer_id}")
                 embedding = self.generate_simple_embedding(content)
             
             # Create embedding record
@@ -283,9 +297,12 @@ class CuelinksOffersService:
                 })
             )
             db.add(offer_embedding)
+            logger.debug(f"Embedding added to session for offer {offer.offer_id}")
             
         except Exception as e:
             logger.error(f"Error creating embedding for offer {offer.offer_id}: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
     
     async def create_offer_embeddings(self, db: Session, offer: Offer):
         """Create embeddings for a single offer (used by admin controller)"""
