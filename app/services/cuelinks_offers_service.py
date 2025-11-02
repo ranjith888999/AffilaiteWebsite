@@ -287,6 +287,32 @@ class CuelinksOffersService:
         except Exception as e:
             logger.error(f"Error creating embedding for offer {offer.offer_id}: {e}")
     
+    async def create_offer_embeddings(self, db: Session, offer: Offer):
+        """Create embeddings for a single offer (used by admin controller)"""
+        try:
+            # Get offer categories from JSON
+            categories = {}
+            if offer.categories:
+                try:
+                    categories = json.loads(offer.categories)
+                except:
+                    pass
+            
+            # Create offer data dict
+            offer_data = {
+                'categories': categories
+            }
+            
+            # Create embedding
+            self.create_offer_embedding(offer, offer.campaign_name, offer_data, db)
+            db.commit()
+            
+            logger.info(f"Created embedding for offer {offer.offer_id}")
+            
+        except Exception as e:
+            logger.error(f"Error creating embeddings for offer {offer.offer_id}: {e}")
+            raise
+    
     def clean_html(self, text: str) -> str:
         """Clean HTML tags from text"""
         if not text:
@@ -335,6 +361,24 @@ class CuelinksOffersService:
         
         db.commit()
     
+    def load_extended_offers(self) -> List[Dict[str, Any]]:
+        """Load offers from offers_extended.json file"""
+        try:
+            extended_file_path = os.path.join("data", "offers_extended.json")
+            
+            if os.path.exists(extended_file_path):
+                with open(extended_file_path, 'r', encoding='utf-8') as f:
+                    extended_offers = json.load(f)
+                    logger.info(f"Loaded {len(extended_offers)} extended offers from JSON file")
+                    return extended_offers
+            else:
+                logger.warning("offers_extended.json not found")
+                return []
+                
+        except Exception as e:
+            logger.error(f"Error loading extended offers: {e}")
+            return []
+    
     async def sync_offers_from_api(self, sync_type: str = "auto", clear_data: bool = True) -> Dict[str, Any]:
         """Main method to sync offers from API"""
         start_time = time.time()
@@ -356,7 +400,14 @@ class CuelinksOffersService:
             offers_data = await self.fetch_all_offers_from_api()
             
             if not offers_data:
-                raise Exception("No offers retrieved from API")
+                logger.warning("No offers retrieved from API, will only use extended offers")
+                offers_data = []
+            
+            # Load and append extended offers
+            extended_offers = self.load_extended_offers()
+            if extended_offers:
+                offers_data.extend(extended_offers)
+                logger.info(f"Total offers including extended: {len(offers_data)}")
             
             # Process and store offers
             total_processed = self.process_and_store_offers(offers_data, db)

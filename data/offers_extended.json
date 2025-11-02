@@ -1,0 +1,62 @@
+[
+  {
+    "id": 200,
+    "campaign_id": "200",
+    "campaign": "Swiggy",
+    "title": "Get the Best Offers & Discounts on Food Orders with Swiggy",
+    "description": "<ul><li>Enjoy amazing restaurant deals nearby — from pizzas and burgers to pasta and more.</li><li>Discover exciting discounts and combo meals at top-rated eateries in your city.</li></ul>",
+    "terms_and_condition": "",
+    "coupon_code": "",
+    "image_url": "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_260/portal/m/seo/Logos/Swiggy/Swiggy%20logo-2.png",
+    "type": "discount",
+    "shipping_charge": "",
+    "status": "live",
+    "url": "https://www.swiggy.com",
+    "affiliate_url": "https://www.swiggy.com/offers-near-me",
+    "start_date": "2025-10-24",
+    "end_date": "2025-12-31",
+    "categories": {
+      "12": "Food"
+    }
+  },
+  {
+    "id": 201,
+    "campaign_id": 201,
+    "campaign": "Myntra",
+    "title": "Get upto 60% off on Fashion",
+    "description": "<ul><li>Discover fresh and stylish wardrobe picks at unbeatable prices.</li><li>Snag huge discounts on top brands and latest fashion trends.</li><li>Valid across categories—from apparel and footwear to accessories and more.</li><li>Shop now, mix & match your style, and save big.</li></ul>",
+    "terms_and_condition": "",
+    "coupon_code": "",
+    "image_url": "",
+    "type": "discount",
+    "shipping_charge": "",
+    "status": "live",
+    "url": "https://www.myntra.com",
+    "affiliate_url": "https://www.myntra.com/shop/offers",
+    "start_date": "",
+    "end_date": "",
+    "categories": {
+      "11": "Fashion"
+    }
+  },
+  {
+    "id": 202,
+    "campaign_id": 202,
+    "campaign": "Test",
+    "title": "Get upto 60% off on Test",
+    "description": "<ul><li>Test</li></ul>",
+    "terms_and_condition": "",
+    "coupon_code": "",
+    "image_url": "",
+    "type": "discount",
+    "shipping_charge": "",
+    "status": "live",
+    "url": "https://www.test.com",
+    "affiliate_url": "https://www.test.com/shop/offers",
+    "start_date": "",
+    "end_date": "",
+    "categories": {
+      "11": "Fashion"
+    }
+  }
+]

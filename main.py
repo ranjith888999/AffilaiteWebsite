@@ -214,6 +214,11 @@ async def sync_admin_page(request: Request):
     """Admin interface for managing offers sync"""
     return templates.TemplateResponse("offers_sync_admin.html", {"request": request})
 
+@app.get("/admin/offers", response_class=HTMLResponse)
+async def admin_offers_page(request: Request):
+    """Admin interface for managing offers - full CRUD operations"""
+    return templates.TemplateResponse("admin_offers.html", {"request": request})
+
 @app.get("/health")
 async def health_check_detailed():
     return {"status": "ok", "timestamp": time.time()}
@@ -243,10 +248,12 @@ try:
     from app.controllers.offers_sync_controller import router as offers_sync_router
     from app.controllers.scheduler_controller import router as scheduler_router
     from app.controllers.semantic_chat_controller import router as semantic_chat_router
+    from app.controllers.admin_offers_controller import router as admin_offers_router
     app.include_router(offers_sync_router)
     app.include_router(scheduler_router)
     app.include_router(semantic_chat_router)
-    print("✅ Sync, scheduler, and semantic chat routes loaded successfully")
+    app.include_router(admin_offers_router)
+    print("✅ Sync, scheduler, semantic chat, and admin offers routes loaded successfully")
 except ImportError as e:
     print(f"⚠️ Could not load additional routes: {e}")
     print("⚠️ Advanced features may not be available")
