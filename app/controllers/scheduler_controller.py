@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Body
 from typing import Dict, Any
 from datetime import datetime
 import logging
@@ -115,12 +115,17 @@ async def restart_scheduler() -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=f"Failed to restart scheduler: {str(e)}")
 
 @router.put("/sync-time")
-async def update_sync_time(sync_time: str) -> Dict[str, Any]:
+async def update_sync_time(sync_time: str = Body(..., embed=True)) -> Dict[str, Any]:
     """
     Update the daily sync time
     
     Args:
         sync_time: New sync time in HH:MM format (e.g., "02:00")
+        
+    Request Body:
+        {
+            "sync_time": "02:00"
+        }
         
     Returns:
         Dict containing operation status
