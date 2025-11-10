@@ -5,6 +5,7 @@ import google.generativeai as genai
 import json
 import os
 import re
+from groq import Groq
 
 
 # Delayed import approach - only import when actually needed
@@ -62,6 +63,8 @@ class SemanticChatService:
         ]
         # Defer loading of sentence transformers until actually needed
         self.embedding_model = None
+        # Initialize Groq client for LLM-based response generation
+        self.groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
     
     def _load_embedding_model(self):
         """Lazy load the embedding model"""
@@ -146,7 +149,8 @@ class SemanticChatService:
 
     async def _generate_llm_response(self, query: str, context_offers: list, user_first_name: str = None) -> str:
         """
-        Generate a personalized response using an LLM with the retrieved offers as context.
+        Generate a personalized response using Groq Llama-3.1-8B-Instant model with the retrieved offers as context.
+        Intelligently determines if offers are relevant to the query and provides alternatives if not.
         """
         # Personalized opening based on user login status
         if user_first_name:
@@ -154,59 +158,52 @@ class SemanticChatService:
         else:
             personalized_intro = ""
         
-        if not OPENAI_AVAILABLE:
-            if context_offers:
-                return f"{personalized_intro}I found {len(context_offers)} great deals for '{query}'! Let me show you what I've got:"
-            else:
-                return f"{personalized_intro}I couldn't find any deals for '{query}'. Try a different search term!"
-
-        # Create a detailed context string from the offers
-        context_str = "\n".join([
-            f"- **{offer['title']}** from {offer['campaign']} (Category: {', '.join(offer['categories'])}). Description: {offer['description']}. Coupon: `{offer['coupon_code'] if offer['coupon_code'] else 'N/A'}`."
-            for offer in context_offers
-        ])
-
-        # System prompt to guide the LLM with personalization instructions
-        system_prompt = f"""
-        You are DealsHub AI, a friendly and helpful shopping assistant. Your goal is to help users find the best deals based on the context provided.
-        {"The user's name is " + user_first_name + ". Use their name naturally in your responses to create a warm, personal conversation." if user_first_name else "The user is not logged in. Be friendly but use generic greetings."}
-        - Analyze the user's query and the provided list of deals.
-        - Synthesize a friendly, conversational, and informative response.
-        - Mention the most relevant deals and highlight key details like coupon codes or discounts.
-        - If no deals are found, say so politely and suggest trying other search terms.
-        - Do not invent deals or information not present in the context.
-        - Keep the response concise, warm, and engaging.
-        - Use emojis sparingly to add personality (1-2 per response).
-        """
-
-        # User prompt with the context
-        user_prompt = f"""
-        User Query: "{query}"
-
-        Here are the deals I found in the database:
-        {context_str if context_offers else "No deals found."}
-
-        Based on this, what is the best response to the user?
-        """
+        if not context_offers:
+            return f"{personalized_intro}I couldn't find any deals for '{query}'. Try a different search term!"
         
         try:
-            response = await openai.ChatCompletion.acreate(
-                model="gpt-3.5-turbo",
+            # Create a prompt for Groq to analyze relevance of offers
+            offer_titles = "\n".join([f"- {offer['title']}" for offer in context_offers])
+            
+            prompt = f"""Analyze if the following offers are directly relevant to the user's query: "{query}".
+
+Offers found:
+{offer_titles}
+
+Instructions:
+1. Identify which offers are DIRECTLY related to "{query}" (exact matches or very close matches)
+2. If NO offers are directly relevant, respond with: "NO_MATCH"
+3. If offers ARE directly relevant, respond with: "MATCH"
+
+Respond with ONLY "MATCH" or "NO_MATCH" (nothing else)."""
+
+            # Call Groq API
+            completion = self.groq_client.chat.completions.create(
+                model="llama-3.1-8b-instant",
                 messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
+                    {"role": "system", "content": "You are a helpful assistant that determines if search results match a user's query. Respond with only 'MATCH' or 'NO_MATCH'."},
+                    {"role": "user", "content": prompt}
                 ],
-                temperature=0.7,  # Slightly higher for more personality
-                max_tokens=250
+                temperature=0,
+                max_tokens=1024,
+                top_p=1,
+                stream=False,
+                stop=None
             )
-            return response.choices[0].message['content'].strip()
-        except Exception as e:
-            logger.error(f"Error generating LLM response: {e}")
-            # Fallback to the personalized simple message if the LLM call fails
-            if context_offers:
-                return f"{personalized_intro}I found {len(context_offers)} great deals for '{query}'! Let me show you what I've got:"
+            
+            relevance_result = completion.choices[0].message.content.strip().upper()
+            
+            if "NO_MATCH" in relevance_result:
+                # No relevant offers found
+                return f"{personalized_intro}We don't have any offers related to '{query}' as of now, but here are a few alternatives that might interest you:"
             else:
-                return f"{personalized_intro}I couldn't find any deals for '{query}'. Try a different search term!"
+                # Relevant offers found
+                return f"{personalized_intro}I found {len(context_offers)} great deals for '{query}'! Here are the best matches:"
+                
+        except Exception as e:
+            logger.error(f"Error calling Groq API: {e}")
+            # Fallback to simple response
+            return f"{personalized_intro}I found {len(context_offers)} deals that might interest you based on '{query}':"
 
     async def semantic_search(self, query: str, db: Session, top_k: int = 10, user_first_name: str = None, fromloc: str = None) -> dict:
         """
