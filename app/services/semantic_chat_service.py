@@ -65,6 +65,8 @@ class SemanticChatService:
         self.embedding_model = None
         # Initialize Groq client for LLM-based response generation
         self.groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+        # Store conversation history in memory (session_id -> list of messages)
+        self.conversation_history = {}
     
     def _load_embedding_model(self):
         """Lazy load the embedding model"""
@@ -147,6 +149,89 @@ class SemanticChatService:
         text = re.sub(clean, '', text)
         return ' '.join(text.split())
 
+    def _add_to_conversation_history(self, session_id: str, user_query: str, bot_response: str):
+        """Add a message to the conversation history"""
+        if session_id not in self.conversation_history:
+            self.conversation_history[session_id] = []
+        
+        self.conversation_history[session_id].append({
+            "user": user_query,
+            "bot": bot_response
+        })
+        
+        # Keep only last 5 exchanges to avoid memory issues
+        if len(self.conversation_history[session_id]) > 5:
+            self.conversation_history[session_id] = self.conversation_history[session_id][-5:]
+    
+    def _get_conversation_context(self, session_id: str) -> str:
+        """Get formatted conversation history for a session"""
+        if session_id not in self.conversation_history or not self.conversation_history[session_id]:
+            return ""
+        
+        context_lines = []
+        for exchange in self.conversation_history[session_id]:
+            context_lines.append(f"User: {exchange['user']}")
+            context_lines.append(f"Bot: {exchange['bot']}")
+        
+        return "\n".join(context_lines)
+    
+    async def _resolve_contextual_query(self, query: str, session_id: str) -> str:
+        """
+        Use Groq to resolve contextual queries by analyzing conversation history.
+        Returns the resolved/enhanced query.
+        """
+        context = self._get_conversation_context(session_id)
+        
+        if not context:
+            # No previous context, return original query
+            return query
+        
+        try:
+            prompt = f"""Given the following conversation history and a new user query, determine if the new query is a follow-up question that requires context from previous messages.
+
+Conversation History:
+{context}
+
+New User Query: "{query}"
+
+Instructions:
+1. If the query is a follow-up (e.g., "show coupons", "deals", "offers" without specifying what), combine it with the most recent context
+2. If the query is independent and complete, return it as-is
+3. Return ONLY the resolved/enhanced query, nothing else
+
+Examples:
+- If previous: "vijay sales offers" and new: "coupons" → return "vijay sales coupons"
+- If previous: "laptop deals" and new: "under 50000" → return "laptop deals under 50000"
+- If previous: "nike shoes" and new: "show me electronics" → return "electronics" (independent query)
+
+Resolved Query:"""
+
+            completion = self.groq_client.chat.completions.create(
+                model="llama-3.1-8b-instant",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant that resolves contextual queries. Return only the resolved query text."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0,
+                max_tokens=100,
+                top_p=1,
+                stream=False,
+                stop=None
+            )
+            
+            resolved_query = completion.choices[0].message.content.strip()
+            
+            # Remove quotes if present
+            resolved_query = resolved_query.strip('"').strip("'")
+            
+            logger.info(f"Resolved contextual query: '{query}' -> '{resolved_query}'")
+            return resolved_query
+            
+        except Exception as e:
+            logger.error(f"Error resolving contextual query: {e}")
+            # Fallback to original query
+            return query
+
     async def _generate_llm_response(self, query: str, context_offers: list, user_first_name: str = None) -> str:
         """
         Generate a personalized response using Groq Llama-3.1-8B-Instant model with the retrieved offers as context.
@@ -205,10 +290,18 @@ Respond with ONLY "MATCH" or "NO_MATCH" (nothing else)."""
             # Fallback to simple response
             return f"{personalized_intro}I found {len(context_offers)} deals that might interest you based on '{query}':"
 
-    async def semantic_search(self, query: str, db: Session, top_k: int = 10, user_first_name: str = None, fromloc: str = None) -> dict:
+    async def semantic_search(self, query: str, db: Session, top_k: int = 10, user_first_name: str = None, fromloc: str = None, session_id: str = None) -> dict:
         """
         Perform semantic search for offers and generate a personalized response using an LLM.
+        Supports contextual conversation based on session history.
         """
+        # Resolve contextual query if session_id is provided
+        original_query = query
+        if session_id:
+            query = await self._resolve_contextual_query(query, session_id)
+            if query != original_query:
+                logger.info(f"Context-aware query resolution: '{original_query}' -> '{query}'")
+        
         if fromloc is not None:
             queryType = await self.classify_query(query)
             logger.info(f"Query classified as: {queryType}")
@@ -225,11 +318,17 @@ Respond with ONLY "MATCH" or "NO_MATCH" (nothing else)."""
             logger.warning("No embedding model available. Falling back to text search.")
             offers = await self.fallback_search(query, db, top_k)
             message = await self._generate_llm_response(query, offers, user_first_name)
+            
+            # Store in conversation history
+            if session_id:
+                self._add_to_conversation_history(session_id, original_query, message)
+            
             return {
                 "type": "offers",
                 "message": message,
                 "offers": offers,
-                "total": len(offers)
+                "total": len(offers),
+                "resolved_query": query if query != original_query else None
             }
             
         try:
@@ -294,11 +393,16 @@ Respond with ONLY "MATCH" or "NO_MATCH" (nothing else)."""
             # 4. Generate a conversational response using the LLM with personalization
             llm_message = await self._generate_llm_response(query, formatted_results, user_first_name)
 
+            # Store in conversation history
+            if session_id:
+                self._add_to_conversation_history(session_id, original_query, llm_message)
+
             return {
                 "type": "offers",
                 "message": llm_message,
                 "offers": formatted_results,
-                "total": len(formatted_results)
+                "total": len(formatted_results),
+                "resolved_query": query if query != original_query else None
             }
             
         except Exception as e:
@@ -306,11 +410,17 @@ Respond with ONLY "MATCH" or "NO_MATCH" (nothing else)."""
             # Fallback to a simple text search if vector search fails
             offers = await self.fallback_search(query, db, top_k)
             message = await self._generate_llm_response(query, offers, user_first_name)
+            
+            # Store in conversation history
+            if session_id:
+                self._add_to_conversation_history(session_id, original_query, message)
+            
             return {
                 "type": "offers",
                 "message": message,
                 "offers": offers,
-                "total": len(offers)
+                "total": len(offers),
+                "resolved_query": query if query != original_query else None
             }
 
     async def classify_query(self, user_query):
