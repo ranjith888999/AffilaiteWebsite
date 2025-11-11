@@ -42,4 +42,4 @@ langchain-core>=0.1.0
 google-generativeai==0.8.5
 # Supabase client (for database connection)
 supabase>=2.0.0
-grok==0.33.0
+groq>=0.33.0
