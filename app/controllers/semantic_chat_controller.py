@@ -61,7 +61,8 @@ async def handle_chat(query: ChatQuery, request: Request, db: Session = Depends(
             query=query.message,
             db=db,
             user_first_name=user_first_name,
-            fromloc="chat_endpoint"
+            fromloc="chat_endpoint",
+            session_id=query.session_id
         )
         
         return {
