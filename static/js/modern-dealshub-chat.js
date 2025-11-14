@@ -264,7 +264,10 @@ window.EnhancedDealsHubChat = (function() {
             state.currentResponse = data;
             
             // Handle different response types
-            if (data.response.type === 'greeting') {
+            if (data.response.type === 'limit_reached' || data.response.conversation_limit_reached) {
+                // Conversation limit reached - show message and suggest new session
+                addConversationLimitMessage(data.response.message);
+            } else if (data.response.type === 'greeting') {
                 addGreetingResponse(data.response);
             } else if (data.response.type === 'offers') {
                 addOffersResponse(data.response);
@@ -311,6 +314,10 @@ window.EnhancedDealsHubChat = (function() {
      * Switch back to search mode
      */
     function backToSearchMode() {
+        // Generate a new session ID for fresh conversation
+        generateSessionId();
+        console.log('🔄 New session started:', state.sessionId);
+        
         // Show main header and welcome state
         elements.mainHeader.style.display = 'flex';
         elements.welcomeState.style.display = 'flex';
@@ -330,8 +337,9 @@ window.EnhancedDealsHubChat = (function() {
         
         state.isInConversation = false;
         
-        // Clear conversation
+        // Clear conversation and messages array
         elements.chatMessages.innerHTML = '';
+        state.messages = [];
         elements.dealshubInput.value = '';
         elements.dealshubInput.focus();
     }
@@ -401,6 +409,42 @@ window.EnhancedDealsHubChat = (function() {
         
         // Don't scroll for greeting responses to keep the page at top
         // scrollToLatestMessage(messageDiv);
+    }
+
+    /**
+     * Add conversation limit reached message
+     */
+    function addConversationLimitMessage(message) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'chat-message bot-message limit-message';
+        
+        const messageBubble = document.createElement('div');
+        messageBubble.className = 'message-bubble';
+        
+        const html = `
+            <div class="conversation-limit-notice">
+                <div class="limit-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <p class="limit-text">${message}</p>
+                <button class="new-session-btn" onclick="EnhancedDealsHubChat.startNewSession()">
+                    <i class="fas fa-plus-circle"></i> Start New Conversation
+                </button>
+            </div>
+        `;
+        
+        messageBubble.innerHTML = html;
+        messageDiv.appendChild(messageBubble);
+        elements.chatMessages.appendChild(messageDiv);
+        
+        scrollToLatestMessage(messageDiv);
+    }
+
+    /**
+     * Start a new conversation session (exposed for button click)
+     */
+    function startNewSession() {
+        backToSearchMode();
     }
 
     /**
@@ -651,7 +695,8 @@ window.EnhancedDealsHubChat = (function() {
 
     // Public API
     return {
-        init: init
+        init: init,
+        startNewSession: startNewSession
     };
 })();
 

@@ -159,9 +159,15 @@ class SemanticChatService:
             "bot": bot_response
         })
         
-        # Keep only last 5 exchanges to avoid memory issues
-        if len(self.conversation_history[session_id]) > 5:
-            self.conversation_history[session_id] = self.conversation_history[session_id][-5:]
+        # Keep only last 10 exchanges to support 10 conversations per session
+        if len(self.conversation_history[session_id]) > 10:
+            self.conversation_history[session_id] = self.conversation_history[session_id][-10:]
+    
+    def _check_conversation_limit(self, session_id: str) -> bool:
+        """Check if conversation has reached the limit of 10 exchanges"""
+        if session_id not in self.conversation_history:
+            return False
+        return len(self.conversation_history[session_id]) >= 10
     
     def _get_conversation_context(self, session_id: str) -> str:
         """Get formatted conversation history for a session"""
@@ -295,6 +301,17 @@ Respond with ONLY "MATCH" or "NO_MATCH" (nothing else)."""
         Perform semantic search for offers and generate a personalized response using an LLM.
         Supports contextual conversation based on session history.
         """
+        # Check if conversation limit has been reached (10 messages)
+        if session_id and self._check_conversation_limit(session_id):
+            limit_message = "You've reached the maximum of 10 conversations in this session. Please click the 'Back to Search' button to start a new conversation with fresh context. This helps me provide you with better and more accurate responses! 🔄"
+            return {
+                "type": "limit_reached",
+                "message": limit_message,
+                "offers": [],
+                "total": 0,
+                "conversation_limit_reached": True
+            }
+        
         # Resolve contextual query if session_id is provided
         original_query = query
         if session_id:

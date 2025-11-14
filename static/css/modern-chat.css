@@ -599,6 +599,7 @@ body {
     font-weight: 500;
     font-family: var(--font-sans);
     line-height: 1.5;
+    margin-left:10px
 }
 
 .search-input::placeholder {
@@ -1918,4 +1919,112 @@ body {
         font-size: 0.95rem;
     }
 }
+
+/* Conversation Limit Notice Styles */
+.conversation-limit-notice {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
+    border-radius: var(--radius-lg);
+    border: 2px solid #feb2b2;
+    text-align: center;
+}
+
+.limit-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(245, 101, 101, 0.3);
+}
+
+.limit-icon i {
+    font-size: 1.8rem;
+    color: white;
+}
+
+.limit-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin: 0;
+    max-width: 500px;
+}
+
+.new-session-btn {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: var(--radius-full);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+}
+
+.new-session-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.new-session-btn:active {
+    transform: translateY(0);
+}
+
+.new-session-btn i {
+    font-size: 1.1rem;
+}
+
+/* Limit message specific styling */
+.limit-message {
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .conversation-limit-notice {
+        padding: var(--space-md);
+        gap: var(--space-sm);
+    }
+
+    .limit-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .limit-icon i {
+        font-size: 1.5rem;
+    }
+
+    .limit-text {
+        font-size: 0.9rem;
+    }
+
+    .new-session-btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}
+
 
