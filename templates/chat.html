@@ -85,6 +85,13 @@
 
             <!-- Quick Action Cards -->
             <div class="quick-actions">
+                <div class="action-card capabilities-card" id="capabilitiesCard" style="animation-delay: 2.5s;">
+                    <div class="card-icon">
+                        <i class="fas fa-magic"></i>
+                    </div>
+                    <h3>Capabilities</h3>
+                    <p>What I Can Do</p>
+                </div>
                 <div class="action-card" data-query="electronics deals" style="animation-delay: 2.1s;">
                     <div class="card-icon">
                         <i class="fas fa-laptop"></i>
@@ -173,6 +180,98 @@
                 <p class="loading-text">Finding amazing deals for you...</p>
             </div>
         </div>
+
+        <!-- Capabilities Modal Overlay -->
+        <div id="capabilitiesModal" class="capabilities-modal-overlay" style="display: none;">
+            <div class="capabilities-modal">
+                <button class="capabilities-modal-close" id="closeCapabilities">&times;</button>
+                <div class="capabilities-modal-header">
+                    <div class="capabilities-modal-icon">
+                        <i class="fas fa-sparkles"></i>
+                    </div>
+                    <h2 class="capabilities-modal-title">AI Assistant Capabilities</h2>
+                </div>
+                
+                <ul class="capabilities-list">
+                    <!-- Smart Search -->
+                    <li class="capability-item">
+                        <div class="capability-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="capability-content">
+                            <h3>Smart Search</h3>
+                            <p>Find deals across 1000+ brands using natural language</p>
+                        </div>
+                    </li>
+
+                    <!-- Contextual Conversation -->
+                    <li class="capability-item">
+                        <div class="capability-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="capability-content">
+                            <h3>Contextual Chat</h3>
+                            <p>Have natural conversations with context awareness</p>
+                        </div>
+                    </li>
+
+                    <!-- Personalized Recommendations -->
+                    <li class="capability-item">
+                        <div class="capability-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="capability-content">
+                            <h3>Personalized Results</h3>
+                            <p>Get tailored recommendations based on your preferences</p>
+                        </div>
+                    </li>
+
+                    <!-- Real-time Updates -->
+                    <li class="capability-item">
+                        <div class="capability-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <div class="capability-content">
+                            <h3>Real-Time Offers</h3>
+                            <p>Access live deals from verified sources</p>
+                        </div>
+                    </li>
+
+                    <!-- Multi-Category Support -->
+                    <li class="capability-item">
+                        <div class="capability-icon">
+                            <i class="fas fa-th-large"></i>
+                        </div>
+                        <div class="capability-content">
+                            <h3>Multi-Category</h3>
+                            <p>Browse deals across all major shopping categories</p>
+                        </div>
+                    </li>
+
+                    <!-- AI Understanding -->
+                    <li class="capability-item">
+                        <div class="capability-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="capability-content">
+                            <h3>AI Understanding</h3>
+                            <p>I understand what you mean, not just what you type</p>
+                        </div>
+                    </li>
+
+                    <!-- 24/7 Availability -->
+                    <li class="capability-item">
+                        <div class="capability-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="capability-content">
+                            <h3>24/7 Availability</h3>
+                            <p>Get help anytime, anywhere with instant responses</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -203,6 +302,46 @@
         // Initialize Enhanced DealsHub AI Chat
         if (window.EnhancedDealsHubChat) {
             window.EnhancedDealsHubChat.init();
+        }
+
+        // Capabilities Modal Handler
+        const capabilitiesCard = document.getElementById('capabilitiesCard');
+        const capabilitiesModal = document.getElementById('capabilitiesModal');
+        const closeCapabilities = document.getElementById('closeCapabilities');
+
+        if (capabilitiesCard && capabilitiesModal) {
+            // Open modal when clicking capabilities card
+            capabilitiesCard.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                capabilitiesModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                console.log('Capabilities modal opened');
+            });
+
+            // Close modal when clicking close button
+            if (closeCapabilities) {
+                closeCapabilities.addEventListener('click', function() {
+                    capabilitiesModal.style.display = 'none';
+                    document.body.style.overflow = ''; // Restore scrolling
+                });
+            }
+
+            // Close modal when clicking outside the content
+            capabilitiesModal.addEventListener('click', function(e) {
+                if (e.target === capabilitiesModal) {
+                    capabilitiesModal.style.display = 'none';
+                    document.body.style.overflow = ''; // Restore scrolling
+                }
+            });
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && capabilitiesModal.style.display === 'flex') {
+                    capabilitiesModal.style.display = 'none';
+                    document.body.style.overflow = ''; // Restore scrolling
+                }
+            });
         }
     });
 </script>
