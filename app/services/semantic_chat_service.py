@@ -355,7 +355,7 @@ Respond with ONLY "MATCH" or "NO_MATCH" (nothing else)."""
         """
         # Check if conversation limit has been reached (10 messages)
         if session_id and self._check_conversation_limit(session_id):
-            limit_message = "You've reached the maximum of 10 conversations in this session. Please click the 'Back to Search' button to start a new conversation with fresh context. This helps me provide you with better and more accurate responses! 🔄"
+            limit_message = "You've reached the maximum of 10 conversations in this session. Please click the 'OK - Start New Conversation' button to start a new conversation with fresh context. This helps me provide you with better and more accurate responses! 🔄"
             return {
                 "type": "limit_reached",
                 "message": limit_message,
