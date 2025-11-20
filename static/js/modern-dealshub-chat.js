@@ -183,6 +183,9 @@ window.EnhancedDealsHubChat = (function() {
         const query = elements.conversationInput.value.trim();
         if (!query) return;
         
+        // Store current query for potential reuse
+        state.currentQuery = query;
+        
         // Add user message to conversation
         addMessageToConversation(query, 'user');
         elements.conversationInput.value = '';
@@ -263,10 +266,17 @@ window.EnhancedDealsHubChat = (function() {
             const data = await response.json();
             state.currentResponse = data;
             
+            console.log('Response received:', data.response.type);
+            
             // Handle different response types
             if (data.response.type === 'limit_reached' || data.response.conversation_limit_reached) {
-                // Conversation limit reached - show message and suggest new session
-                addConversationLimitMessage(data.response.message);
+                // Conversation limit reached - show modal popup
+                console.log('Showing conversation limit modal');
+                // Prevent any further UI updates while modal is shown
+                state.isLoading = false;
+                setLoading(false);
+                showConversationLimitModal(data.response.message);
+                return; // Exit early to prevent any other processing
             } else if (data.response.type === 'greeting') {
                 addGreetingResponse(data.response);
             } else if (data.response.type === 'offers') {
@@ -412,32 +422,97 @@ window.EnhancedDealsHubChat = (function() {
     }
 
     /**
-     * Add conversation limit reached message
+     * Show conversation limit modal popup
      */
-    function addConversationLimitMessage(message) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'chat-message bot-message limit-message';
+    function showConversationLimitModal(message) {
+        // Remove any existing modal first
+        const existingModal = document.getElementById('conversationLimitModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
         
-        const messageBubble = document.createElement('div');
-        messageBubble.className = 'message-bubble';
+        // Create modal overlay
+        const modalOverlay = document.createElement('div');
+        modalOverlay.className = 'conversation-limit-modal-overlay';
+        modalOverlay.id = 'conversationLimitModal';
         
-        const html = `
-            <div class="conversation-limit-notice">
-                <div class="limit-icon">
+        const modalContent = `
+            <div class="conversation-limit-modal">
+                <div class="modal-icon">
                     <i class="fas fa-info-circle"></i>
                 </div>
-                <p class="limit-text">${message}</p>
-                <button class="new-session-btn" onclick="EnhancedDealsHubChat.startNewSession()">
-                    <i class="fas fa-plus-circle"></i> Start New Conversation
-                </button>
+                <h3 class="modal-title">Conversation Limit Reached</h3>
+                <p class="modal-message">${message}</p>
+                <div class="modal-actions">
+                    <button class="modal-btn modal-btn-primary" id="startNewConversationBtn">
+                        <i class="fas fa-plus-circle"></i> OK - Start New Conversation
+                    </button>
+                </div>
             </div>
         `;
         
-        messageBubble.innerHTML = html;
-        messageDiv.appendChild(messageBubble);
-        elements.chatMessages.appendChild(messageDiv);
+        modalOverlay.innerHTML = modalContent;
+        document.body.appendChild(modalOverlay);
         
-        scrollToLatestMessage(messageDiv);
+        // Use setTimeout to ensure DOM is ready
+        setTimeout(() => {
+            const okButton = document.getElementById('startNewConversationBtn');
+            if (okButton) {
+                okButton.addEventListener('click', function handleOkClick() {
+                    // Get the last user query before closing modal
+                    const lastQuery = state.currentQuery || elements.conversationInput?.value || '';
+                    
+                    console.log('OK button clicked, last query:', lastQuery);
+                    
+                    // Close modal
+                    modalOverlay.remove();
+                    
+                    // Start new conversation
+                    startNewConversationWithQuery(lastQuery);
+                }, { once: true }); // Use once option to prevent multiple triggers
+            } else {
+                console.error('OK button not found in modal');
+            }
+        }, 100);
+        
+        // Prevent closing by clicking overlay
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                // Don't allow closing by clicking outside - just log for debugging
+                console.log('Clicked outside modal, not closing');
+                e.stopPropagation();
+            }
+        });
+        
+        console.log('Modal displayed successfully');
+    }
+
+    /**
+     * Start a new conversation with the last query
+     */
+    function startNewConversationWithQuery(query) {
+        // Generate new session ID
+        generateSessionId();
+        console.log('🔄 Starting new conversation with session:', state.sessionId);
+        
+        // Reset to welcome state first
+        backToSearchMode();
+        
+        // If there was a query, automatically submit it in the new conversation
+        if (query && query.trim()) {
+            setTimeout(() => {
+                elements.dealshubInput.value = query;
+                handleSearch(query);
+            }, 300);
+        }
+    }
+
+    /**
+     * Add conversation limit reached message (deprecated - keeping for compatibility)
+     */
+    function addConversationLimitMessage(message) {
+        // Now just shows modal instead
+        showConversationLimitModal(message);
     }
 
     /**

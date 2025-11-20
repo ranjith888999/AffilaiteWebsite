@@ -149,14 +149,17 @@ class SemanticChatService:
         text = re.sub(clean, '', text)
         return ' '.join(text.split())
 
-    def _add_to_conversation_history(self, session_id: str, user_query: str, bot_response: str):
-        """Add a message to the conversation history"""
+    def _add_to_conversation_history(self, session_id: str, user_query: str, resolved_query: str):
+        """
+        Add a message to the conversation history.
+        Now stores the resolved query instead of bot response for better context.
+        """
         if session_id not in self.conversation_history:
             self.conversation_history[session_id] = []
         
         self.conversation_history[session_id].append({
             "user": user_query,
-            "bot": bot_response
+            "resolved": resolved_query  # Store what was actually searched
         })
         
         # Keep only last 10 exchanges to support 10 conversations per session
@@ -176,8 +179,8 @@ class SemanticChatService:
         
         context_lines = []
         for exchange in self.conversation_history[session_id]:
-            context_lines.append(f"User: {exchange['user']}")
-            context_lines.append(f"Bot: {exchange['bot']}")
+            context_lines.append(f"User asked: {exchange['user']}")
+            context_lines.append(f"Searched for: {exchange['resolved']}")
         
         return "\n".join(context_lines)
     
@@ -193,33 +196,37 @@ class SemanticChatService:
             return query
         
         try:
-            prompt = f"""Given the following conversation history and a new user query, determine if the new query is a follow-up question that requires context from previous messages.
+            prompt = f"""You are analyzing a conversation to resolve follow-up queries. Look at the conversation history and determine what the user is asking for.
 
 Conversation History:
 {context}
 
-New User Query: "{query}"
+Current User Query: "{query}"
 
-Instructions:
-1. If the query is a follow-up (e.g., "show coupons", "deals", "offers" without specifying what), combine it with the most recent context
-2. If the query is independent and complete, return it as-is
-3. Return ONLY the resolved/enhanced query, nothing else
+RULES:
+1. If the query is vague (like "deals", "coupons", "offers", "show more") - combine it with the MOST RECENT search topic
+2. Keep the brand/merchant name from the most recent search
+3. Only replace the action word (offers→coupons, coupons→deals, etc)
+4. If the query is completely new and specific, return it as-is
+5. Return ONLY the resolved search query, nothing else
 
 Examples:
-- If previous: "vijay sales offers" and new: "coupons" → return "vijay sales coupons"
-- If previous: "laptop deals" and new: "under 50000" → return "laptop deals under 50000"
-- If previous: "nike shoes" and new: "show me electronics" → return "electronics" (independent query)
+Previous: "zomato offers" → Current: "deals" → Return: "zomato deals"
+Previous: "zomato offers" then "zomato deals" → Current: "coupons" → Return: "zomato coupons"  
+Previous: "laptop deals" → Current: "under 50000" → Return: "laptop deals under 50000"
+Previous: "nike shoes" → Current: "show me electronics" → Return: "electronics" (new topic)
+Previous: "amazon" → Current: "fashion" → Return: "amazon fashion"
 
 Resolved Query:"""
 
             completion = self.groq_client.chat.completions.create(
                 model="llama-3.1-8b-instant",
                 messages=[
-                    {"role": "system", "content": "You are a helpful assistant that resolves contextual queries. Return only the resolved query text."},
+                    {"role": "system", "content": "You resolve contextual queries by preserving the main topic (brand/merchant) from previous searches. Return ONLY the resolved query text, nothing else. No explanations."},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=0,
-                max_tokens=100,
+                max_tokens=50,
                 top_p=1,
                 stream=False,
                 stop=None
@@ -230,13 +237,58 @@ Resolved Query:"""
             # Remove quotes if present
             resolved_query = resolved_query.strip('"').strip("'")
             
+            # Fallback: If LLM returns empty or just returns the original query word for word
+            # and the query is generic, use simple pattern matching
+            if not resolved_query or resolved_query.lower() == query.lower():
+                resolved_query = self._fallback_context_resolution(query, session_id)
+            
             logger.info(f"Resolved contextual query: '{query}' -> '{resolved_query}'")
             return resolved_query
             
         except Exception as e:
             logger.error(f"Error resolving contextual query: {e}")
-            # Fallback to original query
+            # Fallback to pattern-based resolution
+            return self._fallback_context_resolution(query, session_id)
+    
+    def _fallback_context_resolution(self, query: str, session_id: str) -> str:
+        """
+        Fallback method to resolve context using simple pattern matching.
+        Used when LLM fails or returns unclear results.
+        """
+        query_lower = query.lower().strip()
+        
+        # Generic follow-up keywords that need context
+        generic_keywords = ['deals', 'deal', 'offers', 'offer', 'coupons', 'coupon', 
+                          'codes', 'code', 'discounts', 'discount', 'show', 'more']
+        
+        # Check if query is generic
+        is_generic = query_lower in generic_keywords or len(query.split()) <= 2
+        
+        if not is_generic:
             return query
+        
+        # Get the most recent resolved query
+        if session_id not in self.conversation_history or not self.conversation_history[session_id]:
+            return query
+        
+        last_exchange = self.conversation_history[session_id][-1]
+        last_resolved = last_exchange['resolved']
+        
+        # Extract the main topic (brand/merchant/category) from last search
+        # Remove generic words to get the core topic
+        last_words = last_resolved.lower().split()
+        core_topic = []
+        for word in last_words:
+            if word not in generic_keywords:
+                core_topic.append(word)
+        
+        if core_topic:
+            # Combine core topic with new query
+            resolved = ' '.join(core_topic) + ' ' + query_lower
+            logger.info(f"Fallback resolution: '{query}' + context '{' '.join(core_topic)}' -> '{resolved}'")
+            return resolved
+        
+        return query
 
     async def _generate_llm_response(self, query: str, context_offers: list, user_first_name: str = None) -> str:
         """
@@ -336,9 +388,9 @@ Respond with ONLY "MATCH" or "NO_MATCH" (nothing else)."""
             offers = await self.fallback_search(query, db, top_k)
             message = await self._generate_llm_response(query, offers, user_first_name)
             
-            # Store in conversation history
+            # Store in conversation history - use resolved query for context
             if session_id:
-                self._add_to_conversation_history(session_id, original_query, message)
+                self._add_to_conversation_history(session_id, original_query, query)
             
             return {
                 "type": "offers",
@@ -379,10 +431,15 @@ Respond with ONLY "MATCH" or "NO_MATCH" (nothing else)."""
                 LIMIT :top_k
             """)
             
-            results = db.execute(
+            # Execute query and ensure proper result handling
+            result = db.execute(
                 sql_query,
                 {"query_embedding": str(query_embedding), "top_k": top_k}
-            ).fetchall()
+            )
+            results = result.fetchall()
+            
+            # Commit to release any locks (important for connection pool)
+            db.commit()
             
             # 3. Format the results for the LLM and the UI
             formatted_results = []
@@ -410,9 +467,9 @@ Respond with ONLY "MATCH" or "NO_MATCH" (nothing else)."""
             # 4. Generate a conversational response using the LLM with personalization
             llm_message = await self._generate_llm_response(query, formatted_results, user_first_name)
 
-            # Store in conversation history
+            # Store in conversation history - use the resolved query for context
             if session_id:
-                self._add_to_conversation_history(session_id, original_query, llm_message)
+                self._add_to_conversation_history(session_id, original_query, query)
 
             return {
                 "type": "offers",
@@ -424,13 +481,18 @@ Respond with ONLY "MATCH" or "NO_MATCH" (nothing else)."""
             
         except Exception as e:
             logger.error(f"Error during semantic search: {e}")
+            # Rollback to clean up the connection
+            try:
+                db.rollback()
+            except:
+                pass
             # Fallback to a simple text search if vector search fails
             offers = await self.fallback_search(query, db, top_k)
             message = await self._generate_llm_response(query, offers, user_first_name)
             
-            # Store in conversation history
+            # Store in conversation history - use resolved query for context
             if session_id:
-                self._add_to_conversation_history(session_id, original_query, message)
+                self._add_to_conversation_history(session_id, original_query, query)
             
             return {
                 "type": "offers",
@@ -561,10 +623,14 @@ Respond with ONLY "MATCH" or "NO_MATCH" (nothing else)."""
         try:
             search_term = f"%{query}%"
             
+            # Use query with proper result handling
             results = db.query(Offer).filter(
                 (Offer.title.ilike(search_term)) |
                 (Offer.description.ilike(search_term))
             ).limit(top_k).all()
+            
+            # Commit to release any locks
+            db.commit()
             
             formatted_results = []
             for offer in results:
@@ -590,6 +656,11 @@ Respond with ONLY "MATCH" or "NO_MATCH" (nothing else)."""
             return formatted_results
         except Exception as e:
             logger.error(f"Error during fallback search: {e}")
+            # Rollback on error to clean up the connection
+            try:
+                db.rollback()
+            except:
+                pass
             return []
 
 # Global instance

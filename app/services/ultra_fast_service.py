@@ -18,6 +18,7 @@ class UltraFastChatService:
     def search_offers_simple(self, query: str, limit: int = 5) -> List[Dict[str, Any]]:
         """Ultra simple search - but with proper query filtering"""
         start_time = time.time()
+        db = None
         try:
             db = next(get_db_sync())
             query_lower = query.lower()
@@ -139,12 +140,14 @@ class UltraFastChatService:
                     continue
             
             logger.info(f"Ultra fast search found {len(result)} offers for query: '{query}'")
-            db.close()
             return result
             
         except Exception as e:
             logger.error(f"Ultra fast search error: {e}")
             return []
+        finally:
+            if db:
+                db.close()
             
     def _search_by_category(self, db, query_lower, limit):
         """Helper method to search by category and other fallback methods"""
@@ -274,6 +277,7 @@ ultra_fast_service = UltraFastChatService()
 def search_offers_ultra_fast(query: str, limit: int = 5) -> List[Dict[str, Any]]:
     """Ultra fast search - optimized for performance under 10 seconds"""
     start_time = time.time()
+    db = None
     try:
         db = next(get_db_sync())
         query_lower = query.lower()
@@ -379,7 +383,6 @@ def search_offers_ultra_fast(query: str, limit: int = 5) -> List[Dict[str, Any]]
         # Log performance
         elapsed = time.time() - start_time
         logger.info(f"⚡ Ultra-fast search completed in {elapsed:.3f}s with {len(result)} results")
-        db.close()
         return result
         
     except Exception as e:
@@ -387,6 +390,9 @@ def search_offers_ultra_fast(query: str, limit: int = 5) -> List[Dict[str, Any]]
         elapsed = time.time() - start_time
         logger.error(f"Search failed after {elapsed:.3f}s")
         return []
+    finally:
+        if db:
+            db.close()
 
 def generate_response_ultra_fast(query: str, offers: List[Dict]) -> str:
     """Ultra fast response"""

@@ -41,9 +41,9 @@ if IS_PRODUCTION:
     POOL_PRE_PING = True  # Check connection health before use
     STATEMENT_TIMEOUT = 30000  # 30 seconds max per query
 else:
-    # Development: Conservative settings
-    POOL_SIZE = 5
-    MAX_OVERFLOW = 5
+    # Development: Conservative settings but increased for chat functionality
+    POOL_SIZE = 10  # Increased from 5 to handle chat requests better
+    MAX_OVERFLOW = 10  # Increased from 5 for better concurrency
     POOL_TIMEOUT = 30
     POOL_RECYCLE = 300
     POOL_PRE_PING = True
@@ -240,13 +240,24 @@ def get_db_sync():
                 db.close()
 
 def get_sync_db_session():
-    """Get a synchronous database session for sync operations"""
+    """
+    Get a synchronous database session for sync operations.
+    IMPORTANT: This is a generator that should be used with Depends() in FastAPI.
+    The session will be automatically closed after use.
+    """
     if not db_available:
         initialize_database()  # Try to initialize if not already done
     if not db_available or SessionLocal is None:
-        logger.warning("Database not available, returning None.")
-        return None
-    return SessionLocal()
+        logger.warning("Database not available, yielding None.")
+        yield None
+        return
+    
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+        logger.debug("Database session closed")
 
 async def get_async_db():
     """Async database session for embedding-based search with retry logic"""
