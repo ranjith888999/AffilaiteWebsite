@@ -373,11 +373,8 @@ window.EnhancedDealsHubChat = (function() {
         messageDiv.appendChild(messageBubble);
         elements.chatMessages.appendChild(messageDiv);
         
-        // Scroll to show the new message from the top
-        // Only scroll for user messages to keep the conversation visible
-        if (type === 'user') {
-            scrollToLatestMessage(messageDiv);
-        }
+        // Scroll to show the new message
+        scrollToLatestMessage(messageDiv);
     }
 
     /**
@@ -417,8 +414,8 @@ window.EnhancedDealsHubChat = (function() {
             });
         });
         
-        // Don't scroll for greeting responses to keep the page at top
-        // scrollToLatestMessage(messageDiv);
+        // Scroll to show the bot response
+        scrollToLatestMessage(messageDiv);
     }
 
     /**
@@ -579,8 +576,8 @@ window.EnhancedDealsHubChat = (function() {
             });
         });
         
-        // Don't scroll for offer responses to keep the page at top
-        // scrollToLatestMessage(messageDiv);
+        // Scroll to show the bot response with offers
+        scrollToLatestMessage(messageDiv);
     }
 
     /**
@@ -751,15 +748,35 @@ window.EnhancedDealsHubChat = (function() {
     }
 
     /**
-     * Scroll to show the latest message from the top
-     * This allows users to see new messages without jumping to the very bottom
+     * Scroll to show the latest message
+     * This ensures users can see both their question and the bot's answer
      */
     function scrollToLatestMessage(messageElement) {
         if (!messageElement) return;
         
         setTimeout(() => {
-            // Scroll to show the message from its top position
-            // This ensures users can see the question and answer from the beginning
+            const container = elements.chatMessages;
+            
+            // For bot messages, we want to show both the user's question and the bot's answer
+            // Get all messages to find the previous user message
+            const allMessages = container.querySelectorAll('.chat-message');
+            const messageIndex = Array.from(allMessages).indexOf(messageElement);
+            
+            // If this is a bot message and there's a user message before it
+            if (messageElement.classList.contains('bot-message') && messageIndex > 0) {
+                const previousMessage = allMessages[messageIndex - 1];
+                if (previousMessage.classList.contains('user-message')) {
+                    // Scroll to show the user's question at the top, which will also show the bot's answer
+                    previousMessage.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start',
+                        inline: 'nearest'
+                    });
+                    return;
+                }
+            }
+            
+            // For user messages or standalone bot messages, scroll normally
             messageElement.scrollIntoView({ 
                 behavior: 'smooth', 
                 block: 'start',
