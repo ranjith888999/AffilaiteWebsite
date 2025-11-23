@@ -734,17 +734,174 @@ window.EnhancedDealsHubChat = (function() {
     }
 
     /**
-     * Handle voice input (placeholder)
+     * Handle voice input using Web Speech API
      */
     function handleVoiceInput() {
-        // Placeholder for voice functionality
-        console.log('Voice input not implemented yet');
+        // Check if browser supports Web Speech API
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            alert('Voice recognition is not supported in your browser. Please try Google Chrome or Microsoft Edge.');
+            return;
+        }
+
+        // Check for secure context (HTTPS or localhost)
+        if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            alert('Voice recognition requires a secure connection (HTTPS) or localhost. Please access the site via HTTPS or localhost.');
+            return;
+        }
+
+        // Create speech recognition instance
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
         
-        // Visual feedback
+        // Configure recognition
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+        recognition.continuous = false;
+
+        // Visual feedback - start recording
+        const icon = elements.voiceBtn.querySelector('i');
+        const originalBackground = elements.voiceBtn.style.background;
+        
+        // Function to reset button state
+        const resetButton = () => {
+            elements.voiceBtn.style.background = originalBackground;
+            elements.voiceBtn.classList.remove('recording');
+            icon.classList.remove('fa-stop');
+            icon.classList.add('fa-microphone');
+            elements.voiceBtn.title = 'Voice search';
+        };
+
         elements.voiceBtn.style.background = 'var(--secondary-gradient)';
+        elements.voiceBtn.classList.add('recording');
+        icon.classList.remove('fa-microphone');
+        icon.classList.add('fa-stop');
+        elements.voiceBtn.title = 'Listening... Click to stop';
+
+        // Handle successful speech recognition
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            console.log('✅ Voice input recognized:', transcript);
+            
+            // Fill the appropriate input field based on current state
+            if (state.isInConversation && elements.conversationInput) {
+                elements.conversationInput.value = transcript;
+                elements.conversationInput.focus();
+            } else if (elements.dealshubInput) {
+                elements.dealshubInput.value = transcript;
+                elements.dealshubInput.focus();
+            }
+            
+            // Show success feedback
+            showToast('Voice recognized successfully!', 'success');
+        };
+
+        // Handle errors with detailed logging
+        recognition.onerror = (event) => {
+            console.error('❌ Speech recognition error details:', {
+                error: event.error,
+                message: event.message,
+                timeStamp: event.timeStamp
+            });
+            
+            let errorMessage = '';
+            let shouldShowAlert = true;
+            
+            switch(event.error) {
+                case 'no-speech':
+                    errorMessage = 'No speech detected. Please speak clearly and try again.';
+                    break;
+                case 'audio-capture':
+                    errorMessage = 'No microphone found. Please check your device and ensure a microphone is connected.';
+                    break;
+                case 'not-allowed':
+                    errorMessage = 'Microphone access denied. Please allow microphone access in your browser settings and try again.';
+                    break;
+                case 'network':
+                    errorMessage = 'Network error. Please check your internet connection.';
+                    break;
+                case 'aborted':
+                    // User manually stopped - don't show error
+                    shouldShowAlert = false;
+                    break;
+                case 'service-not-allowed':
+                    errorMessage = 'Speech recognition service is not allowed. Please use HTTPS or localhost.';
+                    break;
+                default:
+                    errorMessage = `Voice recognition error (${event.error}). Please try again.`;
+                    console.log('💡 Tip: Make sure you are using HTTPS or localhost, and have granted microphone permissions.');
+            }
+            
+            if (shouldShowAlert && errorMessage) {
+                showToast(errorMessage, 'error');
+            }
+            
+            resetButton();
+        };
+
+        // Handle start
+        recognition.onstart = () => {
+            console.log('🎤 Voice recognition started - speak now!');
+        };
+
+        // Handle end of speech recognition
+        recognition.onend = () => {
+            console.log('🎤 Voice recognition ended');
+            resetButton();
+        };
+
+        // Start listening
+        try {
+            recognition.start();
+        } catch (error) {
+            console.error('❌ Error starting voice recognition:', error);
+            showToast('Failed to start voice recognition. Please try again.', 'error');
+            resetButton();
+        }
+    }
+
+    /**
+     * Show toast notification
+     */
+    function showToast(message, type = 'info') {
+        // Create toast element if it doesn't exist
+        let toast = document.getElementById('voiceToast');
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.id = 'voiceToast';
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 10000;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                max-width: 300px;
+                pointer-events: none;
+            `;
+            document.body.appendChild(toast);
+        }
+
+        // Set background color based on type
+        const colors = {
+            success: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+            error: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            info: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+        };
+        
+        toast.style.background = colors[type] || colors.info;
+        toast.textContent = message;
+        toast.style.opacity = '1';
+
+        // Auto-hide after 3 seconds
         setTimeout(() => {
-            elements.voiceBtn.style.background = '';
-        }, 200);
+            toast.style.opacity = '0';
+        }, 3000);
     }
 
     /**

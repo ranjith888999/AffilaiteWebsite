@@ -652,6 +652,7 @@ body {
 .voice-btn {
     background: rgba(102, 126, 234, 0.1);
     color: var(--border-focus);
+    transition: all 0.3s ease;
 }
 
 .voice-btn:hover {
@@ -659,6 +660,24 @@ body {
     color: white;
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
+}
+
+/* Recording state animation */
+.voice-btn.recording {
+    background: var(--secondary-gradient) !important;
+    color: white !important;
+    animation: pulse-recording 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-recording {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(245, 87, 108, 0.7);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(245, 87, 108, 0);
+    }
 }
 
 .send-btn {
